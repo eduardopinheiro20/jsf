@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ * Sistema Eddydata Gestão e Administração Pública - SOFTCIDADE
+ * Copyright (C) 2014, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Thiago Martos
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'/>
+        <meta name="description" content=""/>
+        <meta name="author" content=""/>    
+        
+        <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
+
+        <title>Eddydata - Gestão Municipal</title>
+    </h:head>    
+    <h:body style="overflow: auto; background-color: #fcfcfc; display: table; margin: auto; padding-top: 80px;">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <br/><br/>
+                <!--<h:graphicImage name="eddydata_logo.png" library="img" styleClass="img-responsive center-block" width="110" height="107"/>-->
+                <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12" style="display: table-cell; vertical-align: middle;">
+                <div class="alert alert-danger">
+                    <h3><i class="glyphicon glyphicon-warning-sign"></i> Oops! Não foi possível acessar a página.</h3>
+                    <p>
+                        Não foi possível acessar a página, faça o login no sistema.
+                        <br/>
+                        <br/>
+                        <h:link outcome='pretty:login' value="retornar" styleClass="btn btn-danger btn-sm"/>
+                    </p>                
+                </div>
+            </div>
+        </div>
+
+    </h:body>
+</html>

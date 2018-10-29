@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Emissão de Carnê" />
+    <ui:param name="pagina_acima" value="Movimentos" />
+    <ui:param name="pretty_pagina" value="movimentos" />
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{emitirFebrabanBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <br/>
+        <div class="row">
+            <div class="input-field col s12 m8" style="margin-top: 0">
+                <h:outputText value="Opções de Filtro" />
+
+            </div>
+        </div>
+        <div class="row">
+            <br/>
+            <div class="input-field col s12 m6">
+                <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                <p:autoComplete value="#{emitirFebrabanBean.contribuinte}" 
+                                id="contribuinte"
+                                style="width: 100%;"
+                                styleClass="ui-autocomplete-edit"
+                                converter="entityConverter"
+                                minQueryLength="3"
+                                maxResults="10"     
+                                completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                    <p:ajax event="itemSelect" oncomplete="updateFields();" global="false"/>
+                </p:autoComplete>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="inscricao_inicial" value="Inscrição Inicial" class="active"/>
+                <h:inputText id="inscricao_inicial" value="#{emitirFebrabanBean.inscricaoInicial}">
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="inscricao_final" value="Inscrição Final" class="active"/>
+                <h:inputText id="inscricao_final" value="#{emitirFebrabanBean.inscricaoFinal}">
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="parcela_incial" value="Parcela Inicial" class="active"/>
+                <h:inputText id="parcela_incial" value="#{emitirFebrabanBean.parcelaInicial}">
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="parcela_final" value="Parcela Final" class="active"/>
+                <h:inputText id="parcela_final" value="#{emitirFebrabanBean.parcelaFinal}">
+                </h:inputText>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <h:selectOneMenu id="tipoCobrancaBoleto" value="#{emitirFebrabanBean.tipoCobrancaBoleto}" >
+                    <f:selectItem itemValue="#{0}" itemLabel="TODAS" />
+                    <f:selectItem itemValue="#{1}" itemLabel="TCF" />
+                    <f:selectItem itemValue="#{3}" itemLabel="EVENTUAL" />
+                </h:selectOneMenu>
+                <h:outputLabel for="tipoCobrancaBoleto" value="Tipo Cobrança"/>
+            </div>
+            <div class="input-field col s12 m9">
+                <h:selectBooleanCheckbox value="#{emitirFebrabanBean.gerarTodos}" id="gerar_todos"/>
+                <h:outputLabel for="gerar_todos" value="Imprimir todos os registros (ISS) do exercício corrente"/>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="vencimento" value="Vencimento"/>
+                <h:inputText id="vencimento" value="#{emitirFebrabanBean.vencimento}">
+                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                </h:inputText>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="input-field col s12">
+                <h6 class="cor-eddy-text" style="margin: 0">Ordem da Impressão</h6>
+            </div>
+        </div>
+        <br/>
+        <div class="col s12 m3">
+            <p:panel id="ordenar">
+                <div class="row">
+                    <div class="col s12 m12">
+                        <h:selectOneRadio class="with-gap" value="#{emitirFebrabanBean.ordem}" layout="pageDirection">
+                            <f:selectItem itemValue="2" itemLabel="Inscrição" />
+                            <f:selectItem itemValue="10" itemLabel="Contribuinte" />
+                            <f:selectItem itemValue="8" itemLabel="Endereco de Cobrança" />
+                        </h:selectOneRadio>
+                    </div>
+                </div>
+            </p:panel>
+        </div>
+
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('#vencimento').mask('99/99/9999');
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

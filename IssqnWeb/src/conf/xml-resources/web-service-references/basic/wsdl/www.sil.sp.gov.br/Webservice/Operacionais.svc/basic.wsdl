@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?><wsdl:definitions name="Operacionais" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:tns="http://tempuri.org/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex">
+    <wsp:Policy wsu:Id="BasicHttpBinding_IOperacionais_policy">
+        <wsp:ExactlyOne>
+            <wsp:All>
+                <http:BasicAuthentication xmlns:http="http://schemas.microsoft.com/ws/06/2004/policy/http"/>
+                <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+                    <wsp:Policy>
+                        <sp:TransportToken>
+                            <wsp:Policy>
+                                <sp:HttpsToken RequireClientCertificate="false"/>
+                            </wsp:Policy>
+                        </sp:TransportToken>
+                        <sp:AlgorithmSuite>
+                            <wsp:Policy>
+                                <sp:Basic256/>
+                            </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                            <wsp:Policy>
+                                <sp:Strict/>
+                            </wsp:Policy>
+                        </sp:Layout>
+                    </wsp:Policy>
+                </sp:TransportBinding>
+            </wsp:All>
+        </wsp:ExactlyOne>
+    </wsp:Policy>
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://tempuri.org/Imports">
+            <xsd:import schemaLocation="https://www.sil.sp.gov.br/Webservice/Operacionais.svc/basic?xsd=xsd0" namespace="http://tempuri.org/"/>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="ConsultarEmpresaPorIdRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarEmpresaPorIdRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarEmpresaPorIdRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarEmpresaPorIdResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarEmpresaPorIdResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarEmpresaPorCNPJRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarEmpresaPorCNPJRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarEmpresaPorCNPJRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarEmpresaPorCNPJResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarEmpresaPorCNPJResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocoloRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocoloResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloPorCNPJRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocoloPorCNPJRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloPorCNPJRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocoloPorCNPJResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocoloPorCNPJResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarNumeroProtocolosRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarNumeroProtocolosResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosPorCNPJRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarNumeroProtocolosPorCNPJRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosPorCNPJRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarNumeroProtocolosPorCNPJResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarNumeroProtocolosPorCNPJResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarPendenciasViabilidadeRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarPendenciasViabilidadeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarPendenciasViabilidadeRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarPendenciasViabilidadeResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarPendenciasViabilidadeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadeRequest">
+        <wsdl:part name="parameters" element="tns:InformarResultadoViabilidadeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadeRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadeResponse">
+        <wsdl:part name="parameters" element="tns:InformarResultadoViabilidadeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="InformarInicioLicenciamentoAltoRiscoRequest">
+        <wsdl:part name="parameters" element="tns:InformarInicioLicenciamentoAltoRiscoRequest"/>
+    </wsdl:message>
+    <wsdl:message name="InformarInicioLicenciamentoAltoRiscoRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="InformarInicioLicenciamentoAltoRiscoResponse">
+        <wsdl:part name="parameters" element="tns:InformarInicioLicenciamentoAltoRiscoResponse"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoAltoRiscoRequest">
+        <wsdl:part name="parameters" element="tns:InformarResultadoLicenciamentoAltoRiscoRequest"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoAltoRiscoRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoAltoRiscoResponse">
+        <wsdl:part name="parameters" element="tns:InformarResultadoLicenciamentoAltoRiscoResponse"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoRequest">
+        <wsdl:part name="parameters" element="tns:InformarResultadoLicenciamentoRequest"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoLicenciamentoResponse">
+        <wsdl:part name="parameters" element="tns:InformarResultadoLicenciamentoResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CassarLicencaAtivaRequest">
+        <wsdl:part name="parameters" element="tns:CassarLicencaAtivaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CassarLicencaAtivaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="CassarLicencaAtivaResponse">
+        <wsdl:part name="parameters" element="tns:CassarLicencaAtivaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="LiberarLicencaCassadaRequest">
+        <wsdl:part name="parameters" element="tns:LiberarLicencaCassadaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="LiberarLicencaCassadaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="LiberarLicencaCassadaResponse">
+        <wsdl:part name="parameters" element="tns:LiberarLicencaCassadaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CancelarCassacaoLicencaRequest">
+        <wsdl:part name="parameters" element="tns:CancelarCassacaoLicencaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CancelarCassacaoLicencaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="CancelarCassacaoLicencaResponse">
+        <wsdl:part name="parameters" element="tns:CancelarCassacaoLicencaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConfirmarViabilidadeRequest">
+        <wsdl:part name="parameters" element="tns:ConfirmarViabilidadeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConfirmarViabilidadeRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConfirmarViabilidadeResponse">
+        <wsdl:part name="parameters" element="tns:ConfirmarViabilidadeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarStatusViabilidadeRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarStatusViabilidadeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarStatusViabilidadeRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarStatusViabilidadeResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarStatusViabilidadeResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarViabilidadePreviaRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarViabilidadePreviaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarViabilidadePreviaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarViabilidadePreviaResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarViabilidadePreviaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocolosViabilidadePreviaRequest">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocolosViabilidadePreviaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocolosViabilidadePreviaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="ConsultarProtocolosViabilidadePreviaResponse">
+        <wsdl:part name="parameters" element="tns:ConsultarProtocolosViabilidadePreviaResponse"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadePreviaRequest">
+        <wsdl:part name="parameters" element="tns:InformarResultadoViabilidadePreviaRequest"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadePreviaRequest_Headers">
+        <wsdl:part name="AuthenticationHeader" element="tns:AuthenticationHeader"/>
+    </wsdl:message>
+    <wsdl:message name="InformarResultadoViabilidadePreviaResponse">
+        <wsdl:part name="parameters" element="tns:InformarResultadoViabilidadePreviaResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="IOperacionais">
+        <wsdl:operation name="ConsultarEmpresaPorId">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarEmpresaPorId" name="ConsultarEmpresaPorIdRequest" message="tns:ConsultarEmpresaPorIdRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarEmpresaPorIdResponse" name="ConsultarEmpresaPorIdResponse" message="tns:ConsultarEmpresaPorIdResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarEmpresaPorCNPJ">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarEmpresaPorCNPJ" name="ConsultarEmpresaPorCNPJRequest" message="tns:ConsultarEmpresaPorCNPJRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarEmpresaPorCNPJResponse" name="ConsultarEmpresaPorCNPJResponse" message="tns:ConsultarEmpresaPorCNPJResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocolo">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocolo" name="ConsultarProtocoloRequest" message="tns:ConsultarProtocoloRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocoloResponse" name="ConsultarProtocoloResponse" message="tns:ConsultarProtocoloResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocoloPorCNPJ">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocoloPorCNPJ" name="ConsultarProtocoloPorCNPJRequest" message="tns:ConsultarProtocoloPorCNPJRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocoloPorCNPJResponse" name="ConsultarProtocoloPorCNPJResponse" message="tns:ConsultarProtocoloPorCNPJResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarNumeroProtocolos">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolos" name="ConsultarNumeroProtocolosRequest" message="tns:ConsultarNumeroProtocolosRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolosResponse" name="ConsultarNumeroProtocolosResponse" message="tns:ConsultarNumeroProtocolosResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarNumeroProtocolosPorCNPJ">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolosPorCNPJ" name="ConsultarNumeroProtocolosPorCNPJRequest" message="tns:ConsultarNumeroProtocolosPorCNPJRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolosPorCNPJResponse" name="ConsultarNumeroProtocolosPorCNPJResponse" message="tns:ConsultarNumeroProtocolosPorCNPJResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarPendenciasViabilidade">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarPendenciasViabilidade" name="ConsultarPendenciasViabilidadeRequest" message="tns:ConsultarPendenciasViabilidadeRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarPendenciasViabilidadeResponse" name="ConsultarPendenciasViabilidadeResponse" message="tns:ConsultarPendenciasViabilidadeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoViabilidade">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoViabilidade" name="InformarResultadoViabilidadeRequest" message="tns:InformarResultadoViabilidadeRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoViabilidadeResponse" name="InformarResultadoViabilidadeResponse" message="tns:InformarResultadoViabilidadeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="InformarInicioLicenciamentoAltoRisco">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/InformarInicioLicenciamentoAltoRisco" name="InformarInicioLicenciamentoAltoRiscoRequest" message="tns:InformarInicioLicenciamentoAltoRiscoRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/InformarInicioLicenciamentoAltoRiscoResponse" name="InformarInicioLicenciamentoAltoRiscoResponse" message="tns:InformarInicioLicenciamentoAltoRiscoResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoLicenciamentoAltoRisco">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoLicenciamentoAltoRisco" name="InformarResultadoLicenciamentoAltoRiscoRequest" message="tns:InformarResultadoLicenciamentoAltoRiscoRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoLicenciamentoAltoRiscoResponse" name="InformarResultadoLicenciamentoAltoRiscoResponse" message="tns:InformarResultadoLicenciamentoAltoRiscoResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoLicenciamento">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoLicenciamento" name="InformarResultadoLicenciamentoRequest" message="tns:InformarResultadoLicenciamentoRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoLicenciamentoResponse" name="InformarResultadoLicenciamentoResponse" message="tns:InformarResultadoLicenciamentoResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="CassarLicencaAtiva">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/CassarLicencaAtiva" name="CassarLicencaAtivaRequest" message="tns:CassarLicencaAtivaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/CassarLicencaAtivaResponse" name="CassarLicencaAtivaResponse" message="tns:CassarLicencaAtivaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="LiberarLicencaCassada">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/LiberarLicencaCassada" name="LiberarLicencaCassadaRequest" message="tns:LiberarLicencaCassadaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/LiberarLicencaCassadaResponse" name="LiberarLicencaCassadaResponse" message="tns:LiberarLicencaCassadaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="CancelarCassacaoLicenca">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/CancelarCassacaoLicenca" name="CancelarCassacaoLicencaRequest" message="tns:CancelarCassacaoLicencaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/CancelarCassacaoLicencaResponse" name="CancelarCassacaoLicencaResponse" message="tns:CancelarCassacaoLicencaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConfirmarViabilidade">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConfirmarViabilidade" name="ConfirmarViabilidadeRequest" message="tns:ConfirmarViabilidadeRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConfirmarViabilidadeResponse" name="ConfirmarViabilidadeResponse" message="tns:ConfirmarViabilidadeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarStatusViabilidade">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarStatusViabilidade" name="ConsultarStatusViabilidadeRequest" message="tns:ConsultarStatusViabilidadeRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarStatusViabilidadeResponse" name="ConsultarStatusViabilidadeResponse" message="tns:ConsultarStatusViabilidadeResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarViabilidadePrevia">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarViabilidadePrevia" name="ConsultarViabilidadePreviaRequest" message="tns:ConsultarViabilidadePreviaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarViabilidadePreviaResponse" name="ConsultarViabilidadePreviaResponse" message="tns:ConsultarViabilidadePreviaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocolosViabilidadePrevia">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocolosViabilidadePrevia" name="ConsultarProtocolosViabilidadePreviaRequest" message="tns:ConsultarProtocolosViabilidadePreviaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/ConsultarProtocolosViabilidadePreviaResponse" name="ConsultarProtocolosViabilidadePreviaResponse" message="tns:ConsultarProtocolosViabilidadePreviaResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoViabilidadePrevia">
+            <wsdl:input wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoViabilidadePrevia" name="InformarResultadoViabilidadePreviaRequest" message="tns:InformarResultadoViabilidadePreviaRequest"/>
+            <wsdl:output wsaw:Action="http://tempuri.org/IOperacionais/InformarResultadoViabilidadePreviaResponse" name="InformarResultadoViabilidadePreviaResponse" message="tns:InformarResultadoViabilidadePreviaResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="BasicHttpBinding_IOperacionais" type="tns:IOperacionais">
+        <wsp:PolicyReference URI="#BasicHttpBinding_IOperacionais_policy"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="ConsultarEmpresaPorId">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarEmpresaPorId" style="document"/>
+            <wsdl:input name="ConsultarEmpresaPorIdRequest">
+                <soap:header message="tns:ConsultarEmpresaPorIdRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarEmpresaPorIdResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarEmpresaPorCNPJ">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarEmpresaPorCNPJ" style="document"/>
+            <wsdl:input name="ConsultarEmpresaPorCNPJRequest">
+                <soap:header message="tns:ConsultarEmpresaPorCNPJRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarEmpresaPorCNPJResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocolo">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarProtocolo" style="document"/>
+            <wsdl:input name="ConsultarProtocoloRequest">
+                <soap:header message="tns:ConsultarProtocoloRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarProtocoloResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocoloPorCNPJ">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarProtocoloPorCNPJ" style="document"/>
+            <wsdl:input name="ConsultarProtocoloPorCNPJRequest">
+                <soap:header message="tns:ConsultarProtocoloPorCNPJRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarProtocoloPorCNPJResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarNumeroProtocolos">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolos" style="document"/>
+            <wsdl:input name="ConsultarNumeroProtocolosRequest">
+                <soap:header message="tns:ConsultarNumeroProtocolosRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarNumeroProtocolosResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarNumeroProtocolosPorCNPJ">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarNumeroProtocolosPorCNPJ" style="document"/>
+            <wsdl:input name="ConsultarNumeroProtocolosPorCNPJRequest">
+                <soap:header message="tns:ConsultarNumeroProtocolosPorCNPJRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarNumeroProtocolosPorCNPJResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarPendenciasViabilidade">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarPendenciasViabilidade" style="document"/>
+            <wsdl:input name="ConsultarPendenciasViabilidadeRequest">
+                <soap:header message="tns:ConsultarPendenciasViabilidadeRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarPendenciasViabilidadeResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoViabilidade">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/InformarResultadoViabilidade" style="document"/>
+            <wsdl:input name="InformarResultadoViabilidadeRequest">
+                <soap:header message="tns:InformarResultadoViabilidadeRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="InformarResultadoViabilidadeResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InformarInicioLicenciamentoAltoRisco">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/InformarInicioLicenciamentoAltoRisco" style="document"/>
+            <wsdl:input name="InformarInicioLicenciamentoAltoRiscoRequest">
+                <soap:header message="tns:InformarInicioLicenciamentoAltoRiscoRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="InformarInicioLicenciamentoAltoRiscoResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoLicenciamentoAltoRisco">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/InformarResultadoLicenciamentoAltoRisco" style="document"/>
+            <wsdl:input name="InformarResultadoLicenciamentoAltoRiscoRequest">
+                <soap:header message="tns:InformarResultadoLicenciamentoAltoRiscoRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="InformarResultadoLicenciamentoAltoRiscoResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoLicenciamento">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/InformarResultadoLicenciamento" style="document"/>
+            <wsdl:input name="InformarResultadoLicenciamentoRequest">
+                <soap:header message="tns:InformarResultadoLicenciamentoRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="InformarResultadoLicenciamentoResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="CassarLicencaAtiva">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/CassarLicencaAtiva" style="document"/>
+            <wsdl:input name="CassarLicencaAtivaRequest">
+                <soap:header message="tns:CassarLicencaAtivaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="CassarLicencaAtivaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="LiberarLicencaCassada">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/LiberarLicencaCassada" style="document"/>
+            <wsdl:input name="LiberarLicencaCassadaRequest">
+                <soap:header message="tns:LiberarLicencaCassadaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="LiberarLicencaCassadaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="CancelarCassacaoLicenca">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/CancelarCassacaoLicenca" style="document"/>
+            <wsdl:input name="CancelarCassacaoLicencaRequest">
+                <soap:header message="tns:CancelarCassacaoLicencaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="CancelarCassacaoLicencaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConfirmarViabilidade">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConfirmarViabilidade" style="document"/>
+            <wsdl:input name="ConfirmarViabilidadeRequest">
+                <soap:header message="tns:ConfirmarViabilidadeRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConfirmarViabilidadeResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarStatusViabilidade">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarStatusViabilidade" style="document"/>
+            <wsdl:input name="ConsultarStatusViabilidadeRequest">
+                <soap:header message="tns:ConsultarStatusViabilidadeRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarStatusViabilidadeResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarViabilidadePrevia">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarViabilidadePrevia" style="document"/>
+            <wsdl:input name="ConsultarViabilidadePreviaRequest">
+                <soap:header message="tns:ConsultarViabilidadePreviaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarViabilidadePreviaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ConsultarProtocolosViabilidadePrevia">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/ConsultarProtocolosViabilidadePrevia" style="document"/>
+            <wsdl:input name="ConsultarProtocolosViabilidadePreviaRequest">
+                <soap:header message="tns:ConsultarProtocolosViabilidadePreviaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="ConsultarProtocolosViabilidadePreviaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InformarResultadoViabilidadePrevia">
+            <soap:operation soapAction="http://tempuri.org/IOperacionais/InformarResultadoViabilidadePrevia" style="document"/>
+            <wsdl:input name="InformarResultadoViabilidadePreviaRequest">
+                <soap:header message="tns:InformarResultadoViabilidadePreviaRequest_Headers" part="AuthenticationHeader" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="InformarResultadoViabilidadePreviaResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="Operacionais">
+        <wsdl:port name="BasicHttpBinding_IOperacionais" binding="tns:BasicHttpBinding_IOperacionais">
+            <soap:address location="https://www.sil.sp.gov.br/webservice/Operacionais.svc"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

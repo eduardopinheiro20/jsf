@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ul id="slide-out" class="side-nav fixed leftside-navigation">
+        <li class="bold">
+            <h:link value="Painel Principal" outcome="pretty:painel-issqn" class="waves-effect waves-cyan"><i class="mdi mdi-action-home"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Cadastros" outcome="pretty:cadastro" class="waves-effect waves-cyan"><i class="mdi mdi-action-list"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Parcelas e Pagamentos" outcome="pretty:consulta-parcelas" class="waves-effect waves-cyan"><i class="mdi mdi-maps-local-atm"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Movimentos" outcome="pretty:movimentos" class="waves-effect waves-cyan"><i class="mdi mdi-action-swap-horiz"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Fiscal" outcome="pretty:fiscal" class="waves-effect waves-cyan"><i class="mdi mdi-action-assignment"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Consultar JUCESP" outcome="pretty:consultar-empresas" class="waves-effect waves-cyan"><i class="mdi mdi-action-search"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Notificações" outcome="pretty:notificacao" class="waves-effect waves-cyan"><i class="mdi mdi-communication-email"></i></h:link>
+        </li>
+        <li class="bold">
+            <h:link value="Relatórios" outcome="pretty:relatorio" class="waves-effect waves-cyan"><i class="mdi mdi-action-print"></i></h:link>
+        </li>
+        <li>
+            <hr style="margin: 0"/>
+            <div class="mes-referencia grey lighten-5">
+                <span>Mês: <strong>#{globalBean.referencia}</strong></span>
+            </div>
+            <div class="mes-referencia grey lighten-5">
+                <span>Versão: <strong>0.0.2</strong></span>
+            </div>
+            <hr style="margin: 0"/>
+        </li>
+        <li class="bold">
+            <a href = "https://www.jucesponline.sp.gov.br" target="_blank"><i class="mdi mdi-action-language"></i>Jucesp Online</a> 
+        </li>
+        <li class="bold">
+            <a href = "http://www.sil.sp.gov.br/consultar_empresas.aspx" target="_blank"><i class="mdi mdi-action-language"></i>VRE - Via Rápida</a> 
+        </li>
+        <li class="bold">
+            <a href = "https://www.receita.fazenda.gov.br/pessoajuridica/cnpj/cnpjreva/cnpjreva_solicitacao2.asp" target="_blank"><i class="mdi mdi-action-language"></i>Receita Federal</a> 
+        </li>
+        <li class="bold">
+            <a href = "http://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21" target="_blank"><i class="mdi mdi-action-language"></i>Simples Nacional</a> 
+        </li>
+        
+    </ul>
+
+</ui:composition>

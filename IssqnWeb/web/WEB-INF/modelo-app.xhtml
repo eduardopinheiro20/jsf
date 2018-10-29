@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- 
+ * Sistema Eddydata de Administração Pública
+ * Copyright (C) 2016, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Rodrigo Teixeira
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="msapplication-tap-highlight" content="no"/>
+        <title><h:outputText value="Eddydata - ISSQN"/></title>
+
+        <h:outputStylesheet name="materialize.min.css" library="css"/>
+        <h:outputStylesheet name="jquery.growl.css" library="css"/>
+        <h:outputStylesheet name="sweet-alert.css" library="css"/>
+        <h:outputStylesheet name="style.min.css" library="css"/>
+        <h:outputStylesheet name="prime.css" library="css"/>
+        <h:outputStylesheet name="default.css" library="css"/>
+
+        <h:outputScript name="jquery.growl.js" library="js" />
+        <h:outputScript name="perfect-scrollbar.min.js" library="js" />
+        <h:outputScript name="materialize.min.js" library="js" />
+        <h:outputScript name="plugins.min.js" library="js" />
+        <h:outputScript name="sweet-alert.min.js" library="js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
+    </h:head>
+    <h:body>
+        <h:form id="form1" prependId="false"  pt:autocomplete="off">
+            <header id="header" class="page-topbar">
+                <ui:include src="../app/dialog.xhtml"/>
+                <div class="navbar-fixed">
+                    <nav class="navbar-color">                       
+                        <ul class="left" style="margin-left: 15px">                      
+                            <li>
+                                <h1 class="logo-wrapper">
+                                    <h:link outcome="pretty:painel-issqn" class="brand-logo darken-1">
+                                        <h:graphicImage name="logo-menu.png" library="img" alt="eddydata logo"/>
+                                    </h:link> 
+                                    <span class="logo-text">Eddydata</span>
+                                </h1>
+                            </li>
+
+                        </ul>
+
+                        <div class="header-search-wrapper hide-on-med-and-down">                                      
+                            <ui:insert name="filtro"></ui:insert>
+                        </div>
+
+                        <ul class="right hide-on-med-and-down" style="margin-right: 15px">
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect waves-block waves-light notification-button" data-activates="parametros-dropdown">
+                                    <i class="mdi mdi-navigation-apps"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect waves-block waves-light translation-button"  data-activates="usuario-dropdown">
+                                    <i class="mdi mdi-social-person" style="float: left"></i>
+                                    <span>#{globalBean.usuarioLogado.nome}</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <ul id="parametros-dropdown" class="dropdown-content">
+                            <li class="divider"></li>
+                            <li>
+                                <a href="#modalTrocarMes" class="waves-effect waves-light modal-trigger">
+                                    <i class="mdi mdi-action-today"></i> 
+                                    <span>Alterar mês de trabalho</span>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <h:link outcome="pretty:usuario" style="background-color: transparent;">
+                                    <i class="mdi mdi-social-people"></i> 
+                                    <span>Usuários</span>
+                                </h:link>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <h:link outcome="pretty:perfil" style="background-color: transparent;">
+                                    <i class="mdi mdi-action-search"></i> 
+                                    <span>Perfis</span>
+                                </h:link>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <h:link outcome="pretty:parametro" style="background-color: transparent;">
+                                    <i class="mdi mdi-action-settings"></i> 
+                                    <span>Parâmetros do sistema</span>
+                                </h:link>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <h:link outcome="pretty:auditoria" style="background-color: transparent;">
+                                    <i class="mdi mdi-notification-sync-problem"></i> 
+                                    <span>Auditoria</span>
+                                </h:link>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <h:link outcome="pretty:historico-taxa" style="background-color: transparent;">
+                                    <i class="mdi mdi-notification-event-note"></i> 
+                                    <span>Histórico Taxa</span>
+                                </h:link>
+                            </li>
+                        </ul>
+
+                        <ul id="usuario-dropdown" class="dropdown-content">
+                            <li class="divider"></li>
+                            <li>
+                                <h:commandLink action="#{logonBean.sair()}" style="background-color: transparent;">
+                                    <i class="mdi mdi-action-exit-to-app"></i> 
+                                    <span><strong>Sair</strong></span>
+                                </h:commandLink>  
+                            </li>
+                        </ul>
+
+                        <ui:insert name="menu-botao"></ui:insert>
+                    </nav>
+                </div>
+
+            </header>
+            <div id="main">
+                <div class="wrapper">
+                    <aside id="left-sidebar-nav">
+                        <ui:include src="../app/menu.xhtml"/>
+                    </aside>
+
+                    <div id="content">
+
+                        <div class="container">
+                            <div id="div-main" class="card-panel">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <ol class="breadcrumbs">
+                                            <li><h:link outcome="pretty:painel-issqn" class="cor-eddy-text">Inicio</h:link></li>
+                                            <h:panelGroup rendered="#{pretty_pagina ne null}">
+                                                <li><h:link outcome="pretty:#{pretty_pagina}" class="cor-eddy-text">#{pagina_acima}</h:link></li>
+                                            </h:panelGroup>
+                                            <li class="active">#{pagina_atual}</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                                <div class="divider" style="margin-bottom: 20px"></div>
+
+                                    <ui:insert name="conteudo"></ui:insert>
+
+                                <div class="fixed-action-btn" style="bottom: 45px; right: 0.5%;">
+                                    <ui:insert name="botoes"></ui:insert>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </h:form>
+
+        <ui:insert name="conteudo_extra"></ui:insert>
+    </h:body>
+</html>

@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ * Sistema Eddydata de Administração Pública
+ * Copyright (C) 2016, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Rodrigo Teixeira
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ph="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>ISSQN - Eddydata</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <h:outputStylesheet name="materialize.min.css" library="css"/>
+        <h:outputStylesheet name="jquery.growl.css" library="css"/>
+        <h:outputStylesheet name="sweet-alert.css" library="css"/>
+        <h:outputStylesheet name="style.min.css" library="css"/>
+        <h:outputStylesheet name="prime.css" library="css"/>
+        <h:outputStylesheet name="default.css" library="css"/>
+        <h:outputStylesheet name="centralizar.css" library="css"/>
+
+        <h:outputScript name="jquery.growl.js" library="js" />
+        <h:outputScript name="perfect-scrollbar.min.js" library="js" />
+        <h:outputScript name="jquery.mask.min.js" library="js" />
+        <h:outputScript name="materialize.min.js" library="js" />
+        <h:outputScript name="plugins.min.js" library="js" />
+        <h:outputScript name="sweet-alert.min.js" library="js"/>
+    </h:head>
+    <h:body class="light-blue darken-2">
+        <style type="text/css">
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+                transition: background-color 5000s ease-in-out 0s;
+            }
+        </style>
+
+        <div id="login-page" class="row">
+            <h:panelGroup id="aviso" rendered="#{logonBean.aviso}" >
+                <div id="card-alert" class="card red">
+                    <div class="card-content white-text">
+                        <p><h:messages style="max-width: 320px; list-style-type: none; margin-left: 0; padding-left: 0;"/></p>
+                    </div>
+                    <button type="button" class="close white-text" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            </h:panelGroup>    
+            <div class="col s12 z-depth-4 card-panel">
+                <h:form class="login-form" prependId="false">
+                    <div class="row">
+                        <div class="input-field col s12 center">
+                            <h:graphicImage name="logo-cor.png" library="img" alt="" />
+                            <p style="line-height: 2px" class="center login-form-text">EDDYDATA</p>
+                            <p class="center login-form-text">Gestão Pública Municipal</p>
+                            <br/>
+                        </div>
+                    </div>
+
+                    <div class="row margin">
+                        <h:panelGroup id="panelPessoa" >
+                            <div class="input-field col s12">
+                                <i class="mdi mdi-action-account-circle prefix blue-text darken-2"></i>
+                                <h:inputText id="cpf" value="#{logonBean.cpfCnpj}" ph:placeholder="Informe seu CPF/CNPJ"
+                                             onkeypress="if (event.keyCode === 13) {
+                                                         var senha = document.getElementById('senha');
+                                                         senha.focus();
+                                                     }"/>
+                                <h:outputLabel for="cpf">CPF/CNPJ</h:outputLabel>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <div class="row margin">
+                        <div class="input-field col s12">
+                            <i class="mdi mdi-action-lock-outline prefix blue-text darken-2"></i>
+                            <h:inputSecret id="senha" value="#{logonBean.senha}" ph:placeholder="Sua senha"
+                                           onkeypress="if (event.keyCode === 13) {
+                                                       document.getElementById('btnEntrar').click();
+                                                       return false;
+                                                   }"/>
+                            <h:outputLabel for="senha">Senha</h:outputLabel>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12 l6">
+                            <h:selectBooleanCheckbox id="opt_pessoa" value="#{logonBean.pessoa}" >
+                                <p:ajax update="pexercicio" global="false" oncomplete="updateFields()"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value="Cidadão" for="opt_pessoa"/>
+                        </div>
+                        <div class="input-field col s12 l6">
+                            <h:panelGroup  id="pexercicio">
+                                <h:selectOneMenu value="#{logonBean.exercicio}" id="exercicio" rendered="#{logonBean.pessoa eq false}">
+                                    <f:selectItems value="#{exercicioBean.todosExercicios}" var="item"
+                                                   itemLabel="#{item.ano}" itemValue="#{item.ano}" />
+                                </h:selectOneMenu>       
+                                <h:outputLabel value="Exercício" for="exercicio" rendered="#{logonBean.pessoa eq false}"/>
+                            </h:panelGroup>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <h:commandLink id="btnEntrar" action="#{logonBean.fazerLogin()}" class="btn waves-effect waves-light col s12 light-blue darken-2">
+                                ENTRAR
+                            </h:commandLink>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s5 m5 l5">
+                            <p class="margin medium-small">
+                                <a href="#modalConsultaCNPJ" class="waves-effect waves-light modal-trigger" onclick="updateFields()">
+                                    <span>Cadastre-se!</span>
+                                </a>
+                            </p>
+                        </div>
+                        <div class="input-field col s7 m7 l7">
+                            <p class="margin right-align medium-small"><h:link outcome="pretty:recuperar-senha">Esqueceu a senha?</h:link></p>
+                        </div>          
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="mdi mdi-action-search prefix blue-text darken-2"></i>
+                        <h:inputText id="validaDocumento" value="#{utilBean.textoFiltro}" ph:placeholder="Informe código do documento"
+                                     onkeypress="if (event.keyCode === 13) {
+                                                 document.getElementById('btnFiltro').click();
+                                                 return false;
+                                             }"/>
+                        <h:outputLabel for="validaDocumento">Validar Documento</h:outputLabel>
+
+                        <h:commandLink id="btnFiltro" actionListener="#{utilBean.filtrar()}" value="FILTRO" style="display: none;" target="_blank"></h:commandLink>
+                    </div>
+
+                </h:form>
+            </div>
+
+        </div>
+
+        <div id="modalConsultaCNPJ" class="modal" style="width: 300px">
+            <h:form prependId="false">
+                <div class="modal-content" style="padding: 5px">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="mdi mdi-action-payment prefix blue-text darken-2"></i>
+                            <h:inputText id="pessoaCnpj" value="#{logonBean.pessoaCnpj}" ph:placeholder="Informe o seu CNPJ"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <h:commandLink action="#{logonBean.buscarCNPJ()}" styleClass="waves-effect waves-green  btn-flat green white-text"> 
+                        <i class="mdi mdi-navigation-check"></i> Consultar
+                    </h:commandLink>
+                </div>
+            </h:form>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#aviso").fadeIn(1900, function () {
+                    window.setTimeout(function () {
+                        $('#aviso').fadeOut();
+                    }, 4000);
+                });
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('select').material_select();
+                $('#pessoaCnpj').focusout(function () {
+                    var cpf, element;
+                    element = $(this);
+                    element.unmask();
+                    cpf = element.val().replace(/\D/g, '');
+                    if (cpf.length > 11) {
+                        element.mask("99.999.999/9999-99");
+                    } else {
+                        element.mask("999.999.999-99?999");
+                    }
+                }).trigger('focusout');
+            }
+        </script>
+    </h:body>
+</html>
+

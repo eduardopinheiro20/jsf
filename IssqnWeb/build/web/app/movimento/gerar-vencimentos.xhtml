@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Gerar Vencimentos" />
+    <ui:param name="pagina_acima" value="Movimentos" />
+    <ui:param name="pretty_pagina" value="movimentos" />
+
+    <ui:define name="filtro"></ui:define>
+
+    <ui:define name="botoes">
+
+        <h:panelGroup rendered="#{gerarVencimentosBean.showPesquisar}">
+            <h:commandLink actionListener="#{gerarVencimentosBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{gerarVencimentosBean.showEditar}">
+            <h:commandLink actionListener="#{gerarVencimentosBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{gerarVencimentosBean.cancelar()}" 
+                                   id="cancelar" title="Fechar" immediate="true">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink id="btnExcluir" actionListener="#{gerarVencimentosBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+
+
+        <h:panelGroup rendered="#{gerarVencimentosBean.tipoCobranca eq null}">
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="tbCobranca" value="#{gerarVencimentosBean.listarTipoCobranca}" var="row" rowKey="#{row.id}" selection="#{gerarVencimentosBean.selecionarTipoCobranca}"
+                                 tableStyleClass="table table-condensed" emptyMessage="Nenhum registro encontrado!">
+                        <!--<p:column selectionMode="multiple" style="width:42px;text-align:center"/>-->
+                        <p:column headerText="Código" width="90">
+                            <h:commandLink actionListener="#{gerarVencimentosBean.selecionar(row)}">
+                                <h:outputText value="#{row.id}" style="font-weight: bold;" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column headerText="Descrição do Vencimento" width="30%">
+                            <h:commandLink actionListener="#{gerarVencimentosBean.selecionar(row)}">
+                                <h:outputText value="#{row.descricao}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{gerarVencimentosBean.tipoCobranca ne null}">
+            <div class="row" style="padding-left: 15px;">
+                <div class="col s12">
+                    <br/>
+                    <br/>
+                    <b><h:outputText value="Código ##{gerarVencimentosBean.codigo}"/></b>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+            <div class="row" style="padding-left: 15px;">
+                <div class="col s8">
+                    <h:outputLabel value="Descrição" for="descricao" styleClass="control-label" />
+                    <h:inputText styleClass="form-control" id="descricao" required="true" requiredMessage="Digite a descrição" 
+                                 value="#{gerarVencimentosBean.tipoCobranca.descricao}" maxlength="80" style="font-weight: bold;"/>
+                </div>
+                <div class="col s4">
+                    <h:outputLabel value="Tipo de Cobrança" for="tipoCobranca" styleClass="control-label" />
+                    <h:selectOneMenu id="tipoCobranca" styleClass="form-control" value="#{gerarVencimentosBean.tipoCobranca.tpCobranca}">
+                        <f:selectItem itemLabel="#{null}" itemValue="0" />
+                        <f:selectItem itemLabel="TCF" itemValue="1" />
+                        <f:selectItem itemLabel="EVENTUAL" itemValue="3" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+            <div class="row" style="padding-left: 15px;">
+                 <div class="col s12">
+                    <h:outputLabel value="Mensagem" for="mensagem" styleClass="control-label" />
+                    <h:inputTextarea id="mensagem" styleClass="form-control" class="materialize-textarea" value="#{gerarVencimentosBean.tipoCobranca.mensagem}" 
+                                     style="font-weight: bold;">
+                        <f:validateLength maximum="250"/>
+                    </h:inputTextarea>                    
+                </div>
+            </div>
+            <div class="row" style="padding-left: 15px;">
+                <div class="col s2">
+                    <h:outputLabel value="Quantidade de Parcelas" for="qtdParcelas" styleClass="control-label" />
+                    <pe:inputNumber id="qtdParcelas" value="#{gerarVencimentosBean.tipoCobranca.qtdParcela}" decimalPlaces="0" style="font-weight: bold; text-align: right;"/>
+                </div>
+                <div class="col s2">                                                                
+                    <h:outputLabel value="Valor Desconto" for="vlDesconto" styleClass="control-label" />
+                    <pe:inputNumber id="vlDesconto"  value="#{gerarVencimentosBean.tipoCobranca.vlDesconto}" decimalPlaces="2" style="font-weight: bold; text-align: right;"/>                           
+                </div>
+                <div class="col s2">                                                                
+                    <h:outputLabel value="Dia do Vencimento" for="diaVencimento" styleClass="control-label" />
+                    <pe:inputNumber id="diaVencimento"  value="#{gerarVencimentosBean.tipoCobranca.diaVencimento}" decimalPlaces="0" style="font-weight: bold; text-align: right;"/>                           
+                </div>
+                <div class="col s2">
+                    <h:outputLabel value="Mês Inicial" styleClass="control-label" />
+                    <h:selectOneMenu styleClass="form-control" value="#{gerarVencimentosBean.tipoCobranca.mesVencimento}">
+                        <f:selectItem itemLabel="JANEIRO" itemValue="1" />
+                        <f:selectItem itemLabel="FEVEREIRO" itemValue="2" />
+                        <f:selectItem itemLabel="MARÇO" itemValue="3" />
+                        <f:selectItem itemLabel="ABRIL" itemValue="4" />
+                        <f:selectItem itemLabel="MAIO" itemValue="5" />
+                        <f:selectItem itemLabel="JUNHO" itemValue="6" />
+                        <f:selectItem itemLabel="JULHO" itemValue="7" />
+                        <f:selectItem itemLabel="AGOSTO" itemValue="8" />
+                        <f:selectItem itemLabel="SETEMBRO" itemValue="9" />
+                        <f:selectItem itemLabel="OUTUBRO" itemValue="10" />
+                        <f:selectItem itemLabel="NOVEMBRO" itemValue="11" />
+                        <f:selectItem itemLabel="DEZEMBRO" itemValue="12" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+            <div class="row" style="padding-left: 15px;">
+                <div class="col s12">
+                    <br />
+                    <p:commandButton styleClass="btn btn-sm btn-flat bg-light-blue" action="#{gerarVencimentosBean.gerarVencimentos}" update="tblParcela" value="Gerar parcelas" />
+                </div>
+                <div class="input-field col s12 m12">
+                    <h:selectBooleanCheckbox value="#{gerarVencimentosBean.tipoCobranca.bloqueio}" id="bloqueio" />
+                    <h:outputLabel for="bloqueio" value="Bloquear Febraban após o vencimento" />
+                </div>
+            </div>
+            <div class="row" style="padding-left: 15px;">
+                <div class="col s6">
+                    <div class="form-group">
+                        <br />
+                        <p:dataTable sortBy="#{row.parcela}" value="#{gerarVencimentosBean.tipoCobranca.itens}" emptyMessage="Nenhuma parcela gerada"
+                                     id="tblParcela" var="row">
+                            <p:column width="20%" headerText="Parcela">
+                                <h:outputText value="#{row.parcela}" />
+                            </p:column>
+                            <p:column headerText="Data Vencimento" >
+                                <p:inputMask value="#{row.dtVencimento}" mask="99/99/9999" requiredMessage="Digite a data de vencimento da parcela #{row.parcela}" required="true" style="width: 100% !important; margin: 0px">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </p:inputMask>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+
+        </h:panelGroup>                    
+        <!--Confirmacao de exclusao -->
+        <p:confirmDialog global="true"  showEffect="fade" hideEffect="explode" width="450" appendTo="form1">  
+            <p:commandButton value="Sim" action="#{gerarVencimentosBean.remover()}" styleClass="btn btn-sm btn-flat btn-default" ajax="false" icon="ui-icon-check" style="height: 35px;" />
+            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no ui-button-default" icon="ui-icon-close" style="height: 35px; "/>
+            <br/>
+        </p:confirmDialog>                          
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+        </script>
+        <style>
+            .col1{width: 50px}
+            .col2{width: 70%}
+            .col3{width: 100px}
+            .col4{width: 50px}
+            .col5{width: 95px}
+        </style>
+    </ui:define>
+</ui:composition>

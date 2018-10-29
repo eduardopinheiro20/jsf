@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Listagem de Débitos" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioListagemDebitosBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                <h:inputText id="inscricao" value="#{relatorioListagemDebitosBean.inscricao}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioListagemDebitosBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m5">
+                <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                <p:autoComplete value="#{relatorioListagemDebitosBean.contribuinte}" 
+                                id="contribuinte"
+                                style="width: 100%;"
+                                styleClass="ui-autocomplete-edit"
+                                converter="entityConverter"
+                                minQueryLength="3"
+                                maxResults="10"     
+                                completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                    <p:ajax event="itemSelect" listener="#{relatorioListagemDebitosBean.selecionarIssqn()}" update="form1" oncomplete="updateFields();"/>
+                </p:autoComplete>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                <h:inputText id="cnpjCpf" value="#{relatorioListagemDebitosBean.cnpjCpf}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioListagemDebitosBean.buscaPorCnpj()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+            <!--<div class="input-field col s12 m2">
+               <h:outputLabel for="validade" value="Validade"/>
+               <h:inputText id="validade" value="#{relatorioListagemDebitosBean.validade}">
+                   <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+               </h:inputText>
+           </div>-->
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m4 no-margin no-padding" style="margin-top: 10px; margin-bottom: 10px;">
+                <h:selectBooleanCheckbox value="#{relatorioListagemDebitosBean.vencidas}" id="chkVencida" />
+                <h:outputLabel for="chkVencida" value="Parcelas vencidas" />
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

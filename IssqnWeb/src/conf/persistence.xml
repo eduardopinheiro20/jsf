@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="eddydataPU" transaction-type="JTA">
+    <jta-data-source>jdbc/issqn</jta-data-source>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables"/>
+      <property name="eclipselink.cache.shared.default" value="false"/>
+      <property name="eclipselink.logging.level" value="OFF"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.DividaTipo"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.Issqn"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnAlvaraDiversoesPublicas"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnAlvaraEmissao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnAtividade"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnAutoInfracao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnCategoria"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnCnae"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnCnaeIss"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnCodigoFiscal"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnConfiguracao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnConselhoRegional"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnContribuinteAtividade"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnEscritorio"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnHistRegTribContribuinte"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnHistorico"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnMotivoCancel"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnMovimento"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnMovimentoParcela"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnMovimentoParcelaItem"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnNotificacao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnOrgaoFiscalizacao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnParametro"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnQuestionario"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnRamoAtuacao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnReciboTaxasDiversas"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnSimplesNacional"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnSocio"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTaxa"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTaxaDiversa"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTermoApreensao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTermoFiscalizacao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTermoIntimacao"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTipoCobranca"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnTipoCobrancaItem"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnVeiculo"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnZonaMunicipio"/>
+      <property value="br.com.eddydata.auditoria.AuditoriaHandler" name="eclipselink.descriptor.customizer.IssqnAnexo"/>
+    </properties>
+  </persistence-unit>
+</persistence>

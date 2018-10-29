@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:param name="pagina_atual" value="Histórico Alteração Taxa" />
+    
+    <ui:define name="conteudo">
+        <h:panelGroup>
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{historicoTaxaBean.listHistorico}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{historicoTaxaBean.listHistorico.size()}"
+                                 paginator="true" paginatorPosition="bottom"  
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhuma Alteração de Taxa!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="5%">
+                            <h:outputText value="#{item.id}" />
+                        </p:column>
+                        <p:column sortBy="#{item.valorAntigo}" headerText="Valor Alterado" width="15%">
+                            <h:outputText value="#{item.valorAntigo}" />
+                        </p:column>
+                        <p:column sortBy="#{item.valorAtual}" headerText="Novo Valor" width="15%">
+                            <h:outputText value="#{item.valorAtual}" />
+                        </p:column>
+                        <p:column sortBy="#{item.dataInicio}" headerText="Data Inicio" width="25%">
+                            <h:outputText value="#{item.dataInicio}">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column sortBy="#{item.dataAlteracao}" headerText="Data Alteração" width="25%">
+                            <h:outputText value="#{item.dataAlteracao}">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column sortBy="#{item.taxa}" headerText="Taxa" width="15%">
+                            <h:outputText value="#{item.taxa}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup> 
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+            }
+        </script>
+    </ui:define>
+</ui:composition>

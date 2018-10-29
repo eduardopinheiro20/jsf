@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Ficha Cadastral" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioFichaCadastralBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+        <ul>
+            <li>
+                <h:commandLink title="Limpar" class="btn-floating light-green">
+                    <i class="mdi-navigation-close"></i>
+                    <f:ajax event="click" render="form1" listener="#{relatorioFichaCadastralBean.limpar()}"/>
+                </h:commandLink>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                <h:inputText id="inscricao" value="#{relatorioFichaCadastralBean.inscricao}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioFichaCadastralBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m5">
+                <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                <p:autoComplete value="#{relatorioFichaCadastralBean.contribuinte}" 
+                                id="contribuinte"
+                                style="width: 100%;"
+                                styleClass="ui-autocomplete-edit"
+                                converter="entityConverter"
+                                minQueryLength="3"
+                                maxResults="10"     
+                                completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                    <p:ajax event="itemSelect" listener="#{relatorioFichaCadastralBean.selecionarIssqn()}" update="form1" oncomplete="updateFields();"/>
+                </p:autoComplete>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                <h:inputText id="cnpjCpf" value="#{relatorioFichaCadastralBean.cnpjCpf}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioFichaCadastralBean.buscaPorCnpj()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m2" style="margin-top: 0">
+                <h:outputText value="Tipo Ficha" />
+                <h:selectOneRadio layout="lineDirection" value="#{relatorioFichaCadastralBean.tipo}">
+                    <f:selectItem itemValue="ficha_cadastral_simplificada" itemLabel="Simplificada"/>
+                    <f:selectItem itemValue="ficha_cadastral_completa" itemLabel="Completa" />
+                </h:selectOneRadio>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

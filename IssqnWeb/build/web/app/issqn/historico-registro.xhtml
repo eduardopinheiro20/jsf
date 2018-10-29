@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Alterações de Registro" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="botoes">
+
+        <h:panelGroup rendered="#{historicoRegistroBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{historicoRegistroBean.salvar()}" title="Autorizar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{historicoRegistroBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{historicoRegistroBean.remover()}" title="Negar" 
+                                   class="btn-floating waves-effect waves-light red">
+                        <i class="mdi-content-block"></i>
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{historicoRegistroBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{historicoRegistroBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{historicoRegistroBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.dataCadastro}" headerText="Data" width="10%">
+                            <h:commandLink actionListener="#{historicoRegistroBean.alterar(item)}">
+                                <h:outputText value="#{item.dataCadastro}">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:outputText>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.iss.pessoa.nome}" headerText="Nome" width="35%">
+                            <h:commandLink actionListener="#{historicoRegistroBean.alterar(item)}">
+                                <h:outputText value="#{item.iss.pessoa.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{historicoRegistroBean.selectedRegistro ne null}">
+            <h:outputText value="Campos alterados no cadastro " style="font-weight: bold;"/>
+            <h:outputText value="#{historicoRegistroBean.getAlteracoes()}" escape="false"/>
+        </h:panelGroup>
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+
+        </script>
+    </ui:define>
+</ui:composition>
+

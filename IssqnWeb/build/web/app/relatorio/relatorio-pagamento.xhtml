@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Relação de Pagamentos" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioPagamentoBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m6 no-margin no-padding">
+                <h:selectOneRadio id="rdFiltro" value="#{relatorioPagamentoBean.filtro}">
+                    <f:selectItem itemValue="MP.LOTE" itemLabel="Lote"/>
+                    <f:selectItem itemValue="MP.DT_PAGAMENTO" itemLabel="Data do Pagamento"/>
+                    <f:selectItem itemValue="MP.DT_BAIXA" itemLabel="Data da Baixa"/>
+                </h:selectOneRadio>
+                <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="dataInicio" value="Data Inicial" />
+                <p:inputMask mask="99/99/9999" styleClass="form-control" maxlength="10" value="#{relatorioPagamentoBean.dataInicio}" id="dataInicio">
+                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    <f:ajax render="@this" event="blur" execute="@this" />
+                </p:inputMask>
+            </div>
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="dataFim" value="Data Final"/>
+                <p:inputMask mask="99/99/9999" styleClass="form-control" maxlength="10" value="#{relatorioPagamentoBean.dataFim}" id="dataFim">
+                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    <f:ajax render="@this" event="blur" execute="@this" />
+                </p:inputMask>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="lote" value="Lote"/>
+                <h:inputText id="lote" value="#{relatorioPagamentoBean.lote}" />  
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

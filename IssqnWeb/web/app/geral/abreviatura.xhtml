@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Abreviatura" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{abreviaturaBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe a abreviatura" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{abreviaturaBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{abreviaturaBean.selectedRegistro eq null}">
+            <h:commandLink actionListener="#{abreviaturaBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{abreviaturaBean.selectedRegistro ne null}">
+            <h:commandLink actionListener="#{abreviaturaBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{abreviaturaBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink id="btnExcluir" actionListener="#{abreviaturaBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{abreviaturaBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{abreviaturaBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{abreviaturaBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{abreviaturaBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nome}" headerText="Abreviatura" width="35%">
+                            <h:commandLink actionListener="#{abreviaturaBean.alterar(item)}">
+                                <h:outputText value="#{item.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nomeExtenso}" headerText="Nome Extenso" width="50%">
+                            <h:commandLink actionListener="#{abreviaturaBean.alterar(item)}">
+                                <h:outputText value="#{item.nomeExtenso}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{abreviaturaBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="abreviatura" value="Abreviatura *"/>
+                    <h:inputText id="abreviatura" value="#{abreviaturaBean.selectedRegistro.nome}" style="font-weight: bold;" />
+                    <h:message for="abreviatura" style="color: red;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="nomeExtenso" value="Nome Extenso"/>
+                    <h:inputText id="nomeExtenso" value="#{abreviaturaBean.selectedRegistro.nomeExtenso}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4">
+                    <h:selectOneRadio class="with-gap" layout="lineDirection" value="#{abreviaturaBean.selectedRegistro.tpAbrev}">
+                        <f:selectItem itemValue="L" itemLabel="Logradouro" />
+                        <f:selectItem itemValue="B" itemLabel="Bairro" />
+                    </h:selectOneRadio>
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $("#btnExcluir").css('display', 'none');
+                        document.getElementById('btnExcluir').click();
+                    }
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

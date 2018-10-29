@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Consultar JUCESP" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{consultarEmpresasBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o CNPJ" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{consultarEmpresasBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{consultarEmpresasBean.solicitacao ne null}">
+            <p:remoteCommand name="rc" actionListener="#{consultarEmpresasBean.salvar}" />
+            <h:commandLink actionListener="#{consultarEmpresasBean.salvarContribuinte()}" title="Salvar"  immediate="true"
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{consultarEmpresasBean.cancelar()}" title="Voltar" immediate="true">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{consultarEmpresasBean.solicitacao eq null}">
+            <h:commandLink actionListener="#{consultarEmpresasBean.buscarProtocolosPorPeriodo()}" title="Consultar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-action-search"></i>
+                <p:ajax process="@form" update="table"/>
+            </h:commandLink>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{consultarEmpresasBean.solicitacao eq null}"> 
+            <div class="row">
+                <div class="input-field col s2">
+                    <h:outputLabel for="dataInicial" value="Data Inicial"/>
+                    <h:inputText id="dataInicial" value="#{consultarEmpresasBean.dataInicial}" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </h:inputText>
+                </div>
+                <div class="input-field col s2">
+                    <h:outputLabel for="dataFinal" value="Data Final"/>
+                    <h:inputText id="dataFinal" value="#{consultarEmpresasBean.dataFinal}" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{consultarEmpresasBean.listaEmpresas}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{consultarEmpresasBean.listaEmpresas.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.numeroProtocolo}" headerText="Protocolo" width="15%">
+                            <h:commandLink actionListener="#{consultarEmpresasBean.alterar(item)}">
+                                <h:outputText value="#{item.numeroProtocolo}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.empresa.nomeEmpresa}" headerText="Empresa" width="35%">
+                            <h:commandLink actionListener="#{consultarEmpresasBean.alterar(item)}">
+                                <h:outputText value="#{item.empresa.nomeEmpresa}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.empresa.cpnj}" headerText="CNPJ" width="15%">
+                            <h:commandLink actionListener="#{consultarEmpresasBean.alterar(item)}">
+                                <h:outputText value="#{item.empresa.cpnj}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.statusSolicitacao.status}" headerText="Status" width="25%">
+                            <h:commandLink actionListener="#{consultarEmpresasBean.alterar(item)}">
+                                <h:outputText value="#{item.statusSolicitacao.status}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.pendenteViabilidade}" headerText="Pendente" width="10%">
+                            <h:commandLink actionListener="#{consultarEmpresasBean.alterar(item)}">
+                                <h:outputText value="#{item.pendenteViabilidade ? 'Sim' : 'Não'}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{consultarEmpresasBean.solicitacao ne null}">
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="cnpj" value="CNPJ"/>
+                    <p:inputMask id="cnpj" mask="99.999.999/9999-99" value="#{consultarEmpresasBean.solicitacao.empresa.cpnj}" />
+                </div>
+                <div class="input-field col s8">
+                    <h:outputLabel for="nome" value="Nome"/>
+                    <h:inputText id="nome" value="#{consultarEmpresasBean.solicitacao.empresa.nomeEmpresa}"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3">
+                    <h:outputLabel for="telefone1" value="Telefone 1"/>
+                    <h:inputText id="telefone1" value="#{consultarEmpresasBean.solicitacao.empresa.DDD1}#{consultarEmpresasBean.solicitacao.empresa.telefone1}" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="telefone2" value="Telefone 2"/>
+                    <h:inputText id="telefone2" value="#{consultarEmpresasBean.solicitacao.empresa.DDD2}#{consultarEmpresasBean.solicitacao.empresa.telefone2}" />
+                </div>
+                <div class="input-field col s6">
+                    <h:outputLabel for="email" value="E-mail"/>
+                    <h:inputText id="email" value="#{consultarEmpresasBean.solicitacao.empresa.email}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="inclusao" value="Data Inclusão"/>
+                    <h:inputText id="inclusao" value="#{utilBean.convertXmlGregorianCalendarToDate(consultarEmpresasBean.solicitacao.empresa.horaInclusao)}" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </h:inputText>
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="natureza" value="Natureza Jurídica"/>
+                    <h:inputText id="natureza" value="#{consultarEmpresasBean.solicitacao.empresa.naturezaJuridica.nomeNaturezaJuridica}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="porte" value="Porte"/>
+                    <h:inputText id="porte" value="#{consultarEmpresasBean.solicitacao.empresa.porte.descricaoPorte}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="estado" value="Estado"/>
+                    <h:inputText id="estado" value="#{consultarEmpresasBean.solicitacao.empresa.municipio.estado.nome}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="cidade" value="Cidade"/>
+                    <h:inputText id="cidade" value="#{consultarEmpresasBean.solicitacao.empresa.municipio.nome}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="bairro" value="Bairro"/>
+                    <h:inputText id="bairro" value="#{consultarEmpresasBean.solicitacao.empresa.bairro}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s5">
+                    <h:outputLabel for="logradouro" value="Logradouro"/>
+                    <h:inputText id="logradouro" value="#{consultarEmpresasBean.solicitacao.empresa.tipoLogradouro.nomeLogradouro} #{consultarEmpresasBean.solicitacao.empresa.logradouro}" />
+                </div>
+                <div class="input-field col s1">
+                    <h:outputLabel for="numero" value="Número"/>
+                    <h:inputText id="numero" value="#{consultarEmpresasBean.solicitacao.empresa.numero}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="complemento" value="Complemento"/>
+                    <h:inputText id="complemento" value="#{consultarEmpresasBean.solicitacao.empresa.complemento}" />
+                </div>
+                <div class="input-field col s2">
+                    <h:outputLabel for="CEP" value="CEP"/>
+                    <p:inputMask id="CEP" mask="99999-999" value="#{consultarEmpresasBean.solicitacao.empresa.cep}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="referencia" value="Referência"/>
+                    <h:inputText id="referencia" value="#{consultarEmpresasBean.solicitacao.empresa.referencia}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="setor" value="Setor/Quadra/Lote"/>
+                    <h:inputText id="setor" value="#{consultarEmpresasBean.solicitacao.empresa.setorQuadraLote}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="cpfResponsavel" value="Cpf Responsável"/>
+                    <h:inputText id="cpfResponsavel" value="#{consultarEmpresasBean.solicitacao.empresa.cpfResponsavel}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="nire" value="NIRE"/>
+                    <h:inputText id="nire" value="#{consultarEmpresasBean.solicitacao.empresa.nire}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="areaImovel" value="Área do Imóvel"/>
+                    <h:inputText id="areaImovel" value="#{consultarEmpresasBean.solicitacao.empresa.areaImovel}" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="areaEstabelecimento" value="Área do Estabelecimento"/>
+                    <h:inputText id="areaEstabelecimento" value="#{consultarEmpresasBean.solicitacao.empresa.areaEstabelecimento}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4 no-margin no-padding">
+                    <h:selectBooleanCheckbox value="#{consultarEmpresasBean.solicitacao.empresa.mei}" id="mei" />
+                    <h:outputLabel for="mei" value="MEI" />
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col s12 m12">
+                    <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header">Solicitação</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s4">
+                                    <h:outputLabel for="protocolo" value="Protocolo"/>
+                                    <h:inputText id="protocolo" value="#{consultarEmpresasBean.solicitacao.numeroProtocolo}" />
+                                </div>
+                                <div class="input-field col s4">
+                                    <h:outputLabel for="status" value="Status"/>
+                                    <h:inputText id="status" value="#{consultarEmpresasBean.solicitacao.statusSolicitacao.status}" />
+                                </div>
+                                <div class="input-field col s4">
+                                    <h:outputLabel for="pendente" value="Pendente"/>
+                                    <h:inputText id="pendente" value="#{consultarEmpresasBean.solicitacao.pendenteViabilidade ? 'Sim' : 'Não'}" />
+                                </div>
+                                <div class="input-field col 12">
+                                    <p:dataTable id="tableLicencas" var="lic" value="#{consultarEmpresasBean.solicitacao.licencas.licenca}" styleClass="bordered"
+                                                 style="overflow: hidden !important; cursor: pointer;"
+                                                 rows="20" rowsPerPageTemplate="20,50,100,#{consultarEmpresasBean.solicitacao.licencas.licenca.size()}"
+                                                 paginator="true" paginatorPosition="bottom" 
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column sortBy="#{lic.orgao.nome}" headerText="Solicitante" width="40%">
+                                            <h:outputText value="#{lic.orgao.nome}" />
+                                        </p:column>
+                                        <p:column sortBy="#{lic.protocolo}" headerText="Protocolo" width="15%">
+                                            <h:outputText value="#{lic.protocolo}" />
+                                        </p:column>
+                                        <p:column sortBy="#{lic.numero}" headerText="Número" width="15%">
+                                            <h:outputText value="#{lic.numero}" />
+                                        </p:column>
+<!--                                        <p:column sortBy="# {lic.orientacao}" headerText="Orientação" width="40%">
+                                            <h:outputText value="# {lic.orientacao}" />
+                                        </p:column>-->
+                                        <p:column headerText="Validade" width="10%">
+                                            <h:outputText value="#{utilBean.convertXmlGregorianCalendarToDate(lic.dataValidade.value)}" >
+                                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column sortBy="#{lic.situacaoLicenca.descricao}" headerText="Situação" width="10%">
+                                            <h:outputText value="#{lic.situacaoLicenca.descricao}" />
+                                        </p:column>
+                                        <p:column sortBy="#{lic.viabilidade}" headerText="Viabilidade" width="10%" >
+                                            <h:outputText value="#{lic.viabilidade ? 'Sim' : 'Não'}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Sócios</div>
+                            <div class="collapsible-body">
+                                <p:dataTable id="tableSocios" var="soc" value="#{consultarEmpresasBean.solicitacao.empresa.socios.responsavelEmpresa}" styleClass="bordered"
+                                             style="overflow: hidden !important; cursor: pointer;"
+                                             rows="20" rowsPerPageTemplate="20,50,100,#{consultarEmpresasBean.solicitacao.empresa.socios.responsavelEmpresa.size()}"
+                                             paginator="true" paginatorPosition="bottom" 
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column sortBy="#{soc.nomeResponsavel}" headerText="Nome" width="70%">
+                                        <h:outputText value="#{soc.nomeResponsavel}" />
+                                    </p:column>
+                                    <p:column sortBy="#{soc.CPFResponsavel}" headerText="CPF" width="15%">
+                                        <h:outputText value="#{soc.CPFResponsavel}" />
+                                    </p:column>
+                                    <p:column sortBy="#{utilBean.convertXmlGregorianCalendarToDate(soc.inclusao)}" headerText="Inclusão" width="15%">
+                                        <h:outputText value="#{utilBean.convertXmlGregorianCalendarToDate(soc.inclusao)}" >
+                                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Atividades</div>
+                            <div class="collapsible-body">
+                                <p:dataTable id="tableAtividades" var="atv" value="#{consultarEmpresasBean.solicitacao.empresa.atividadesAuxiliares.atividadeAuxiliar}" styleClass="bordered"
+                                             style="overflow: hidden !important; cursor: pointer;"
+                                             rows="20" rowsPerPageTemplate="20,50,100,#{consultarEmpresasBean.solicitacao.empresa.atividadesAuxiliares.atividadeAuxiliar.size()}"
+                                             paginator="true" paginatorPosition="bottom" 
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column sortBy="#{atv.nome}" headerText="Nome" width="30%">
+                                        <h:outputText value="#{atv.nome}" />
+                                    </p:column>
+                                    <p:column sortBy="#{atv.descricao}" headerText="Descrição" width="50%">
+                                        <h:outputText value="#{atv.descricao}" />
+                                    </p:column>
+                                    <p:column sortBy="#{atv.tipo}" headerText="Tipo" width="20%">
+                                        <h:outputText value="#{atv.tipo}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Atividades CNAE</div>
+                            <div class="collapsible-body">
+                                <p:dataTable id="tableCnae" var="cnae" value="#{consultarEmpresasBean.solicitacao.empresa.atividadesCNAE.atividadeCNAE}" styleClass="bordered"
+                                             style="overflow: hidden !important; cursor: pointer;"
+                                             rows="20" rowsPerPageTemplate="20,50,100,#{consultarEmpresasBean.solicitacao.empresa.atividadesCNAE.atividadeCNAE.size()}"
+                                             paginator="true" paginatorPosition="bottom" 
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column sortBy="#{cnae.descricao}" headerText="Descrição" width="70%">
+                                        <h:outputText value="#{cnae.descricao}" />
+                                    </p:column>
+                                    <p:column sortBy="#{cnae.tipo}" headerText="Tipo" width="15%">
+                                        <h:outputText value="#{cnae.tipo}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#dataInicial').mask('99/99/9999');
+                $('#dataFinal').mask('99/99/9999');
+            }
+
+        </script>
+    </ui:define>
+</ui:composition>
+

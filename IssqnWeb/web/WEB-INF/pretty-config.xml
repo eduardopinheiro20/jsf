@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.3.3" 
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.3.3 
+   http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
+    
+    <!-- Begin Example RewriteRules-->
+    <rewrite match="(?i)^(.*);jsessionid=\w+(.*)" substitute="$1$2" redirect="chain" />
+    
+    <url-mapping id="login">
+        <pattern value="/login" />
+        <view-id value="/login.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <url-mapping id="registro">
+        <pattern value="/registro" />
+        <view-id value="/registro.xhtml?faces-redirect=true" />
+        <action>#{issqnBean.adicionar}</action>
+    </url-mapping>             
+
+    <url-mapping id="registroAlteracao">
+        <pattern value="/registro-alteracao" />
+        <view-id value="/registro.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <url-mapping id="registro-sucesso">
+        <pattern value="/registro-sucesso" />
+        <view-id value="/registro-sucesso.xhtml?faces-redirect=true" />
+    </url-mapping>           
+    
+    <url-mapping id="recuperar-senha">
+        <pattern value="/recuperar-senha" />
+        <view-id value="/recuperar-senha.xhtml?faces-redirect=true" />
+    </url-mapping>           
+    
+    <url-mapping id="painel-issqn">
+        <pattern value="/painel-issqn" />
+        <view-id value="/app/painel-issqn.xhtml?faces-redirect=true" />
+    </url-mapping>           
+    
+    <url-mapping id="parametro">
+        <pattern value="/parametros-sistema" />
+        <view-id value="/app/admin/parametro.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="usuario">
+        <pattern value="/usuarios" />
+        <view-id value="/app/admin/usuario.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <url-mapping id="perfil">
+        <pattern value="/perfil" />
+        <view-id value="/app/admin/perfil.xhtml?faces-redirect=true" />
+    </url-mapping>             
+    
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <!--  -->
+    <url-mapping id="contribuinte">
+        <pattern value="/contribuinte" />
+        <view-id value="/app/issqn/contribuinte.xhtml?faces-redirect=true" />
+    </url-mapping>  
+             
+    <url-mapping id="notificacao">
+        <pattern value="/notificacao-email-contribuintes" />
+        <view-id value="/app/issqn/notificacao.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="logradouro">
+        <pattern value="/logradouro" />
+        <view-id value="/app/geo/logradouro.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="bairro">
+        <pattern value="/bairro" />
+        <view-id value="/app/geo/bairro.xhtml?faces-redirect=true" />
+    </url-mapping>                    
+
+    <url-mapping id="grupo">
+        <pattern value="/grupo" />
+        <view-id value="/app/estoque/grupo.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="estoque">
+        <pattern value="/estoque" />
+        <view-id value="/app/estoque/estoque.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="setor">
+        <pattern value="/setor" />
+        <view-id value="/app/estoque/setor.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="material">
+        <pattern value="/material" />
+        <view-id value="/app/estoque/material.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="unidade-fornecimento">
+        <pattern value="/unidade-fornecimento" />
+        <view-id value="/app/estoque/unidade-fornecimento.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="fechamento-balanco">
+        <pattern value="/fechamento-balanco" />
+        <view-id value="/app/estoque/fechamento-balanco.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <url-mapping id="parametro-estoque">
+        <pattern value="/parametro-estoque" />
+        <view-id value="/app/estoque/parametro-estoque.xhtml?faces-redirect=true" />
+    </url-mapping>           
+
+    <!-- COMPRA -->           
+
+    <url-mapping id="favorecido-tipo">
+        <pattern value="/favorecido-tipo" />
+        <view-id value="/app/compra/favorecido-tipo.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <url-mapping id="favorecido">
+        <pattern value="/favorecido" />
+        <view-id value="/app/compra/favorecido.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <!-- ADMIN -->
+    <url-mapping id="exercicio">
+        <pattern value="/exercicio" />
+        <view-id value="/app/admin/exercicio.xhtml?faces-redirect=true" />
+    </url-mapping>             
+
+    <url-mapping id="perfil">
+        <pattern value="/perfis"/>
+        <view-id value="/app/admin/perfil.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="cadastro">
+        <pattern value="/cadastros" />
+        <view-id value="/app/cadastro.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="taxa">
+        <pattern value="/cadastro-taxas" />
+        <view-id value="/app/issqn/taxa.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="codigo-fiscal">
+        <pattern value="/cadastro-codigo-fiscal" />
+        <view-id value="/app/issqn/codigo-fiscal.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="categoria">
+        <pattern value="/cadastro-categoria" />
+        <view-id value="/app/issqn/categoria.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="banco">
+        <pattern value="/cadastro-banco" />
+        <view-id value="/app/geral/banco.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="ramo-atuacao">
+        <pattern value="/cadastro-ramo-atuacao" />
+        <view-id value="/app/issqn/ramo-atuacao.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="conselho-regional">
+        <pattern value="/cadastro-conselho-regional" />
+        <view-id value="/app/issqn/conselho-regional.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="escritorio">
+        <pattern value="/cadastro-escritorio" />
+        <view-id value="/app/issqn/escritorio.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="atividade">
+        <pattern value="/cadastro-atividade" />
+        <view-id value="/app/issqn/atividade.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="abreviatura">
+        <pattern value="/cadastro-abreviatura" />
+        <view-id value="/app/geral/abreviatura.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="cidade">
+        <pattern value="/cadastro-cidade" />
+        <view-id value="/app/geral/cidade.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="profissao">
+        <pattern value="/cadastro-profissao" />
+        <view-id value="/app/geral/profissao.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="religiao">
+        <pattern value="/cadastro-religiao" />
+        <view-id value="/app/geral/religiao.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="motivo-cancelamento">
+        <pattern value="/cadastro-motivo-cancelamento" />
+        <view-id value="/app/issqn/motivo-cancelamento.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="contribuinte-cadastro">
+        <pattern value="/cadastro-contribuinte" />
+        <view-id value="/app/issqn/contribuinte.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="pessoa">
+        <pattern value="/cadastro-pessoa" />
+        <view-id value="/app/geral/pessoa.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="imovel">
+        <pattern value="/cadastro-imoveis" />
+        <view-id value="/app/geral/imovel.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="fiscal">
+        <pattern value="/fiscais" />
+        <view-id value="/app/fiscal.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="alvara-diversoes">
+        <pattern value="/alvara-diversoes" />
+        <view-id value="/app/fiscal/alvara-diversoes.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="termo-fiscalizacao">
+        <pattern value="/termos-de-fiscalizacao" />
+        <view-id value="/app/fiscal/termo-fiscalizacao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="auto-infracao">
+        <pattern value="/termo-auto-infracao" />
+        <view-id value="/app/fiscal/auto-infracao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="termo-apreensao">
+        <pattern value="/termo-apreensao" />
+        <view-id value="/app/fiscal/termo-apreensao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="termo-intimacao">
+        <pattern value="/termo-intimacao" />
+        <view-id value="/app/fiscal/termo-intimacao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="calculo">
+        <pattern value="/calculo" />
+        <view-id value="/app/movimento/calculo.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="cancelar-calculo">
+        <pattern value="/cancelar-calculo" />
+        <view-id value="/app/movimento/cancelamento.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="arquivo-febraban">
+        <pattern value="/arquivo-febraban" />
+        <view-id value="/app/movimento/arquivo-febraban.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="consultar-empresas">
+        <pattern value="/consultar-empresas" />
+        <view-id value="/app/geral/consultar-empresas.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="consultar-protocolos">
+        <pattern value="/consultar-protocolos" />
+        <view-id value="/consultar-protocolo.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="movimentos">
+        <pattern value="/movimentos" />
+        <view-id value="/app/movimento.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio">
+        <pattern value="/relatorios" />
+        <view-id value="/app/relatorio.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-pagamento">
+        <pattern value="/relacao-pagamentos" />
+        <view-id value="/app/relatorio/relatorio-pagamento.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="carta-cobranca">
+        <pattern value="/carta-cobrancas" />
+        <view-id value="/app/relatorio/carta-cobranca.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-contribuinte">
+        <pattern value="/relacao-contribuintes" />
+        <view-id value="/app/relatorio/relatorio-contribuinte.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-certidao-negativa">
+        <pattern value="/certidao-negativa" />
+        <view-id value="/app/relatorio/relatorio-certidao-negativa.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-ficha-cadastral">
+        <pattern value="/ficha-cadastral" />
+        <view-id value="/app/relatorio/relatorio-ficha-cadastral.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-listagem-debitos">
+        <pattern value="/listagem-debitos" />
+        <view-id value="/app/relatorio/relatorio-listagem-debitos.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-taxa">
+        <pattern value="/relatorio-de-taxas" />
+        <view-id value="/app/relatorio/relatorio-taxa.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-por-segmento">
+        <pattern value="/relatorio-por-segmento" />
+        <view-id value="/app/relatorio/relatorio-por-segmento.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-alvara">
+        <pattern value="/emissao-de-alvara" />
+        <view-id value="/app/relatorio/relatorio-alvara.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="consulta-parcelas">
+        <pattern value="/consulta-de-parcelas" />
+        <view-id value="/app/consulta-parcelas.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="emissao-carne">
+        <pattern value="/emissao-carne" />
+        <view-id value="/app/movimento/emissao-carne.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-contribuinte-devedores">
+        <pattern value="/relacao-contribuintes-devedores" />
+        <view-id value="/app/relatorio/relatorio-contribuinte-devedores.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="questao">
+        <pattern value="/questao" />
+        <view-id value="/app/issqn/questao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="orgao-fiscalizacao">
+        <pattern value="/orgao-fiscalizacao" />
+        <view-id value="/app/issqn/orgao-fiscalizacao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="zona-municipio">
+        <pattern value="/zona-municipio" />
+        <view-id value="/app/issqn/zona-municipio.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="cadastro-requisitos">
+        <pattern value="/cadastro-requisitos" />
+        <view-id value="/app/issqn/cadastro-requisitos.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="cadastro-segmentos">
+        <pattern value="/cadastro-segmentos" />
+        <view-id value="/app/issqn/cadastro-segmentos.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="alerta-notificacao">
+        <pattern value="/alerta-notificacao" />
+        <view-id value="/app/relatorio/alerta-notificacao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="auditoria">
+        <pattern value="/auditoria" />
+        <view-id value="/app/auditoria.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-termo-abertura">
+        <pattern value="/termo-abertura" />
+        <view-id value="/app/relatorio/relatorio-termo-abertura.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="historico-registro">
+        <pattern value="/historico-registro" />
+        <view-id value="/app/issqn/historico-registro.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="historico-taxa">
+        <pattern value="/historico-taxa" />
+        <view-id value="/app/issqn/historico-taxa.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-historico-registro">
+        <pattern value="/relatorio-historico-registro" />
+        <view-id value="/app/relatorio/relatorio-historico-registro.xhtml?faces-redirect=true" />
+    </url-mapping>
+
+    <url-mapping id="arquivo">
+        <pattern value="/arquivo" />
+        <view-id value="app/resources/anexo/carne_febraban.pdf" />
+    </url-mapping>
+     
+    <url-mapping id="relatorio-encerramento-inscricao">
+        <pattern value="/encerramento-inscricao" />
+        <view-id value="/app/relatorio/relatorio-encerramento-inscricao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-inativacao-inscricao">
+        <pattern value="/inativacao-inscricao" />
+        <view-id value="/app/relatorio/relatorio-inativacao-inscricao.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="relatorio-conferencia-parcelas">
+        <pattern value="/relatorio-conferencia-parcelas" />
+        <view-id value="/app/relatorio/relatorio-conferencia-parcelas.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="gerar-vencimentos">
+        <pattern value="/gerar-vencimentos" />
+        <view-id value="/app/movimento/gerar-vencimentos.xhtml?faces-redirect=true" />
+    </url-mapping>
+    
+    <url-mapping id="gerar-remessa">
+        <pattern value="/gerar-remessa" />
+        <view-id value="/app/movimento/gerar-remessa.xhtml?faces-redirect=true" />
+    </url-mapping>
+     
+</pretty-config>

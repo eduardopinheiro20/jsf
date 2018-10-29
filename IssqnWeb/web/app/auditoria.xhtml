@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Auditoria" />
+
+    <ui:define name="filtro"></ui:define>
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{auditoriaBean.doBuscarAuditorias()}" title="Buscar Auditorias" 
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-search"></i>
+            Buscar
+            <f:ajax render="dataItem" />
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col m4">
+                <h:outputLabel value="Operação:&nbsp;" />
+                <h:selectOneMenu value="#{auditoriaBean.tipoOperacao}" styleClass="form-control" style="width: 100%" >
+                    <f:selectItems value="#{auditoriaBean.listTipoOperacao}" var="b" itemValue="#{b[0]}" itemLabel="#{b[1]}" />
+                    <f:ajax render="@this" event="change" execute="@this" />
+                </h:selectOneMenu>
+            </div>
+            <div class="col m2">
+                <h:selectBooleanCheckbox id="chkInclusao" value="#{auditoriaBean.inclusao}" >
+                    <f:ajax render="@this" event="click" execute="@this" />
+                </h:selectBooleanCheckbox>
+                <h:outputLabel for="chkInclusao" value="Inclusão" styleClass="control-label"/>
+            </div> 
+            <div class="col m2">
+                <h:selectBooleanCheckbox id="chkEdicao" value="#{auditoriaBean.alteracao}" >
+                    <f:ajax render="@this" event="click" execute="@this" />
+                </h:selectBooleanCheckbox>
+                <h:outputLabel for="chkEdicao" value="Edição" styleClass="control-label"/>
+            </div>
+            <div class="col m2">
+                <h:selectBooleanCheckbox id="chkExclusao" value="#{auditoriaBean.exclusao}" >
+                    <f:ajax render="@this" event="click" execute="@this" />
+                </h:selectBooleanCheckbox>
+                <h:outputLabel for="chkExclusao" value="Exclusão" styleClass="control-label"/>
+            </div>
+            <h:panelGroup rendered="#{loginFace.selectedUsuarioSistema.administrador}">
+                <div class="col m2">
+                    <h:selectBooleanCheckbox id="chkTodos" value="#{auditoriaBean.todosSistemas}" >
+                        <f:ajax render="@this" event="click" execute="@this" />
+                    </h:selectBooleanCheckbox>
+                    <h:outputLabel for="chkTodos" value="Buscar em todos sistemas" styleClass="control-label"/>
+                </div>
+            </h:panelGroup>
+        </div>
+        <div class="row">
+            <div class="col m4">
+                <h:outputLabel value="Período:&nbsp;" />
+                <h:selectOneMenu value="#{auditoriaBean.periodo}" styleClass="form-control" style="width: 100%" >
+                    <f:selectItems value="#{auditoriaBean.listPeriodo}" var="b" itemValue="#{b[0]}" itemLabel="#{b[1]}" />
+                    <f:ajax render="pnlPeriodo" event="change" execute="@this" listener="#{auditoriaBean.doToggleDisplay()}" />
+                </h:selectOneMenu>
+            </div>
+            <h:panelGroup id="pnlPeriodo">
+                <div class="col m2" style="display: #{auditoriaBean.display};">
+                    <h:outputLabel  value="Data Inicial&nbsp;" styleClass="control-label"/><br/>
+                    <p:inputMask mask="99/99/9999" styleClass="form-control" maxlength="10" value="#{auditoriaBean.data_ini}" style="color:#00F;" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        <f:ajax render="@this" event="blur" execute="@this" />
+                    </p:inputMask>
+                </div>
+                <div class="col m2" style="display: #{auditoriaBean.display};">
+                    <h:outputLabel  value="Data Final&nbsp;" styleClass="control-label"/><br/>
+                    <p:inputMask mask="99/99/9999" styleClass="form-control" maxlength="10" value="#{auditoriaBean.data_fim}" style="color:#00F;" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        <f:ajax render="@this" event="blur" execute="@this" />
+                    </p:inputMask>
+                </div>
+                <div class="col m2">
+                    <h:outputLabel  value="Hora Inicial&nbsp;" styleClass="control-label"/><br/>
+                    <p:inputMask mask="99:99" styleClass="form-control" maxlength="5" value="#{auditoriaBean.hora_ini}" style="color:#00F;" >
+                        <f:ajax render="@this" event="blur" execute="@this" />
+                    </p:inputMask>
+                </div>
+                <div class="col m2">
+                    <h:outputLabel  value="Hora Final&nbsp;" styleClass="control-label"/><br/>
+                    <p:inputMask mask="99:99" styleClass="form-control" maxlength="5" value="#{auditoriaBean.hora_fim}" style="color:#00F;" >
+                        <f:ajax render="@this" event="blur" execute="@this" />
+                    </p:inputMask>
+                </div>
+            </h:panelGroup>
+        </div>
+        <div class="row">
+            <div class="col m3">
+                <h:outputLabel  value="Usuário:" styleClass="control-label"/><br/>
+                <h:inputText value="#{auditoriaBean.usuario}" styleClass="form-control" >
+                    <f:ajax render="@this" event="blur" execute="@this" />
+                </h:inputText>
+            </div>
+            <div class="col m5">
+                <h:outputLabel  value="Histórico:" styleClass="control-label"/><br/>
+                <h:inputText value="#{auditoriaBean.historico}" styleClass="form-control" >
+                    <f:ajax render="@this" event="blur" execute="@this" />
+                </h:inputText>
+            </div>
+            <div class="col m1">
+                <h:outputLabel  value="ID:" styleClass="control-label"/><br/>
+                <pe:inputNumber value="#{auditoriaBean.idRegistro}" decimalPlaces="0" >
+                    <f:ajax render="@this" execute="@this" />
+                </pe:inputNumber>
+            </div>
+            <div class="col m1">
+                <h:outputLabel  value="Qtde.:" styleClass="control-label"/><br/>
+                <pe:inputNumber value="#{auditoriaBean.n_reg}" decimalPlaces="0" >
+                    <f:ajax render="@this" execute="@this" />
+                </pe:inputNumber>
+            </div>
+            <h:panelGroup rendered="#{loginFace.selectedUsuarioSistema.administrador}">
+                <div class="col m2">
+                    <div class="checkbox checkbox-warning">
+                        <h:selectBooleanCheckbox id="mostrarComando" value="#{auditoriaBean.mostrarComando}" >
+                            <f:ajax render="@this" event="click" execute="@this" />
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel for="mostrarComando" value="Mostrar Comandos" styleClass="control-label"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </div>
+        <div class="row">
+            <div class="col m12">
+                <div id="divScroll1" style="max-height: 87%; overflow: auto;">
+                    <h:panelGroup id="pnlItem" style="height: 100%; min-height: 100%;">
+                        <h:panelGroup id="pnlExport" style="height: 100%; min-height: 100%; float: right;">
+                            <h:commandLink>
+                                <p:graphicImage name="pdf.png" library="img"  width="24" title="Exportar para PDF"/>
+                                <p:dataExporter type="pdf" target="dataItem" fileName="auditoria" pageOnly="true" encoding="iso-8859-1"/>
+                            </h:commandLink>
+                            <h:commandLink>
+                                <p:graphicImage name="csv.png" library="img"  width="24" title="Exportar para CSV"/>
+                                <p:dataExporter type="csv" target="dataItem" fileName="auditoria" pageOnly="true" encoding="iso-8859-1"/>
+                            </h:commandLink>
+                            <h:commandLink>
+                                <p:graphicImage name="xls.png" library="img"  width="24" title="Exportar para  XLS (Excel)"/>
+                                <p:dataExporter type="xls" target="dataItem" fileName="auditoria" pageOnly="true" encoding="iso-8859-1"/>
+                            </h:commandLink>
+                        </h:panelGroup>
+                        <p:dataTable id="dataItem" value="#{auditoriaBean.lstAuditoria}" var="item" tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!" >
+                            <p:column headerText="ID" width="60" >
+                                <p:outputLabel value="#{item.idRegistro}" style="width: 100%; font-weight: normal;"/>
+                            </p:column>
+                            <p:column headerText="Data" width="90" >
+                                <p:outputLabel value="#{item.data}" style="width: 100%; font-weight: normal;">
+                                    <f:convertDateTime type="both" dateStyle="short" pattern="dd/MM/yyyy HH:mm" locale="pt" timeZone="America/Sao_Paulo" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuário" width="15%" >
+                                <p:outputLabel value="#{item.usuario}" style="width: 100%; font-weight: normal;"/>
+                            </p:column>
+                            <p:column headerText="Operação" width="10%" >
+                                <p:outputLabel value="#{item.operacao}" style="width: 100%; font-weight: normal;"/>
+                            </p:column>
+                            <p:column headerText="Histórico" width="50%" >
+                                <h:outputText escape="false"  value="#{item.queryMap}" style="width: 100%; font-weight: normal;"/>
+                            </p:column>
+                            <p:column headerText="Detalhado" width="30%" rendered="#{auditoriaBean.mostrarComando}">
+                                <h:outputText escape="false"  value="#{item.query}" style="width: 100%; font-weight: normal;"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </div>
+            </div>                     
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

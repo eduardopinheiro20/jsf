@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="tributario-lib" default="default" basedir=".">
+    <description>Builds, tests, and runs the project tributario-lib.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <target name="yguard_eddydata_lib">
+        <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask"
+                 classpath="./lib/yguard.jar"/>
+        <yguard>
+            <inoutpair in="./dist/tributario-lib.jar" out="./dist/tributario-lib.jar"/>
+            <externalclasses>
+                <pathelement location="dist/lib/activation-1.1.1.jar"/>
+                <pathelement location="dist/lib/antlr-2.7.7.jar"/>
+                <pathelement location="dist/lib/barbecue-1.5-beta1.jar"/>
+                <pathelement location="dist/lib/bcmail-jdk14-1.38.jar"/>
+                <pathelement location="dist/lib/bcmail-jdk14-138.jar"/>
+                <pathelement location="dist/lib/bcprov-jdk14-1.38.jar"/>
+                <pathelement location="dist/lib/bcprov-jdk14-138.jar"/>
+                <pathelement location="dist/lib/bctsp-jdk14-1.38.jar"/>
+                <pathelement location="dist/lib/commonj.sdo-2.1.1.jar"/>
+                <pathelement location="dist/lib/commons-beanutils-1.8.0.jar"/>
+                <pathelement location="dist/lib/commons-codec-1.5.jar"/>
+                <pathelement location="dist/lib/commons-collections-3.0.jar"/>
+                <pathelement location="dist/lib/commons-digester-1.7.jar"/>
+                <pathelement location="dist/lib/commons-email-1.3.2.jar"/>
+                <pathelement location="dist/lib/commons-fileupload-1.3.1.jar"/>
+                <pathelement location="dist/lib/commons-io-2.4.jar"/>
+                <pathelement location="dist/lib/commons-logging-1.1.1.jar"/>
+                <pathelement location="dist/lib/dom4j-1.6.1.jar"/>
+                <pathelement location="dist/lib/DynamicJasper-3.0.13.jar"/>
+                <pathelement location="dist/lib/DynamicJasper-core-fonts-1.0.jar"/>
+                <pathelement location="dist/lib/eclipselink-2.5.2.jar"/>
+                <pathelement location="dist/lib/itext-2.1.7.jar"/>
+                <pathelement location="dist/lib/jandex-1.1.0.Final.jar"/>
+                <pathelement location="dist/lib/jasperreports-3.6.2.jar"/>
+                <pathelement location="dist/lib/javaee-api-7.0.jar"/>
+                <pathelement location="dist/lib/javassist-3.18.1-GA.jar"/>
+                <pathelement location="dist/lib/javax.persistence-2.1.0.jar"/>
+                <pathelement location="dist/lib/jcommon-1.0.15.jar"/>
+                <pathelement location="dist/lib/jdtcore-3.1.0.jar"/>
+                <pathelement location="dist/lib/jfreechart-1.0.12.jar"/>
+                <pathelement location="dist/lib/mail-1.4.5.jar"/>
+                <pathelement location="dist/lib/poi-3.10-FINAL.jar"/>
+                <pathelement location="dist/lib/poi-ooxml-3.10-FINAL.jar"/>
+                <pathelement location="dist/lib/poi-ooxml-schemas-3.10-FINAL.jar"/>
+                <pathelement location="dist/lib/prettyfaces-jsf2-3.3.3.jar"/>
+                <pathelement location="dist/lib/primefaces-5.2.jar"/>
+                <pathelement location="dist/lib/primefaces-extensions-3.2.0.jar"/>
+                <pathelement location="dist/lib/spring-beans-2.5.6.SEC02.jar"/>
+                <pathelement location="dist/lib/spring-core-2.5.6.jar"/>
+                <pathelement location="dist/lib/stax-api-1.0.1.jar"/>
+                <pathelement location="dist/lib/validation-api-1.0.0.GA.jar"/>
+                <pathelement location="dist/lib/xml-apis-1.3.02.jar"/>
+                <pathelement location="dist/lib/xmlbeans-2.3.0.jar"/>
+            </externalclasses>
+            <rename logfile="yrenamelog.xml">
+                <property name="error-checking" value="pedantic"/>
+                <keep>
+                    <class classes="public" methods="public" fields="public">
+                        <patternset>
+                            <include name="br.com.eddydata.servico.**"/>
+                            <include name="br.com.eddydata.servlet.**"/>
+                            <include name="br.com.eddydata.suporte.**"/>
+                            <include name="br.com.eddydata.repositorio.Repositorio*"/>
+                        </patternset>
+                    </class>
+                    <class classes="private" methods="private" fields="private">
+                        <patternset>
+                            <include name="br.com.eddydata.entidade.**"/>
+                        </patternset>
+                    </class>
+                    <class classes="public" methods="protected">
+                        <patternset>
+                            <include name="br.com.eddydata.repositorio.Repositorio*"/>
+                        </patternset>
+                    </class>
+                    <!-- projeto final. nao deve deixar o minimo de pontos de entrada abertos -->
+                </keep>
+            </rename>
+        </yguard>
+    </target>
+    <!--<target name="-post-jar" depends="yguard_eddydata_lib"/>-->
+    
+    <target name="-post-jar">
+        <copy file="./dist/tributario-lib.jar" todir="../LibJsf/" overwrite="true" />
+    </target>
+    
+</project>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:param name="pagina_atual" value="E-mails a contribuintes" />
+    <ui:param name="pretty_pagina" value="notificacao" />
+
+    <ui:define name="filtro"></ui:define>
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{alvaraDiversoesBean.adicionar()}" title="Incluir" 
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-content-add"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs tab-demo z-depth-0" style="width: 100%; display: initial">
+                    <li class="tab col s12 m2"><a class="active" href="#abaContribuintes">Contribuintes</a></li>
+                    <li class="tab col s12 m2"><a href="#abaEmail">Dados do E-mail</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="abaContribuintes" class="col s12">
+            <h:panelGroup id="pnlItem1" style="height: 100%; min-height: 100%;">
+                <h:dataTable id="dataItem" value="#{notificacaoBean.dataItem}" var="o" style="font-size: 11px;">
+                    <h:column>
+                        <f:facet name="header">
+                            <h:selectBooleanCheckbox id="chkChange" value="#{notificacaoBean.chkChange}" >
+                                <p:ajax global="false" listener="#{notificacaoBean.doChangeAllChecks(notificacaoBean.chkChange)}" update="dataItem" />
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel for="chkChange" />
+                        </f:facet>
+                        <div style="margin: -7px 0 0 0">
+                            <h:selectBooleanCheckbox id="chkChecked" value="#{o.checked}" >
+                                <p:ajax process="@this" global="false" />
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel for="chkChecked" />
+                        </div>
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Inscrição</f:facet>
+                            #{o.iss.inscricao}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">CPF/CNPJ</f:facet>
+                            #{o.iss.cnpjCpf}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Nome</f:facet>
+                            #{o.iss.pessoa.nome}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">E-mail</f:facet>
+                            #{o.iss.pessoa.email}
+                    </h:column>
+                </h:dataTable>
+                <p:commandButton id="btn-todos" action="#{notificacaoBean.doChangeAllChecks(true)}" value="Marcar todos" styleClass="blue-text" update="dataItem"/>
+                <p:commandButton id="btn-nenhum" action="#{notificacaoBean.doChangeAllChecks(false)}" value="Desmarcar todos" styleClass="blue-text" update="dataItem"/>
+            </h:panelGroup>
+        </div>
+        <div id="abaEmail" class="col s12">
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel value="Assunto" for="subject" />
+                    <h:inputText styleClass="form-control" id="subject" value="#{notificacaoBean.subject}" maxlength="100" style="font-weight: bold;">
+                        <p:ajax process="@this" global="false"/>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel value="Cópia para" for="email_copy" />
+                    <h:inputText styleClass="form-control" id="email_copy" value="#{notificacaoBean.emailCopy}" maxlength="100" style="font-weight: bold;">
+                        <p:ajax process="@this" global="false"/>
+                    </h:inputText>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <h:outputLabel value="Mensagem" />
+                    <h:inputTextarea id="texto" class="materialize-textarea" value="#{notificacaoBean.message}" style="font-weight: bold;" >
+                        <p:ajax process="@this" global="false"/>
+                    </h:inputTextarea>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Usuários" />
+    <ui:param name="pagina_acima" value="Inicio" />
+
+    <ui:define name="menu-input">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{usuarioBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o código ou nome do usuário" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{usuarioBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{usuarioBean.usuario eq null}">
+            <h:commandLink rendered="#{globalBean.somenteConsulta eq false}" disabled="#{globalBean.somenteConsulta}" actionListener="#{usuarioBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{usuarioBean.usuario ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{usuarioBean.salvar(false)}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink title="Fechar" class="btn-floating grey" actionListener="#{usuarioBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{usuarioBean.remover()}" style="display: none;"/>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" title="Salvar/Novo " class="btn-floating blue lighten-2" actionListener="#{usuarioBean.salvarIncluir()}">
+                        <i class="mdi-content-save"></i>
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+    <ui:define name="conteudo">
+        <div id="basic-form" class="section">
+            <h:panelGroup id="frm0" rendered="#{usuarioBean.usuario eq null}"> 
+                <div class="row">
+                    <div class="col s9">
+                        <h:graphicImage name="usuario-42.png" library="img" alt="usuarios" styleClass="imgtexto" />
+                        <h4 class="header">Usuários e permissões</h4>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br/>
+                <div class="row">
+                    <div class="col s12">
+                        <style type="text/css">
+                            .col1 { width: 5% }
+                            .col2 { width: 90% }
+                        </style>                            
+                        <h:dataTable id="table" var="item" value="#{usuarioBean.todosUsuarios}" styleClass="bordered"
+                                     style="overflow: hidden !important; cursor: pointer;" columnClasses="col1, col2">
+                            <h:column>
+                                <h:commandLink id="btn-alterar" style="width: 100%; display: block; color: #555" actionListener="#{usuarioBean.alterar(item)}">
+                                    <i class="mdi mdi-chevron-double-right" style="color: #ccc"/>&nbsp;<h:outputText value="#{item.nome}  #{item.sobrenome}" /><br/>
+                                </h:commandLink>
+                            </h:column>
+                        </h:dataTable>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" id="frm1" rendered="#{usuarioBean.usuario ne null}">                
+                <div class="row">
+                    <div class="col s8">
+                        <h:graphicImage name="usuario-42.png" library="img" alt="usuarios" styleClass="imgtexto" />
+                        <h4 class="header">Usuários e permissões</h4>
+                    </div>
+                    <div class="col s1" align="right">
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{usuarioBean.salvar()}" title="Foto do usuário" style="font-size: 32px; color: #006064">
+                            <i class="mdi mdi-instagram"></i>
+                        </h:commandLink>
+                    </div>
+                    <div class="col s1" align="right">
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" title="Ativar do usuário" style="font-size: 32px; color: #006064">
+                            <i class="mdi mdi-account-check"></i>
+                            <p:ajax oncomplete="PF('modalAtivar').show();" update=":formAtivar"/>
+                        </h:commandLink>
+                    </div>                        
+                </div>
+                <div class="divider"></div>
+                <br/>
+                <div class="row">
+                    <div class="col s3">
+                        <div class="row">
+                            <div class="input-field col s5">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" styleClass="thumb" >
+                                    <p:ajax oncomplete="abrirModalFoto()" update=":formlogo"/>
+                                    <p:graphicImage id="foto" cache="false" library="img" style="width: 138px; height: 128px;" 
+                                                    name="#{(usuarioBean.usuario.avatar eq null || usuarioBean.usuario.avatar == '' ? '128x128_user.png' : usuarioBean.usuario.avatar)}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s9">
+
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="input-field col s5">
+
+                                <p:focus for="nome"/>
+                                <h:inputText id="nome" title="Nome" value="#{usuarioBean.usuario.nome}"
+                                             style="text-transform: uppercase; " maxlength="60">
+                                    <p:ajax event="blur" process="@this" global="false" />
+                                </h:inputText>
+                                <label for="firstname">Nome</label>
+                            </div>
+                            <div class="input-field col s5">
+                                <label for="lastname">Sobrenome</label>
+                                <h:inputText title="Sobrenome" value="#{usuarioBean.usuario.sobrenome}" 
+                                             style="text-transform: uppercase;" maxlength="60">
+                                    <p:ajax event="blur" process="@this" global="false" />
+                                </h:inputText> 
+                            </div>
+                            <div class="input-field col s2">
+                                <div class="switch">
+                                    <label>
+                                        <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{usuarioBean.usuario.ativo}" />
+                                        <span class="lever"></span>                                                    
+                                        <span style="font-size: 14px; color: #000;">Ativo</span>
+                                    </label>                        
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col s2">
+                                <h:panelGroup rendered="#{not usuarioBean.usuario.ativo and usuarioBean.usuario.id ne null}">
+                                    <div style="margin-bottom: 0!important;">
+                                        <i class="mdi mdi-information-outline"></i>
+                                        <b>Atenção:</b> Este usuário está inativo!
+                                    </div>
+                                </h:panelGroup>     
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6">
+                                <h:outputLabel value="Perfil" />
+                                <h:selectOneMenu value="#{usuarioBean.usuarioSistema.usuarioPerfil}"
+                                                 converter="entityConverter" style="width: 100%;">
+                                    <f:selectItem noSelectionOption="true" itemLabel="" itemValue="" />
+                                    <f:selectItems value="#{usuarioBean.listarPerfil}" var="item"
+                                                   itemLabel="#{item.idPerfil} - #{item.nome}" itemValue="#{item}" />
+                                    <p:ajax event="change" process="@this" global="false" />
+                                </h:selectOneMenu>                        
+                            </div>
+                            <div class="col s3">
+                                <label for="cpf">CPF</label>
+                                <p:inputMask id="cpfF" mask="999.999.999-99" title="CPF" value="#{usuarioBean.usuario.cpf}" 
+                                             style="text-transform: uppercase;" maxlength="18">
+                                </p:inputMask>
+                            </div>
+                            <div class="col s3">
+                                <label for="fone">Telefone</label>
+                                <p:inputMask id="tel" mask="(99)9999-9999" title="Telefone" value="#{usuarioBean.usuario.fone1}" 
+                                             style="text-transform: uppercase;" maxlength="80">
+                                    <p:ajax event="blur" process="@this" global="false" />
+                                </p:inputMask>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br/>
+                <div class="row">
+                    <div class="col s6">
+                        <label for="email">e-mail</label>
+                        <h:inputText title="email" value="#{usuarioBean.usuario.email}" 
+                                     style="text-transform: lowercase;" maxlength="80">
+                            <p:ajax event="blur" process="@this" global="false" />
+                        </h:inputText>
+                    </div>
+                    <div class="col s6">
+                        <label for="cargo">Cargo</label>
+                        <h:inputText title="cargo" value="#{usuarioBean.usuario.cargo}" 
+                                     style="text-transform: uppercase;" maxlength="80">
+                            <p:ajax event="blur" process="@this" global="false" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6" style="margin-top: 0; padding-top: 0;">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{usuarioBean.usuarioSistema.administrador}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Administrador</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col s6">
+                        <h:panelGroup >
+                            <div class="form-group">
+                                <h:outputLabel value="Senha" for="passwd"/>
+                                <h:inputSecret value="#{usuarioBean.usuario.senha}" id="passwd" autocomplete="off">
+                                    <p:ajax event="blur" process="@this" global="false" />
+                                </h:inputSecret>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <ui:include src="usuario-ativar.xhtml" />
+
+        <div id="modalFoto" class="modal modal-fixed-footer" style="height: 680px; width: 600px; background-color: #fff">
+            <h:form id="formlogo" prependId="false" enctype="multipart/form-data">
+                <div class="modal-content" style="height: 780px;">
+                    <div class="row">
+                        <div class="col s12">
+                            <p:selectOneListbox id="advanced" value="#{usuarioBean.usuario.avatar}" 
+                                                var="avatar" filter="false" 
+                                                style="border: 0 !important; width: 550px !important; height: 260px; padding: 4px !important;">
+                                <f:selectItem itemLabel="avatar1" itemValue="avatar.png" />
+                                <f:selectItem itemLabel="avatar2" itemValue="avatar2.png" />
+                                <f:selectItem itemLabel="avatar3" itemValue="avatar3.png" />
+                                <f:selectItem itemLabel="avatar4" itemValue="avatar4.png" />
+                                <f:selectItem itemLabel="avatar5" itemValue="avatar5.png" />
+
+                                <p:column>
+                                    <p:graphicImage cache="false" library="img" name="#{avatar}" rendered="true"  style="background-color: #fff; width: 48px; height: 48px;"/> 
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputText value="#{avatar}" />
+                                </p:column>
+                                <p:ajax event="valueChange" update=":form1"/>
+                            </p:selectOneListbox>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Fechar</a>
+                </div>
+            </h:form>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').closeFAB();
+                $('select').material_select();
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+
+            function fecharModalFoto() {
+                $('#modalFoto').closeModal();
+            }
+
+            function abrirModalFoto() {
+                $('#modalFoto').openModal({
+                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    opacity: .0, // Opacity of modal background
+                    in_duration: 300, // Transition in duration
+                    out_duration: 200, // Transition out duration
+                    ready: function () {
+                    }, // Callback for Modal open
+                    complete: function () {
+                    } // Callback for Modal close
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

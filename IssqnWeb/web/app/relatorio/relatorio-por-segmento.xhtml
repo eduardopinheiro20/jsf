@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Relação Contribuinte por Segmento" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioContribuintePorSegmento.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m8" style="margin-top: 0">
+                <h:outputText value="Ordem de Impressão" />
+                <h:selectOneRadio layout="lineDirection" value="#{relatorioContribuintePorSegmento.ordem}">
+                    <f:selectItem itemValue="2" itemLabel="Contribuinte" />
+                    <f:selectItem itemValue="1" itemLabel="Inscrição" />
+                </h:selectOneRadio>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+

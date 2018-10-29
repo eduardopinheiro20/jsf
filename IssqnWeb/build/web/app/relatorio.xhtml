@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:param name="pagina_atual" value="Relatórios" />
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-contribuinte" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Relação de Contribuintes</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-contribuinte-devedores" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Relação de Contribuintes Devedores</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-certidao-negativa" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Certidão Negativa</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-ficha-cadastral" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Ficha Cadastral</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-listagem-debitos" class="waves-effect waves-cyan cor-eddy-text">
+                        <!--imprimirListagemDebitos()-->
+                        <i class="mdi-action-print"></i> 
+                        <span>Extrato de Débito</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-taxa" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Taxas</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-alvara" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Emissão de Alvará</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-pagamento" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Relação de Pagamentos</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:carta-cobranca" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Carta de Cobrança</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:commandLink actionListener="#{alvaraBean.imprimirLicencasVencidas()}" target="_blank" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Licenças Vencidas</span>
+                    </h:commandLink>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:commandLink actionListener="#{contribuinteBean.imprimirContribuinteDocFiscalizacao()}" target="_blank" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Contríbuinte Pendente Doc. / Fiscal.</span>
+                    </h:commandLink>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:commandLink actionListener="#{questaoBean.imprimirQuestionario()}" target="_blank" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Questionário Abertura de Empresas</span>
+                    </h:commandLink>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:alerta-notificacao"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Alerta Notificação Vencendo</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-termo-abertura"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Termo de Fiscalização Por Data</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-historico-registro"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Histórico do Contribuinte</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-encerramento-inscricao"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Certidão Baixa de Inscrição</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-inativacao-inscricao"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Certidão Inativação de Inscrição</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-conferencia-parcelas"  class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Relatório Conferência de Parcelas</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:relatorio-por-segmento" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-print"></i> 
+                        <span>Contribuintes por Segmento</span>
+                    </h:link>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra"></ui:define>
+</ui:composition>

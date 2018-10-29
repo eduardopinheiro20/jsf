@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:param name="pagina_atual" value="Fiscais" />
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:alvara-diversoes" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-extension"></i> 
+                        <span>Alvará de Diversões</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:termo-fiscalizacao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-extension"></i> 
+                        <span>Termo de Fiscalização</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:auto-infracao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-extension"></i> 
+                        <span>Termo de Auto Infração</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:termo-apreensao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-extension"></i> 
+                        <span>Termo de Apreensão</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l4">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:termo-intimacao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-action-extension"></i> 
+                        <span>Termo de Intimação</span>
+                    </h:link>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra"></ui:define>
+</ui:composition>

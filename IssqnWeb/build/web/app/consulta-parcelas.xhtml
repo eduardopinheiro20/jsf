@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Consulta de Parcelas" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{parcelasBean.buscarParcelas()}" title="Consultar" 
+                       class="btn-floating btn-large waves-effect waves-light blue modal-trigger">
+            <i class="mdi mdi-action-search"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                <h:inputText id="inscricao" value="#{parcelasBean.inscricao}">
+                    <p:ajax update="@this, contribuinte, cnpjCpf, tableParcelas, vlPago, juros, multa, desconto,tableTaxas, tableCancelamento" event="blur" process="@this" listener="#{parcelasBean.buscaPorInscricao()}" />
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m7">
+                <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                <p:autoComplete value="#{parcelasBean.contribuinte}" 
+                                id="contribuinte"
+                                style="width: 100%;"
+                                styleClass="ui-autocomplete-edit"
+                                converter="entityConverter"
+                                minQueryLength="3"
+                                maxResults="10"     
+                                completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                    <p:ajax event="itemSelect" listener="#{parcelasBean.selecionarIssqn()}" update="inscricao, contribuinte, cnpjCpf, tableParcelas, vlPago, juros, multa, desconto,tableTaxas, tableCancelamento" oncomplete="updateFields();"/>
+                </p:autoComplete>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                <h:inputText id="cnpjCpf" value="#{parcelasBean.contribuinte.cnpjCpf}"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="vlPago" value="Vl. Pago"/>
+                <h:inputText id="vlPago" value="#{parcelasBean.total[3]}" style="font-weight: bold;" readonly="true">
+                    <f:convertNumber pattern="#,##0.000" minFractionDigits="2"/>
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="juros" value="Juros"/>
+                <h:inputText id="juros" value="#{parcelasBean.total[1]}" style="font-weight: bold;" readonly="true">
+                    <f:convertNumber pattern="#,##0.000" minFractionDigits="2"/>
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="multa" value="Multa"/>
+                <h:inputText id="multa" value="#{parcelasBean.total[2]}" style="font-weight: bold;" readonly="true">
+                    <f:convertNumber pattern="#,##0.000" minFractionDigits="2"/>
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m3">
+                <h:outputLabel for="desconto" value="Desconto"/>
+                <h:inputText id="desconto" value="#{parcelasBean.total[0]}" style="font-weight: bold;" readonly="true">
+                    <f:convertNumber pattern="#,##0.000" minFractionDigits="2"/>
+                </h:inputText>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs z-depth-0" style="width: 100%;">
+                    <li class="tab col s12 m4"><a class="active" href="#abaParcelas">Parcelas</a></li>
+                    <li class="tab col s12 m4"><a id="abaTaxasTab" href="#abaTaxas">Taxas</a></li>
+                    <li class="tab col s12 m4"><a href="#abaCancelamentos">Parcelas Canceladas</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="abaParcelas">
+            <p:dataTable id="tableParcelas" var="itemP" value="#{parcelasBean.lstParcela}" styleClass="bordered"
+                         rows="20" rowsPerPageTemplate="20,50,100,#{parcelasBean.lstParcela.size()}"
+                         paginator="true" paginatorPosition="bottom" selectionMode="single" selection="#{parcelasBean.selectedParcelaDTO}"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         tableStyleClass="table table-condensed" emptyMessage="Nenhum registro encontrado!" rowKey="#{itemP}"
+                         >
+                <p:ajax event="rowSelect" listener="#{parcelasBean.onParcelaSelected}" oncomplete="$('#abaTaxasTab').click()" update="tableTaxas"/>
+                <p:column sortBy="#{itemP.tipoTaxa}" headerText="Tipo de Taxa" width="100">
+                        <h:outputText value="#{itemP.tipoTaxa}" />
+                </p:column>
+                <p:column sortBy="#{itemP.formaPagto}" headerText="Forma Pagto" width="100">
+                        <h:outputText value="#{itemP.formaPagto}" />
+                </p:column>
+                <p:column sortBy="#{itemP.parc}" headerText="Parc" width="40">
+                        <h:outputText value="#{itemP.parc}" />
+                </p:column>
+                <p:column sortBy="#{itemP.valor}" headerText="Valor" width="90">
+                        <h:outputText value="#{itemP.valor}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                        </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemP.dtVenc}" headerText="Dt. Venc" width="90">
+                        <h:outputText value="#{itemP.dtVenc}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemP.dtPagto}" headerText="Dt. Pagto" width="90">
+                        <h:outputText value="#{itemP.dtPagto}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemP.vlPago}" headerText="Vl. Pago" width="90">
+                        <h:outputText value="#{itemP.vlPago}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                        </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemP.banco}" headerText="Banco" width="100">
+                        <h:outputText value="#{itemP.banco}" />
+                </p:column>
+                <p:column sortBy="#{itemP.lote}" headerText="Lote" width="80">
+                        <h:outputText value="#{itemP.lote}" />
+                </p:column>
+                <p:column sortBy="#{itemP.nossoNumero}" headerText="Nosso Número" width="130">
+                        <h:outputText value="#{itemP.nossoNumero}" />
+                </p:column>
+                <p:column sortBy="#{itemP.vlTotal}" headerText="Vl. Total" width="100">
+                        <h:outputText value="#{itemP.vlTotal}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                        </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div id="abaTaxas">
+            <p:dataTable id="tableTaxas" var="itemT" value="#{parcelasBean.listTaxa}" styleClass="bordered"
+                         rows="20" rowsPerPageTemplate="20,50,100,#{parcelasBean.listTaxa.size()}"
+                         paginator="true" paginatorPosition="bottom" 
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                <p:column sortBy="#{itemT[0]}" headerText="Taxas" width="400">
+                    <h:outputText value="#{itemT[0]}" />
+                </p:column>
+                <p:column sortBy="#{itemT[1]}" headerText="Valor" width="100">
+                    <h:outputText value="#{itemT[1]}" >
+                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div id="abaCancelamentos">
+            <p:dataTable id="tableCancelamento" var="itemC" value="#{parcelasBean.lstCancelamento}" styleClass="bordered"
+                         rows="20" rowsPerPageTemplate="20,50,100,#{parcelasBean.lstCancelamento.size()}"
+                         paginator="true" paginatorPosition="bottom" 
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                <p:column sortBy="#{itemC.formaPagto}" headerText="Forma Pagto" width="130">
+                    <h:outputText value="#{itemC.formaPagto}" />
+                </p:column>
+                <p:column sortBy="#{itemC.parc}" headerText="Parc" width="40">
+                    <h:outputText value="#{itemC.parc}" />
+                </p:column>
+                <p:column sortBy="#{itemC.valor}" headerText="Valor" width="90">
+                    <h:outputText value="#{itemC.valor}" >
+                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemC.dtCancelamento}" headerText="Dt. Cancelamento" width="90">
+                    <h:outputText value="#{itemC.dtCancelamento}" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </h:outputText>
+                </p:column>
+                <p:column sortBy="#{itemC.descricaoParc}" headerText="Descrição Parc" width="200">
+                    <h:outputText value="#{itemC.descricaoParc}" />
+                </p:column>
+                <p:column sortBy="#{itemC.detalheCancelamento}" headerText="Detalhe Cancelamento" width="300">
+                    <h:outputText value="#{itemC.detalheCancelamento}" />
+                </p:column>
+            </p:dataTable>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <div id="modalBuscaParcela" class="modal">
+            <h:form prependId="false" id="formBuscaParcela">
+                <nav class="task-modal-nav blue">
+                    <div class="nav-wrapper">
+                        <div class="left col s12 m5 l5">
+                            <ul>
+                                <li><a href="#!" class="todo-menu"><i class="modal-action modal-close  mdi-hardware-keyboard-backspace"></i></a>
+                                </li>
+                                <li><a href="#!" class="todo-add">Busca por Contribuinte/Inscrição</a></li>
+                            </ul>
+                        </div>
+                        <div class="col s12 m7 l7">
+                            <ul class="right">
+                                <li><a href="#!"><i class="mdi-navigation-more-vert"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <div class="modal-content">                    
+                    <div class="row">
+                        <p:dataTable id="tableBuscaParcela" var="itemB" value="#{parcelasBean.lstBuscaParcela}" styleClass="bordered"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{parcelasBean.lstBuscaParcela.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                            <p:column width="50">
+                                <h:commandLink class="btn-floating green darken-1 white-text tooltipped" 
+                                               action="#{parcelasBean.selecionarMovimento()}" immediate="true">
+                                    <f:setPropertyActionListener target="#{parcelasBean.movimentoId}" value="#{itemB.idMovimento}" />
+                                    <f:passThroughAttribute name="data-position" value="right" />
+                                    <f:passThroughAttribute name="data-tooltip" value="Selecionar Movimento" />
+                                    <i class="mdi-action-find-in-page"></i>
+                                    <p:ajax />
+                                </h:commandLink>
+                            </p:column>
+                            <p:column sortBy="#{itemB.inscricao}" headerText="Inscrição" width="50">
+                                <h:outputText value="#{itemB.inscricao}" />
+                            </p:column>
+                            <p:column sortBy="#{itemB.nome}" headerText="Nome" width="150">
+                                <h:outputText value="#{itemB.nome}" />
+                            </p:column>
+                            <p:column sortBy="#{itemB.endereco}" headerText="Endereço" width="100">
+                                <h:outputText value="#{itemB.endereco}" />
+                            </p:column>
+                            <p:column sortBy="#{itemB.tpMovimento}" headerText="Tipo Movimento" width="50">
+                                <h:outputText value="#{itemB.tpMovimento}" />
+                            </p:column>
+                            <p:column sortBy="#{itemB.idMovimento}" headerText="Movimento" width="50">
+                                <h:outputText value="#{itemB.idMovimento}" />
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>  
+            </h:form>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

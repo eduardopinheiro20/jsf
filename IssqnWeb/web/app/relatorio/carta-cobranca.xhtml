@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Carta de Cobrança" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioCartaCobrancaBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                <h:inputText id="inscricao" value="#{relatorioCartaCobrancaBean.inscricao}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioCartaCobrancaBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                <h:inputText id="cnpjCpf" value="#{relatorioCartaCobrancaBean.cnpjCpf}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioCartaCobrancaBean.buscaPorCnpj()}" oncomplete="updateFields();" />
+                </h:inputText>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="dataInicio" value="Data Inicial"/>
+                    <p:inputText styleClass="form-control" maxlength="10" value="#{relatorioCartaCobrancaBean.dataInicial}" id="dataInicio">
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </p:inputText>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="dataFim" value="Data Final"/>
+                    <p:inputText styleClass="form-control" maxlength="10" value="#{relatorioCartaCobrancaBean.dataFinal}" id="dataFim">
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </p:inputText>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="exercicio" value="Exercício"/>
+                    <h:inputText id="exercicio" value="#{relatorioCartaCobrancaBean.exercicio}" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m8" style="margin-top: 0">
+                <h:outputText value="Ordem de Impressão" />
+                <h:selectOneRadio layout="lineDirection" value="#{relatorioCartaCobrancaBean.order}">
+                    <f:selectItem itemValue="0" itemLabel="Endereço de Entrega" />
+                    <f:selectItem itemValue="1" itemLabel="Endereço do Imóvel" />
+                    <f:selectItem itemValue="2" itemLabel="Inscrição" />
+                    <f:selectItem itemValue="3" itemLabel="CNPJ"/>
+                </h:selectOneRadio>
+            </div>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#dataInicio').mask('99/99/9999');
+                $('#dataFim').mask('99/99/9999');
+            }   
+        </script>
+    </ui:define>
+</ui:composition>
+

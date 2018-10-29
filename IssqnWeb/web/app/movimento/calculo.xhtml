@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Efetuar Cálculo" />
+    <ui:param name="pagina_acima" value="Movimentos" />
+    <ui:param name="pretty_pagina" value="movimentos" />
+    <ui:define name="botoes">
+        <h:commandLink title="Calcular" actionListener="#{calculoBean.calcular()}"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <p:ajax />
+            <i class="mdi-content-send"></i>
+        </h:commandLink>
+    </ui:define>
+    <ui:define name="conteudo">
+        <h:panelGroup id="panelGeral">
+            <div class="row">
+                <div class="col s12 m4">
+                    <h:selectOneRadio class="with-gap" value="#{calculoBean.opcaoCalculo}" layout="pageDirection">
+                        <f:selectItem itemValue="C" itemLabel="Cálculo do Contribuinte" />
+                        <f:selectItem itemValue="G" itemLabel="Cálculo Geral" />
+                        <p:ajax update="panelGeral" oncomplete="updateFields();" global="false"/>
+                    </h:selectOneRadio>
+                </div>
+            </div>
+            <h:panelGroup id="infoContribuinte" rendered="#{calculoBean.opcaoCalculo.equalsIgnoreCase('C')}">
+                <div class="row">
+                    <div class="input-field col s12 m4">
+                        <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                        <h:inputText id="inscricao" value="#{calculoBean.inscricao}" 
+                                     onkeypress="if (event.keyCode === 13) {
+                                                 document.getElementById('inscricao').blur();
+                                                 return false;
+                                             }">
+                            <p:ajax update="form1" event="blur" process="@this" listener="#{calculoBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s12 m8">
+                        <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                        <p:autoComplete value="#{calculoBean.issqn}" 
+                                        id="contribuinte"
+                                        style="width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        converter="entityConverter"
+                                        minQueryLength="3"
+                                        maxResults="10"     
+                                        completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                        var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                            <p:ajax event="itemSelect" process="@this" update="@this inscricao" oncomplete="updateFields();"/>
+                        </p:autoComplete>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col s12 m4">
+                        <h:selectBooleanCheckbox id="parcelasProporcionais" value="#{calculoBean.parcelasProporcionais}" >
+                            <p:ajax process="@this" global="false"/>
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel for="parcelasProporcionais" value="Parcelas proporcionais à data de abertura" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <br/>
+            <div class="row">
+                <h:panelGroup id="infoGeral" rendered="#{calculoBean.opcaoCalculo.equalsIgnoreCase('G')}">
+                    <div class="input-field col s12 m3">
+                        <h:outputLabel for="data" value="Data de abertura máxima"/>
+                        <h:inputText id="data" value="#{calculoBean.dtAbertura}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </h:panelGroup>
+                <div class="input-field col s12 m3">
+                    <h:selectOneMenu id="tipoCobrancaBoleto" value="#{calculoBean.tipoCobrancaBoleto}" >
+                        <f:selectItem itemValue="#{1}" itemLabel="TCF" />
+                        <f:selectItem itemValue="#{3}" itemLabel="EVENTUAL" />
+                        <p:ajax event="change" process="@this" global="false"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel for="tipoCobrancaBoleto" value="Tipo Cobrança"/>
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#data').mask('99/99/9999');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

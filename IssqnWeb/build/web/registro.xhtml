@@ -1,0 +1,480 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ * Sistema Eddydata de Administração Pública
+ * Copyright (C) 2016, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Rodrigo Teixeira
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ph="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="msapplication-tap-highlight" content="no"/>
+        <title><h:outputText value="Eddydata - ISSQN"/></title>
+
+        <h:outputStylesheet name="materialize.min.css" library="css"/>
+        <h:outputStylesheet name="jquery.growl.css" library="css"/>
+        <h:outputStylesheet name="sweet-alert.css" library="css"/>
+        <h:outputStylesheet name="style.min.css" library="css"/>
+        <h:outputStylesheet name="prime.css" library="css"/>
+        <h:outputStylesheet name="default.css" library="css"/>
+
+        <h:outputScript name="jquery.growl.js" library="js" />
+        <h:outputScript name="perfect-scrollbar.min.js" library="js" />
+        <h:outputScript name="materialize.min.js" library="js" />
+        <h:outputScript name="plugins.min.js" library="js" />
+        <h:outputScript name="sweet-alert.min.js" library="js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
+    </h:head>
+    <h:body class="light-blue darken-2">
+        <style type="text/css">
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+                transition: background-color 5000s ease-in-out 0s;
+            }
+        </style>
+
+        <h:form id="form1" prependId="false" ph:autocomplete="off">
+            <p:growl showDetail="false" life="9000" sticky="true" autoUpdate="true" /> 
+            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>  
+
+            <p:dialog widgetVar="statusDialog" width="33%" style="overflow: hidden" position="right top"
+                      draggable="false" closable="false" resizable="false" modal="false" showHeader="false">  
+                <div class="col s12">
+                    <h:outputLabel value="Buscando informações, por favor aguarde..." />
+                    <div class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+                </div>
+            </p:dialog>
+
+            <div id="content">
+                <div id="div-main" class="card-panel">
+                    <div class="row">
+                        <div class="col s12">
+                            <h:link outcome="pretty:login" class="left btn-flat waves-effect waves-light grey white-text">
+                                <i class="mdi mdi-content-reply"></i>
+                                Sair
+                            </h:link>
+                            <h:commandLink actionListener="#{issqnBean.salvar()}" rendered="#{issqnBean.selectedRegistro.id eq null}"
+                                           class="right btn-flat waves-effect waves-light blue white-text">
+                                <i class="mdi mdi-action-done"></i>
+                                Salvar
+                            </h:commandLink>
+                            <h:commandLink actionListener="#{issqnBean.alterar()}" rendered="#{issqnBean.selectedRegistro.id ne null}"
+                                           class="right btn-flat waves-effect waves-light blue white-text">
+                                <i class="mdi mdi-action-done"></i>
+                                Alterar
+                            </h:commandLink>
+                        </div>
+                    </div>
+                    <div class="divider" ></div>
+
+                    <h:panelGroup rendered="#{!issqnBean.jucesp}">
+                        <div class="row">
+                            <div class="input-field col s12 m2">
+                                <h:selectOneMenu id="tipoPessoaManual" value="#{issqnBean.selectedRegistro.pessoa.tpPessoa}">
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listTipoPessoa}" var="pes" itemValue="#{pes}" itemLabel="#{pes.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="tipoPessoaManual" value="Tipo Pessoa"/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="cpfcnpjManual" value="CPF/CNPJ"/>
+                                <h:inputText id="cpfcnpjManual" value="#{issqnBean.selectedRegistro.pessoa.cpfCnpj}" style="font-weight: bold;" disabled="true"/>
+                            </div>
+                            <div class="input-field col s12 m8">
+                                <h:outputLabel for="contribuinteManual" value="Nome *"/>
+                                <h:inputText id="contribuinteManual" value="#{issqnBean.selectedRegistro.pessoa.nome}" style="font-weight: bold;"/>
+                                <h:message for="contribuinteManual" style="color: red;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="telManual" value="Telefone"/>
+                                <h:inputText id="telManual" value="#{issqnBean.selectedRegistro.pessoa.telefone}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m8">
+                                <h:outputLabel for="emailManuel" value="Email"/>
+                                <h:inputText id="emailManuel" value="#{issqnBean.selectedRegistro.pessoa.email}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s3">
+                                <h:selectOneMenu id="tipoCategoria" value="#{issqnBean.selectedRegistro.categoria}" converter="entityConverter">
+                                    <f:selectItem itemLabel="Selecione a Categoria"/>
+                                    <f:selectItems value="#{issqnBean.listCategorias}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel for="tipoCategoria" value="Categoria"/>
+                            </div>
+                            <div class="input-field col s3">
+                                <h:selectOneMenu id="rAtuacao" value="#{issqnBean.selectedRegistro.ramoAtuacao}" converter="entityConverter">
+                                    <f:selectItem itemLabel="Selecione o Ramo de Atuação"/>
+                                    <f:selectItems value="#{issqnBean.listRamoAtuacao}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel for="rAtuacao" value="Ramo de Atuação"/>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <br/>
+                                    <h:outputLabel style="font-size: 20px" value="Endereço Imóvel"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s3">
+                                    <h:selectOneMenu id="estado" value="#{issqnBean.selectedRegistro.imovel.bairrologradouro.cidade.estado}" converter="entityConverter"
+                                                     required="true" requiredMessage="Informar Estado do Endereço do Imóvel" >
+                                        <f:selectItem itemLabel="Selecione o estado" />
+                                        <f:selectItems value="#{utilBean.buscarIssqnEstado()}" var="est" itemValue="#{est}" itemLabel="#{est.nome}"/>
+                                        <p:ajax listener="#{issqnBean.changeEstado()}" global="false"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="estado" value="Estado"/>
+                                </div>
+                                <div class="input-field col s4">
+                                    <h:outputLabel for="cidade" value="Cidade" class="active"/>
+                                    <p:autoComplete value="#{issqnBean.selectedRegistro.imovel.bairrologradouro.cidade}" 
+                                                    required="true" requiredMessage="Informar Cidade do Endereço do Imóvel"
+                                                    id="cidade"
+                                                    style="font-weight: bold;width: 100%;"
+                                                    styleClass="ui-autocomplete-edit"
+                                                    minQueryLength="3" 
+                                                    maxResults="10"     
+                                                    converter="entityConverter"
+                                                    forceSelection="true"
+                                                    completeMethod="#{utilBean.buscarIssqnCidade}" 
+                                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                                        <p:ajax event="itemSelect" listener="#{issqnBean.changeCidade()}" global="false"/>
+                                    </p:autoComplete>
+                                </div>
+                                <div class="input-field col s5">
+                                    <h:outputLabel for="bairro" value="Bairro" class="active"/>
+                                    <p:autoComplete value="#{issqnBean.selectedRegistro.imovel.bairrologradouro.bairro}" 
+                                                    required="true" requiredMessage="Informar Bairro do Endereço do Imóvel"
+                                                    id="bairro"
+                                                    style="font-weight: bold;width: 100%;"
+                                                    styleClass="ui-autocomplete-edit"
+                                                    minQueryLength="3"
+                                                    maxResults="10"    
+                                                    converter="entityConverter"
+                                                    forceSelection="true"
+                                                    completeMethod="#{utilBean.buscarIssqnBairro}" 
+                                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                                    </p:autoComplete>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s5">
+                                    <h:outputLabel for="logradouro" value="Logradouro" class="active"/>
+                                    <p:autoComplete value="#{issqnBean.selectedRegistro.imovel.bairrologradouro.logradouro}" 
+                                                    required="true" requiredMessage="Informar Logradouro do Endereço do Imóvel"
+                                                    id="logradouro"
+                                                    style="font-weight: bold;width: 100%;"
+                                                    styleClass="ui-autocomplete-edit"
+                                                    minQueryLength="3"
+                                                    maxResults="10"    
+                                                    converter="entityConverter"
+                                                    forceSelection="true"
+                                                    completeMethod="#{utilBean.buscarIssqnLogradouro}" 
+                                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                                    </p:autoComplete>
+                                </div>
+                                <div class="input-field col s1">
+                                    <h:outputLabel for="numero" value="Número" />
+                                    <h:inputText id="numero"  value="#{issqnBean.selectedRegistro.imovel.nrImovel}" >
+                                    </h:inputText>
+                                </div>    
+                                <div class="input-field col s4">
+                                    <h:outputLabel for="complemento" value="Complemento" />
+                                    <h:inputText id="complemento"  value="#{issqnBean.selectedRegistro.imovel.complemento}" >
+                                    </h:inputText>
+                                </div>  
+                                <div class="input-field col s2">
+                                    <h:outputLabel for="cep" value="Cep" />
+                                    <p:inputMask id="cep"  mask="99999-999" value="#{issqnBean.selectedRegistro.imovel.cep}" >
+                                    </p:inputMask>
+                                </div>   
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{issqnBean.jucesp}">
+                        <div class="row">
+                            <div class="input-field col s12 m6">
+                                <h:outputLabel for="nome" value="Nome *"/>
+                                <h:inputText id="nome" value="#{issqnBean.selectedRegistro.pessoa.nome}" style="font-weight: bold;" disabled="true"/>
+                                <h:message for="nome" style="color: red;" />
+                            </div>
+                            <div class="input-field col s12 m6">
+                                <h:outputLabel for="nomeFantasia" value="Nome Fantasia"/>
+                                <h:inputText id="nomeFantasia" value="#{issqnBean.selectedRegistro.pessoa.nomeFantasia}" style="font-weight: bold;" disabled="true"/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:selectOneMenu id="tipoPessoa" value="#{issqnBean.selectedRegistro.pessoa.tpPessoa}" disabled="true">
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listTipoPessoa}" var="pes" itemValue="#{pes}" itemLabel="#{pes.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="tipoPessoa" value="Tipo Pessoa"/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="cpf" value="CPF/CNPJ"/>
+                                <h:inputText id="cpf" value="#{issqnBean.selectedRegistro.pessoa.cpfCnpj}" style="font-weight: bold;" disabled="true"/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="cartaoCidadao" value="Cartão Cidadão"/>
+                                <h:inputText id="cartaoCidadao" value="#{issqnBean.selectedRegistro.pessoa.cartaoCidadao}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="telRes" value="Tel. Res"/>
+                                <h:inputText id="telRes" value="#{issqnBean.selectedRegistro.pessoa.telefone}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="celular" value="Celular"/>
+                                <h:inputText id="celular" value="#{issqnBean.selectedRegistro.pessoa.celular}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="telCom" value="Tel. Com"/>
+                                <h:inputText id="telCom" value="#{issqnBean.selectedRegistro.pessoa.tel1}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="telRecados" value="Tel. Recados"/>
+                                <h:inputText id="telRecados" value="#{issqnBean.selectedRegistro.pessoa.tel2}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m1">
+                                <h:outputLabel for="nascimento" value="Nascimento"/>
+                                <h:inputText id="nascimento" value="#{issqnBean.selectedRegistro.pessoa.dataNascimento}" style="font-weight: bold;">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:inputText>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="rg" value="Nº. RG"/>
+                                <h:inputText id="rg" value="#{issqnBean.selectedRegistro.pessoa.rg}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m1">
+                                <h:outputLabel for="dtRg" value="Dt. RG"/>
+                                <h:inputText id="dtRg" value="#{issqnBean.selectedRegistro.pessoa.dtEmissaoRg}" style="font-weight: bold;">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:inputText>
+                            </div>
+                            <div class="input-field col s12 m4">
+                                <h:outputLabel for="email" value="Email"/>
+                                <h:inputText id="email" value="#{issqnBean.selectedRegistro.pessoa.email}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:selectOneMenu id="orgaoExp" value="#{issqnBean.selectedRegistro.pessoa.orgaoExpRg}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listOrgaoExpedidor}" var="rgx" itemValue="#{rgx}" itemLabel="#{rgx.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="orgaoExp" value="Orgão Exp."/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="reservista" value="Reservista"/>
+                                <h:inputText id="reservista" value="#{issqnBean.selectedRegistro.pessoa.certReservista}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <h:selectOneMenu id="escolaridade" value="#{issqnBean.selectedRegistro.pessoa.grauInstrucao}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listGrauInstrucao}" var="esc" itemValue="#{esc}" itemLabel="#{esc.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="escolaridade" value="Escolaridade"/>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <h:selectOneMenu id="estadoCivil" value="#{issqnBean.selectedRegistro.pessoa.estCivil}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listEstadoCivil}" var="est" itemValue="#{est}" itemLabel="#{est.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="estadoCivil" value="Est. Civil"/>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <h:selectOneMenu id="cor" value="#{issqnBean.selectedRegistro.pessoa.cor}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listCor}" var="obj" itemValue="#{obj}" itemLabel="#{obj.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="cor" value="Cor"/>
+                            </div>
+                            <div class="input-field col s12 m1">
+                                <h:selectOneMenu id="ufRg" value="#{issqnBean.selectedRegistro.pessoa.ufRg}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listUfRg}" var="ufr" itemValue="#{ufr}" itemLabel="#{ufr.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="ufRg" value="UF"/>
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:selectOneMenu id="sexo" value="#{issqnBean.selectedRegistro.pessoa.sexo}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listSexo}" var="sex" itemValue="#{sex}" itemLabel="#{sex.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="sexo" value="Sexo"/>
+                            </div>
+                            <div class="input-field col s12 m1">
+                                <h:selectOneMenu id="tpSanguineo" value="#{issqnBean.selectedRegistro.pessoa.tpSanguineo}" 
+                                                 >
+                                    <f:selectItem itemValue="#{null}" itemLabel="---"/>
+                                    <f:selectItems value="#{issqnBean.listTipoSanguineo}" var="tps" itemValue="#{tps}" itemLabel="#{tps.descricao}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="tpSanguineo" value="Tp. Sanguineo"/>
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <h:outputLabel for="inscEstadual" value="Insc. Estadual"/>
+                                <h:inputText id="inscEstadual" value="#{issqnBean.selectedRegistro.pessoa.inscEstadual}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m3">
+                                <h:outputLabel for="inscMunicipal" value="Insc. Municipal"/>
+                                <h:inputText id="inscMunicipal" value="#{issqnBean.selectedRegistro.pessoa.inscMunicipal}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s12 m2">
+                                <h:outputLabel for="senha">Senha</h:outputLabel>
+                                <h:inputSecret id="senha" value="#{issqnBean.selectedRegistro.senha}" ph:placeholder="Sua senha"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s3" style="margin-top: 1rem">
+                                <h:commandLink actionListener="#{issqnBean.imprimirFichaCadastral()}" title="Imprimir Ficha Cadastral" target="_blank"
+                                               class="btn-floating btn-flat waves-effect waves-light blue" >
+                                    <i class="mdi mdi-action-print"></i>
+                                </h:commandLink>
+                                &nbsp;
+                                <h:outputLabel value="Ficha Cadastral"/>
+                            </div>
+                            <div class="col s3" style="margin-top: 1rem">
+                                <h:commandLink actionListener="#{issqnBean.imprimirBoleto()}" title="Imprimir Boleto" target="_blank" 
+                                               class="btn-floating btn-flat waves-effect waves-light blue ">
+                                    <i class="mdi mdi-action-print"></i>
+                                </h:commandLink>
+                                &nbsp;
+                                <h:outputLabel value="Imprimir Boleto" />
+                            </div>
+                        </div>
+                        <h:panelGroup rendered="#{issqnBean.selectedRegistro.id eq null}">
+                            <hr />
+                            <h4 class="blue-text darken-2">Anexos</h4>
+                            <div class="row">
+                                <div class="col s12">
+                                    <p:dataTable id="table9" value="#{issqnBean.listAnexos}" var="row" emptyMessage="Nenhum arquivo anexado para este contribuinte!">
+                                        <p:column width="40%" headerText="Nome" sortBy="#{row.nome}">
+                                            <h:outputText value="#{row.nome}" style="font-weight: bold;"/>
+                                        </p:column>
+                                        <p:column width="50%" headerText="Arquivo" sortBy="#{row.nomeRealArquivo}">
+                                            <h:outputText value="#{row.nomeRealArquivo}" />
+                                        </p:column>
+                                        <p:column width="100" headerText="Data" sortBy="#{row.dataCadastro}">
+                                            <h:outputText value="#{row.dataCadastro}">
+                                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                            </h:outputText>
+                                        </p:column>
+                                    </p:dataTable>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <h:commandLink class="left btn-flat waves-effect waves-light blue white-text"
+                                                   onclick="PF('modalIncluirArquivo').show();
+                                                           return false">
+                                        <i class="glyphicon glyphicon-paperclip"></i> 
+                                        <strong>Incluir Anexo</strong>
+                                    </h:commandLink>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+        <p:dialog id="dialogIncluirArquivo" rendered="true" header="Inclusão de anexos do contribuinte" widgetVar="modalIncluirArquivo"
+                  resizable="false" closable="true" modal="true" width="750" height="auto">
+            <h:form id="formAnexo"  prependId="false" enctype="multipart/form-data" >
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel value="Nome" for="nome"/>
+                        <h:outputLabel value="*" style="color: #F00;"/>
+                        <h:inputText value="#{issqnBean.selectedAnexo.nome}" required="true" requiredMessage="Informe o Nome do arquivo!">
+                            <f:validateLength maximum="100" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m2">
+                        <p:fileUpload fileUploadListener="#{issqnBean.handleFileUpload}" mode="advanced"
+                                      label="Incluir Anexo" invalidSizeMessage="Arquivo maior que 5mb não é permitido!"
+                                      auto="true" sizeLimit="5000000" update="panel"/>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <h:outputText  value="Anexo:" style="font-weight: bold; margin-top: 10px;" class="right"/>
+                    </div>
+                    <div class="input-field col s12 m4">
+                        <h:commandLink actionListener="#{issqnBean.downloadAnexo()}" >
+                            <h:outputText id="panel" value="#{issqnBean.selectedAnexo.nomeRealArquivo}" style="font-weight: bold; margin-top: 10px; " class="left"/>                       
+                        </h:commandLink>
+                    </div>
+                </div>   
+                <hr style="margin-bottom: 5px;"/>
+                <div class="row" style="padding-left: 15px;">
+                    <div class="input-field col s12 m5">
+                        <p:commandButton value="Enviar arquivo" action="#{issqnBean.salvarAnexo()}"  process="@form"
+                                         styleClass="btn-flat green" update=":form1:table9" oncomplete="PF('modalIncluirArquivo').hide();" />
+                        &nbsp;
+                        <p:commandLink value="Cancelar" onclick="PF('modalIncluirArquivo').hide();" immediate="true" class="btn-flat grey"/>
+                    </div>
+                    <div class="input-field col s12 m7">
+                        <h:messages style="font-weight: bold; font-size: 11px; color: red;"/>
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#telRes').mask('(99)99999999');
+                $('#telManual').mask('(99)99999999');
+                $('#celular').mask('(99)999999999');
+                $('#telCom').mask('(99)99999999');
+                $('#telRecados').mask('(99)99999999');
+                $('#nascimento').mask('99/99/9999');
+                $('#dtCadastro').mask('99/99/9999');
+                $('#dtAdmissao').mask('99/99/9999');
+                $('#dtEmissaoCart').mask('99/99/9999');
+                $('#dtRg').mask('99/99/9999');
+                $('#cpf').focusout(function () {
+                    var cpf, element;
+                    element = $(this);
+                    element.unmask();
+                    cpf = element.val().replace(/\D/g, '');
+                    if (cpf.length > 11) {
+                        element.mask("99.999.999/9999-99");
+                    } else {
+                        element.mask("999.999.999-99?999");
+                    }
+                }).trigger('focusout');
+                $('#cpfcnpjManual').focusout(function () {
+                    var cpf, element;
+                    element = $(this);
+                    element.unmask();
+                    cpf = element.val().replace(/\D/g, '');
+                    if (cpf.length > 11) {
+                        element.mask("99.999.999/9999-99");
+                    } else {
+                        element.mask("999.999.999-99?999");
+                    }
+                }).trigger('focusout');
+            }
+        </script>
+    </h:body>
+</html>
+

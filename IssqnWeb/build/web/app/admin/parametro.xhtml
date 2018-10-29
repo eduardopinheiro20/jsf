@@ -1,0 +1,508 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Parâmetros do Sistema" />
+
+    <ui:define name="botoes">
+        <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{configuracaoBean.salvar()}" title="Salvar" 
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi-content-save"></i>
+        </h:commandLink>
+        <ul>
+            <li>
+                <h:link class="btn-floating grey"  outcome="pretty:painel-issqn">
+                    <i class="mdi-navigation-close"></i>
+                </h:link>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs z-depth-0" style="width: 100%;">
+                    <li class="tab col s12 m6"><a class="active" href="#abaIssqn">Configurações do ISSQN</a></li>
+                    <li class="tab col s12 m6"><a href="#abaPrefeitura">Dados da Prefeitura</a></li>
+                    <li class="tab col s12 m6"><a href="#abaExercicio">Abertura de Exercício</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="abaPrefeitura">
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <h:outputLabel for="nome" value="Prefeitura"/>
+                    <h:inputText id="nome" value="#{configuracaoBean.selectedOrgao.nome}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="cnpj" value="CNPJ"/>
+                    <h:inputText id="cnpj" value="#{configuracaoBean.selectedOrgao.cnpj}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="telefone" value="Telefone"/>
+                    <h:inputText id="telefone" value="#{configuracaoBean.selectedOrgao.telefone}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="cep" value="CEP"/>
+                    <h:inputText id="cep" value="#{configuracaoBean.selectedOrgao.cep}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m6">
+                    <h:outputLabel for="endereco" value="Endereço"/>
+                    <h:inputText id="endereco" value="#{configuracaoBean.selectedOrgao.endereco}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="bairro" value="Bairro"/>
+                    <h:inputText id="bairro" value="#{configuracaoBean.selectedOrgao.bairro}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="cidade" value="Cidade"/>
+                    <h:inputText id="cidade" value="#{configuracaoBean.selectedOrgao.cidade}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="uf" value="Estado"/>
+                    <h:inputText id="uf" value="#{configuracaoBean.selectedOrgao.uf}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m6">
+                    <h:outputLabel for="email" value="E-mail"/>
+                    <h:inputText id="email" value="#{configuracaoBean.selectedOrgao.email}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <h:outputLabel for="tesoureiro" value="Tesoureiro"/>
+                    <h:inputText id="tesoureiro" value="#{configuracaoBean.selectedOrgao.tesoureiro}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="titulo_tesoureiro" value="Título"/>
+                    <h:inputText id="titulo_tesoureiro" value="#{configuracaoBean.selectedOrgao.tituloTesoureiro}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="crc" value="CRC"/>
+                    <h:inputText id="crc" value="#{configuracaoBean.selectedOrgao.crc}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m10">
+                    <div class="row">
+                        <div class="input-field col s12 m6">
+                            <h:outputLabel for="chefeEmpreendedorismo" value="Chefe de Empreendedorismo"/>
+                            <h:inputText id="chefeEmpreendedorismo" value="#{configuracaoBean.selectedOrgao.chefeEmpreendedorismo}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                        <div class="input-field col s12 m5">
+                            <h:outputLabel for="fiscalRendas" value="Fiscal de Rendas"/>
+                            <h:inputText id="fiscalRendas" value="#{configuracaoBean.selectedOrgao.fiscalRendas}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 m6">
+                            <h:outputLabel for="contador" value="Contador"/>
+                            <h:inputText id="contador" value="#{configuracaoBean.selectedOrgao.contador}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                        <div class="input-field col s12 m5">
+                            <h:outputLabel for="titulo_contador" value="Título"/>
+                            <h:inputText id="titulo_contador" value="#{configuracaoBean.selectedOrgao.tituloContador}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 m6">
+                            <h:outputLabel for="prefeito" value="Prefeito"/>
+                            <h:inputText id="prefeito" value="#{configuracaoBean.selectedOrgao.prefeito}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                        <div class="input-field col s12 m5">
+                            <h:outputLabel for="titulo_prefeito" value="Título"/>
+                            <h:inputText id="titulo_prefeito" value="#{configuracaoBean.selectedOrgao.tituloPrefeito}" 
+                                         onkeypress="if (event.keyCode === 13) {
+                                                     return false;
+                                                 }"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 m2">
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" styleClass="thumb" title="Clique para enviar brasão" >
+                        <p:ajax oncomplete="abrirModalFoto()" update=":formlogo"/>
+                        <p:graphicImage id="brasao" cache="false" value="#{configuracaoBean.getCaminhoImagem(configuracaoBean.selectedOrgao.brasao)}" />
+                    </h:commandLink>
+                </div>
+            </div>
+        </div>
+        <div id="abaIssqn">
+            <div class="row">
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="febraban" value="Febraban" class="active"/>
+                    <pe:inputNumber id="febraban" value="#{configuracaoBean.selectedRegistro.febraban}" decimalPlaces="0"
+                                    onkeypress="if (event.keyCode === 13) {
+                                                return false;
+                                            }"/>
+                </div>
+                <div class="input-field col s12 m5">
+                    <h:outputLabel for="local_arquivo" value="Local de Geração do arquivo"/>
+                    <h:inputText id="local_arquivo" value="#{configuracaoBean.selectedRegistro.localArquivo}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+                <div class="input-field col s12 m5">
+                    <h:outputLabel for="local_pagamento" value="Local de Pagamento de carnês"/>
+                    <h:inputText id="local_pagamento" value="#{configuracaoBean.selectedRegistro.localPagamento}" 
+                                 onkeypress="if (event.keyCode === 13) {
+                                             return false;
+                                         }"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.usaNumCertGeral}" id="usaNumCertGeral" />
+                    <h:outputLabel for="usaNumCertGeral" value="Usa controle geral de numeração de certidões" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.atribuicaoAutomaticaInscricao}" id="atribuicaoAutomaticaInscricao" />
+                    <h:outputLabel for="atribuicaoAutomaticaInscricao" value="Atribuição automatica do número de inscrição" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.inscricaoMunicipal}" id="inscricaoMunicipal" />
+                    <h:outputLabel for="inscricaoMunicipal" value="Utilização da inscrição municipal" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.alvaraSequencial}" id="alvaraSequencial" />
+                    <h:outputLabel for="alvaraSequencial" value="Utilização número de alvará sequencial" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.trocarNomenclaturaAlvara}" id="trocarNomenclaturaAlvara" />
+                    <h:outputLabel for="trocarNomenclaturaAlvara" value="Trocar nomenclatura do alvará para licença" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.agruparBoleto}" id="agruparBoleto" />
+                    <h:outputLabel for="agruparBoleto" value="Agrupar boleto" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m4">
+                    <div class="switch">
+                        <label>
+                            <span>Usar Carnê Febraban</span>
+                            <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.usaBoleto}" />
+                            <span class="lever"></span>                                                    
+                            <span>Usar boleto</span>
+                        </label>
+                    </div>
+                </div>
+                <br></br>
+                <br></br>
+                <div class="input-field col s12 m8" style="margin-top: 0">
+                    <h:selectOneRadio disabled="#{globalBean.somenteConsulta}" layout="lineDirection" value="#{configuracaoBean.selectedRegistro.usacarneTresvias}">
+                        <f:selectItem itemValue="1" itemLabel="Usar carnê 3 vias em folha picotada" />
+                        <f:selectItem itemValue="0" itemLabel="Usar carnê 4 vias em folha sufite" />
+                    </h:selectOneRadio>
+                </div>
+            </div>
+            <br></br> 
+            <div class="row">
+                <div class="col s12 m12">
+                    <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header">Modelos</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s12 m4">
+                                    <h:selectOneMenu id="bancoBoleto" value="#{configuracaoBean.selectedRegistro.bancoBoleto}"  converter="entityConverter">
+                                        <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                                        <f:selectItems value="#{utilBean.listBancos()}" var="bco" itemValue="#{bco}" itemLabel="#{bco.agencia} #{bco.dvAgencia} #{bco.conta} #{bco.dvConta} #{bco.nome}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="bancoBoleto" value="Banco / Boleto" />
+                                </div>
+                                <div class="input-field col s12 m3">
+                                    <h:selectOneMenu id="modeloCarne" value="#{configuracaoBean.selectedRegistro.modeloCarne}" >
+                                        <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                                        <f:selectItems value="#{configuracaoBean.listModCarne}" var="mcarne" itemValue="#{mcarne[0]}" itemLabel="#{mcarne[1]}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="modeloCarne" value="Modelo Carnê" />
+                                </div>
+                                <div class="input-field col s12 m3">
+                                    <h:selectOneMenu id="modeloCertidao" value="#{configuracaoBean.selectedRegistro.modeloCertidao}" >
+                                        <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                                        <f:selectItems value="#{configuracaoBean.listModCertidao}" var="mcert" itemValue="#{mcert[0]}" itemLabel="#{mcert[1]}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="modeloCertidao" value="Modelo Certidão" />
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:selectOneMenu id="modeloAlvara" value="#{configuracaoBean.selectedRegistro.modeloAlvara}" >
+                                        <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                                        <f:selectItems value="#{configuracaoBean.listModAlvara}" var="malv" itemValue="#{malv[0]}" itemLabel="#{malv[1]}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="modeloAlvara" value="Alvará" />
+                                </div>
+                                <div class="input-field col s12 m4">
+                                    <h:selectOneMenu id="modeloCarta" value="#{configuracaoBean.selectedRegistro.modeloCarta}" >
+                                        <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                                        <f:selectItems value="#{configuracaoBean.listModCarta}" var="mcart" itemValue="#{mcart[0]}" itemLabel="#{mcart[1]}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="modeloCarta" value="Carta" />
+                                </div>
+                                <div class="input-field col s12 m8">
+                                    <h:outputLabel for="mascara" value="Mascara"/>
+                                    <h:inputText id="mascara" value="#{configuracaoBean.selectedRegistro.mascara}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header">Alvará</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s12 m6">
+                                    <h:outputLabel for="nome1" value="Nome"/>
+                                    <h:inputText id="nome1" value="#{configuracaoBean.selectedRegistro.nome1}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                                <div class="input-field col s12 m4">
+                                    <h:outputLabel for="cargo1" value="Cargo"/>
+                                    <h:inputText id="cargo1" value="#{configuracaoBean.selectedRegistro.cargo1}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="dtProporcaoAlvara" value="Data"/>
+                                    <h:inputText id="dtProporcaoAlvara" value="#{configuracaoBean.selectedRegistro.dtProporcaoAlvara}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }">
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                    </h:inputText>
+                                </div>
+                                <div class="input-field col s12 m4">
+                                    <h:outputLabel for="alvaraDiversao" value="Alvará de diversão"/>
+                                    <h:inputText id="alvaraDiversao" value="#{configuracaoBean.selectedRegistro.alvaraDiversao}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                                <div class="input-field col s12 m4">
+                                    <h:outputLabel for="escritorioResponsavel" value="Escritório Responsável"/>
+                                    <h:inputText id="escritorioResponsavel" value="#{configuracaoBean.selectedRegistro.escritorioResponsavel}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                                <div class="input-field col s12 m4">
+                                    <h:outputLabel for="endCeat" value="Endereço CEAT"/>
+                                    <h:inputText id="endCeat" value="#{configuracaoBean.selectedRegistro.endCeat}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Nota Fiscal Eletrônica</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s12 m4">
+                                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{configuracaoBean.agruparBoleto}" id="valorNF" />
+                                    <h:outputLabel for="valorNF" value="Valor Total da Nota = Valor Total do Serviço + Valor do ISS" />
+                                </div>
+                                <div class="input-field col s12 m8">
+                                    <h:outputLabel for="setorRespNF" value="Setor Responsável pela NF"/>
+                                    <h:inputText id="setorRespNF" value="#{configuracaoBean.selectedRegistro.endCeat}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Fiscalização</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s12">
+                                    <h:outputLabel for="leiNum" value="Lei Número"/>
+                                    <h:inputText id="leiNum" value="#{configuracaoBean.selectedRegistro.endCeat}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }"/>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header ">Taxas</div>
+                            <div class="collapsible-body">
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="ufm" value="UFM" class="active"/>
+                                    <h:inputText onkeypress="if (event.keyCode === 13) {
+                                                return false;
+                                            }" id="ufm" value="#{configuracaoBean.selectedRegistro.ufm}" >
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"></f:convertNumber>
+                                    </h:inputText> 
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="ufesp" value="UFESP" class="active"/>
+                                    <h:inputText id="ufesp" value="#{configuracaoBean.selectedRegistro.ufesp}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"></f:convertNumber>
+                                    </h:inputText> 
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="expediente" value="Expediente" class="active"/>
+                                    <h:inputText id="expediente" value="#{configuracaoBean.selectedRegistro.expediente}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"></f:convertNumber>
+                                    </h:inputText>
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="vl_multa" value="Valor Multa" class="active"/>
+                                    <h:inputText id="vl_multa" value="#{configuracaoBean.selectedRegistro.vlMulta}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"></f:convertNumber>
+                                    </h:inputText>
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <h:outputLabel for="vl_juros" value="Valor Juros" class="active"/>
+                                    <h:inputText id="vl_juros" value="#{configuracaoBean.selectedRegistro.vlJuros}" 
+                                                 onkeypress="if (event.keyCode === 13) {
+                                                             return false;
+                                                         }">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"></f:convertNumber>
+                                    </h:inputText>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="abaExercicio">
+            <h:form id="formExercicio" prependId="false" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="col s2" style="padding-top: 8px;"> 
+                        <h:outputLabel for="exercicio" value="Ano de Exercicio" class="active"/>
+                        <h:inputText id="exercicio" value="#{configuracaoBean.ano}" onkeypress="if (event.keyCode === 13) {
+                                    return false;
+                                }"/>
+                        <p:commandButton id="geraExercicio" action="#{configuracaoBean.gerarExercicio}" value="Gerar Exercício"/>
+
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <div id="modalFoto" class="modal modal-fixed-footer white" style="max-height: 200px">
+            <h:form id="formlogo" prependId="false" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="row">
+                        <div class="col s12" style="padding-top: 8px;"> 
+                            <p:fileUpload fileUploadListener="#{configuracaoBean.fazerUploadArquivo}" mode="advanced"
+                                          label="Enviar arquivo" invalidSizeMessage="Arquivo maior que 5mb não é permitido!"
+                                          auto="true" sizeLimit="5000000" update=":form1" oncomplete="fecharModalFoto()"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Fechar</a>
+                </div>
+            </h:form>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+
+                $('#dtProporcaoAlvara').mask('99/99/9999');
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+
+            function fecharModalFoto() {
+                $('#modalFoto').closeModal();
+                updateFields();
+            }
+
+            function abrirModalFoto() {
+                $('#modalFoto').openModal({
+                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    opacity: .0, // Opacity of modal background
+                    in_duration: 300, // Transition in duration
+                    out_duration: 200, // Transition out duration
+                    ready: function () {
+                    }, // Callback for Modal open
+                    complete: function () {
+                    } // Callback for Modal close
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

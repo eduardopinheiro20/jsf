@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Relação de Contribuintes Devedores" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioContribuinteDevedorBean.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+    </ui:define>
+
+    <ui:define name="conteudo">
+
+        <div class="row">
+            <div class="input-field col s12 m8" style="margin-top: 0">
+                <h:outputText value="Opções de Pesquisa" />
+                <h:selectOneRadio layout="lineDirection" value="#{relatorioContribuinteDevedorBean.opcao}">
+                    <f:selectItem itemValue="G" itemLabel="Geral" />
+                    <f:selectItem itemValue="E" itemLabel="Por Exercício" />
+                    <f:selectItem itemValue="P" itemLabel="Pessoa ou contribuinte" />
+                    <f:selectItem itemValue="B" itemLabel="Banco"/>
+                    <p:ajax event="change" update="@form" oncomplete="updateFields()"/>
+                </h:selectOneRadio>
+            </div>
+        </div>
+
+        <div class="row" style="padding: 20px 0px 10px 22px;">
+            <h:panelGroup id="painelGeral" rendered="#{relatorioContribuinteDevedorBean.opcao eq 'G'}">
+                <div class="input-field col s12 m4 no-margin no-padding">
+                    <h:selectBooleanCheckbox value="#{relatorioContribuinteDevedorBean.licenca}" id="chkLicenca" />
+                    <h:outputLabel for="chkLicenca" value="Licença de Funcionamento" />
+                </div>
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox value="#{relatorioContribuinteDevedorBean.iss}" id="iss" />
+                    <h:outputLabel for="iss" value="Iss" />
+                </div>
+
+                <div class="input-field col s12 m4 no-margin no-padding">
+                    <h:selectBooleanCheckbox value="#{relatorioContribuinteDevedorBean.taxa}" id="taxa" />
+                    <h:outputLabel for="taxa" value="Desconsiderar taxa de Expediente" />
+                </div>
+
+                <div class="input-field col s12 m6 no-margin no-padding">
+                    <h:selectBooleanCheckbox value="#{relatorioContribuinteDevedorBean.alvaraVencido}" id="alvara" />
+                    <h:outputLabel for="alvara" value="Listar Somente contribuintes com alvará vencido (50 dias)" />
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup id="painelExercicio" rendered="#{relatorioContribuinteDevedorBean.opcao eq 'E'}">
+                <div class="input-field col s12 m3">
+                    <h:outputLabel for="ano" value="Exercício"/>
+                    <h:inputText id="ano" value="#{relatorioContribuinteDevedorBean.exercicio}"/>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup id="painelPessoa" rendered="#{relatorioContribuinteDevedorBean.opcao eq 'P'}">
+
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                    <h:inputText id="inscricao" value="#{relatorioContribuinteDevedorBean.inscricao}">
+                        <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioContribuinteDevedorBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                    </h:inputText>
+                </div>
+
+                <div class="input-field col s12 m7">
+                    <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                    <p:autoComplete value="#{relatorioContribuinteDevedorBean.contribuinte}" 
+                                    id="contribuinte"
+                                    style="width: 100%;"
+                                    styleClass="ui-autocomplete-edit"
+                                    converter="entityConverter"
+                                    minQueryLength="3"
+                                    maxResults="10"     
+                                    completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                    var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                        <p:ajax event="itemSelect" listener="#{relatorioContribuinteDevedorBean.selecionarIssqn()}" update="form1" oncomplete="updateFields();"/>
+                    </p:autoComplete>
+                </div>
+                <div class="input-field col s12 m3">
+                    <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                    <h:inputText id="cnpjCpf" value="#{relatorioContribuinteDevedorBean.cnpjCpf}">
+                        <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioContribuinteDevedorBean.buscaPorCnpj()}" oncomplete="updateFields();" />
+                    </h:inputText>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup id="painelBanco" rendered="#{relatorioContribuinteDevedorBean.opcao eq 'B'}">
+                <div class="input-field col s12 m5">
+                    <h:selectOneMenu id="banco" value="#{relatorioContribuinteDevedorBean.banco}" 
+                                     converter="entityConverter">
+                        <f:selectItem itemValue="#{null}" itemLabel="Selecione o Banco"/>
+                        <f:selectItems value="#{relatorioContribuinteDevedorBean.listBanco}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel for="banco" value="Banco"/>
+                </div>
+            </h:panelGroup>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12 m10" style="margin-top: 10px;">
+                <h:outputText value="Ordem de Impressão" />
+                <h:selectOneRadio layout="lineDirection" value="#{relatorioContribuinteDevedorBean.ordem}">
+                    <f:selectItem itemValue="II.INSCRICAO" itemLabel="Inscrição" />
+                    <f:selectItem itemValue="P.NOME" itemLabel="Proprietário" />
+                    <f:selectItem itemValue="LOGRA_COBRANCA, NR_COBRANCA" itemLabel="Endereço Cobrança" />
+                    <f:selectItem itemValue="LOGRA_IMOVEL, EI.NR_IMOVEL" itemLabel="Endereço Imóvel" />
+                    <f:selectItem itemValue="VALOR DESC" itemLabel="Valor (Licença de Funcionamento)" />
+                </h:selectOneRadio>
+            </div>
+        </div>
+
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

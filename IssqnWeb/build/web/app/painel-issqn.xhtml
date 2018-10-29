@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+    <ui:define name="filtro">
+        
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{utilBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o código para validar documento" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{utilBean.filtrar()}" value="FILTRO" style="display: none;" target="_blank"></h:commandLink>
+    </ui:define>
+    <ui:define name="conteudo">
+        
+    </ui:define>
+    <ui:define name="conteudo_extra"></ui:define>
+</ui:composition>

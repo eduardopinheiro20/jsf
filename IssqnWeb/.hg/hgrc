@@ -1,0 +1,6 @@
+# example repository config (see 'hg help config' for more info)
+
+[paths]
+default = ssh://192.168.1.254//eddydata/hg/jsf/IssqnWeb
+default-push = ssh://192.168.1.254//eddydata/hg/jsf/IssqnWeb
+

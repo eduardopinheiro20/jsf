@@ -1,0 +1,1956 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:param name="pagina_atual" value="Contribuinte" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{contribuinteBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o nome, logradouro, inscrição ou CPF/CNPJ do contribuinte" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{contribuinteBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{contribuinteBean.selectedRegistro eq null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.adicionar()}" rendered="#{globalBean.somenteConsulta eq false}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{contribuinteBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{contribuinteBean.cancelar()}" 
+                                   id="cancelar" title="Fechar" immediate="true">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red" >
+                        <i class="mdi mdi-action-delete"></i>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{contribuinteBean.remover()}" style="display: none;" immediate="true"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{contribuinteBean.selectedRegistro eq null}"> 
+
+            <div class="row right" style="margin-top: -70px">
+                <div class="col s4" style="padding-top: 10px">
+                    <h:outputText value="Filtrar por:" />
+                </div>
+                <div class="col s8">
+                    <h:selectOneMenu id="statusContribuinte" value="#{contribuinteBean.filter}" >
+                        <f:selectItem itemValue="T" itemLabel="Todas" />
+                        <f:selectItem itemValue="P" itemLabel="Pendente" />
+                        <f:selectItem itemValue="A" itemLabel="Ativo"/>
+                        <f:selectItem itemValue="I" itemLabel="Inativo" />
+                        <f:selectItem itemValue="E" itemLabel="Encerrado" />
+                        <f:selectItem itemValue="S" itemLabel="Bloqueado" />
+                        <f:selectItem itemValue="EV" itemLabel="Eventual" />
+                        <p:ajax process="@this" event="change" listener="#{contribuinteBean.carregarListagem()}" update="table"/>
+                    </h:selectOneMenu>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{contribuinteBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom"  
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column headerText="ID" width="5%">
+                            <h:commandLink actionListener="#{contribuinteBean.alterar(item)}" onclick="selectedContribuinte()">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.inscricao}" headerText="Inscrição" width="20%">
+                            <h:commandLink actionListener="#{contribuinteBean.alterar(item)}"  onclick="selectedContribuinte()">
+                                <h:outputText value="#{item.inscricao}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.pessoa.nome}" headerText="Nome" width="40%">
+                            <h:commandLink actionListener="#{contribuinteBean.alterar(item)}"  onclick="selectedContribuinte()">
+                                <h:outputText value="#{item.pessoa.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.fantasia}" headerText="Fantasia" width="20%">
+                            <h:commandLink actionListener="#{contribuinteBean.alterar(item)}"  onclick="selectedContribuinte()">
+                                <h:outputText value="#{item.fantasia}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.dtAbertura}" headerText="Data Abertura" width="10%">
+                            <h:commandLink actionListener="#{contribuinteBean.alterar(item)}"  onclick="selectedContribuinte()">
+                                <h:outputText value="#{item.dtAbertura}">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:outputText>
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{contribuinteBean.selectedRegistro ne null}" id="cadastroContribuinte">
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs tab-demo z-depth-0" style="width: 100%; display: initial">
+                        <li class="tab col s12 m2"><a class="active" href="#dadosContribuinte">Contribuinte</a></li>
+                        <li  class="tab col s12 m2"><a href="#dadosCNAE">Atividade</a></li>
+                        <li class="tab col s12 m2"><a href="#dadosTaxas">Taxas</a></li>
+                        <li class="tab col s12 m2"><a href="#dadosComplementares">Complementares</a></li>
+                        <li class="tab col s12 m2"><a href="#dadosAdicionais">Adicionais</a></li>
+                        <li class="tab col s12 m2"><a href="#tabnotificacao">Notificação</a></li>
+                        <li class="tab col s12 m2"><a href="#historico">Processos</a></li>
+                        <li class="tab col s12 m2"><a href="#tabanexo">Anexos</a></li>
+                        <li class="tab col s12 m2"><a href="#tabextras">Extras</a></li>
+                        <li class="tab col s12 m2"><a href="#tabAlvaras">Licenças</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="dadosContribuinte" class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                        <h:inputText id="inscricao"  readonly="true" value="#{contribuinteBean.selectedRegistro.inscricao}"/>
+                    </div>
+
+                </div>
+                <h:panelGroup id="dadosPessoa">
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <h:selectOneMenu id="tipoPes" value="#{contribuinteBean.selectedRegistro.pessoa.tpPessoa}">
+                                <f:selectItem itemValue="#{null}" itemLabel="Selecione o tipo" />
+                                <f:selectItems value="#{contribuinteBean.listTipoPessoa}" var="pes" itemValue="#{pes}" itemLabel="#{pes.descricao}"/>
+                                <p:ajax update="panelCpf panelLicenca" event="change" global="false"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel for="tipoPes" value="Tipo Pessoa"/>
+                        </div>
+                        <div class="input-field col s2">
+                            <h:panelGroup id="panelCpf">
+                                <h:outputLabel for="cpfF" value="CPF/CNPJ *" class="active" rendered="#{contribuinteBean.retornaTipoPessoa() eq 0}"/>
+                                <p:inputMask id="cpfF" mask="999.999.999-99" value="#{contribuinteBean.selectedRegistro.pessoa.cpfCnpj}" 
+                                             rendered="#{contribuinteBean.retornaTipoPessoa() eq 0}" required="true" requiredMessage="Preencher CPF/CNPJ">
+                                    <p:ajax update="panelContribuinte dadosPessoa"  oncomplete="updateFields()" 
+                                            listener="#{contribuinteBean.validaCpfCnpj}"/>
+                                </p:inputMask>    
+                                <h:outputLabel for="cpfJ" value="CPF/CNPJ *" class="active" rendered="#{contribuinteBean.retornaTipoPessoa() eq 1}"/>
+                                <p:inputMask id="cpfJ" mask="99.999.999/9999-99" value="#{contribuinteBean.selectedRegistro.pessoa.cpfCnpj}" 
+                                             rendered="#{contribuinteBean.retornaTipoPessoa() eq 1}" required="true" requiredMessage="Preencher CPF/CNPJ">
+                                    <p:ajax update="panelContribuinte dadosPessoa"  oncomplete="updateFields()" 
+                                            listener="#{contribuinteBean.validaCpfCnpj}" />
+                                </p:inputMask>
+                            </h:panelGroup>
+                        </div>
+                        <div class="input-field col s8">
+                            <h:outputLabel for="contribuinteAlterado" id="lblContribuinteAlterado" value="Contribuinte *" class="active"/>
+                            <h:inputText id="contribuinteAlterado" value="#{contribuinteBean.selectedRegistro.pessoa.nome}" 
+                                         style="text-transform:uppercase" required="true" requiredMessage="Informar Razão Social">
+                                <p:ajax update="@this" process="@this" global="false"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <h:panelGroup id="panelContribuinte">
+                        <div class="row">
+                            <div class="input-field col s2">
+                                <h:outputLabel for="rg" value="RG"/>
+                                <h:inputText id="rg" value="#{contribuinteBean.selectedRegistro.pessoa.rg}" />
+                            </div>
+                            <div class="input-field col s2">
+                                <h:outputLabel for="telRes" value="Telefone 1"/>
+                                <h:inputText id="telRes" value="#{contribuinteBean.selectedRegistro.pessoa.telefone}" />
+                            </div>
+                            <div class="input-field col s2">
+                                <h:outputLabel for="celPes" value="Telefone 2"/>
+                                <h:inputText id="celPes" value="#{contribuinteBean.selectedRegistro.pessoa.celular}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="emailPes" value="Email"/>
+                                <h:inputText id="emailPes" value="#{contribuinteBean.selectedRegistro.pessoa.email}" />
+                            </div>
+                            <div class="input-field col s2">
+                                <h:outputLabel for="senha" value="Senha de Acesso"/>
+                                <h:inputText id="senha"  value="#{contribuinteBean.selectedRegistro.senhaBase}" style="font-weight: bold" />
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:panelGroup> 
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="tipoCategoria" value="#{contribuinteBean.selectedRegistro.categoria}" converter="entityConverter">
+                            <f:selectItem itemLabel="Selecione a Categoria"/>
+                            <f:selectItems value="#{contribuinteBean.listCategorias}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tipoCategoria" value="Categoria"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="rAtuacao" value="#{contribuinteBean.selectedRegistro.ramoAtuacao}" converter="entityConverter">
+                            <f:selectItem itemLabel="Selecione o Ramo de Atuação"/>
+                            <f:selectItems value="#{contribuinteBean.listRamoAtuacao}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="rAtuacao" value="Ramo de Atuação"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="segmento" value="#{contribuinteBean.selectedRegistro.segmento}" converter="entityConverter">
+                            <f:selectItem itemLabel="Selecione o Segmento"/>
+                            <f:selectItems value="#{contribuinteBean.listSegmento}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="segmento" value="Segmento"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="nomeFantasia" value="Nome Fantasia"/>
+                        <h:inputText id="nomeFantasia" style="text-transform: uppercase" value="#{contribuinteBean.selectedRegistro.fantasia}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <br/>
+                        <h:outputLabel style="font-size: 20px" value="Endereço Imóvel"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="estado" value="#{contribuinteBean.selectedRegistro.imovel.bairrologradouro.cidade.estado}" converter="entityConverter"
+                                         required="true" requiredMessage="Informar Estado do Endereço do Imóvel" >
+                            <f:selectItem itemLabel="Selecione o estado" />
+                            <f:selectItems value="#{utilBean.buscarIssqnEstado()}" var="est" itemValue="#{est}" itemLabel="#{est.nome}"/>
+                            <p:ajax listener="#{contribuinteBean.changeEstado()}" global="false"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="estado" value="Estado"/>
+                    </div>
+                    <div class="input-field col s4">
+                        <h:outputLabel for="cidade" value="Cidade" class="active"/>
+                        <p:autoComplete value="#{contribuinteBean.selectedRegistro.imovel.bairrologradouro.cidade}" 
+                                        required="true" requiredMessage="Informar Cidade do Endereço do Imóvel"
+                                        id="cidade"
+                                        style="font-weight: bold;width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        minQueryLength="3" 
+                                        maxResults="10"     
+                                        converter="entityConverter"
+                                        forceSelection="true"
+                                        completeMethod="#{utilBean.buscarIssqnCidade}" 
+                                        var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                            <p:ajax event="itemSelect" listener="#{contribuinteBean.changeCidade()}" global="false"/>
+                        </p:autoComplete>
+                    </div>
+                    <div class="input-field col s5">
+                        <h:outputLabel for="bairro" value="Bairro" class="active"/>
+                        <p:autoComplete value="#{contribuinteBean.selectedRegistro.imovel.bairrologradouro.bairro}" 
+                                        required="true" requiredMessage="Informar Bairro do Endereço do Imóvel"
+                                        id="bairro"
+                                        style="font-weight: bold;width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        minQueryLength="3"
+                                        maxResults="10"    
+                                        converter="entityConverter"
+                                        forceSelection="true"
+                                        completeMethod="#{utilBean.buscarIssqnBairro}" 
+                                        var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                            <p:ajax event="itemSelect" process="@this" global="false"/>
+                        </p:autoComplete>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s5">
+                        <h:outputLabel for="logradouro" value="Logradouro" class="active"/>
+                        <p:autoComplete value="#{contribuinteBean.selectedRegistro.imovel.bairrologradouro.logradouro}" 
+                                        required="true" requiredMessage="Informar Logradouro do Endereço do Imóvel"
+                                        id="logradouro"
+                                        style="font-weight: bold;width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        minQueryLength="3"
+                                        maxResults="10"    
+                                        converter="entityConverter"
+                                        forceSelection="true"
+                                        completeMethod="#{utilBean.buscarIssqnLogradouro}" 
+                                        var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                            <p:ajax event="itemSelect" process="@this" global="false"/>
+                        </p:autoComplete>
+                    </div>
+                    <div class="input-field col s1">
+                        <h:outputLabel for="numero" value="Número" />
+                        <h:inputText id="numero"  value="#{contribuinteBean.selectedRegistro.imovel.nrImovel}" >
+                            <p:ajax event="blur" process="@this" global="false"/>
+                        </h:inputText>
+                    </div>    
+                    <div class="input-field col s4">
+                        <h:outputLabel for="complemento" value="Complemento" />
+                        <h:inputText id="complemento"  value="#{contribuinteBean.selectedRegistro.imovel.complemento}" >
+                            <p:ajax event="blur" process="@this" global="false"/>
+                        </h:inputText>
+                    </div>  
+                    <div class="input-field col s2">
+                        <h:outputLabel for="cep" value="Cep" />
+                        <p:inputMask id="cep"  mask="99999-999" value="#{contribuinteBean.selectedRegistro.imovel.cep}" >
+                            <p:ajax event="blur" process="@this" global="false"/>
+                        </p:inputMask>
+                    </div>   
+                </div>
+                <div class="row">
+                    <div class="col s9">
+                        <br/>
+                        <h:outputLabel style="font-size: 20px" value="Endereço Cobrança"/>
+                    </div>
+                    <div class="col s3">
+                        <br/>
+                        <h:selectManyCheckbox value="#{contribuinteBean.enderecoExistente}" >
+                            <f:selectItem itemLabel="Mesmo Endereço Imóvel" itemValue="1" />
+                            <p:ajax update="@this,cobranca" oncomplete="updateFields()" listener="#{contribuinteBean.copiarEndereco()}"/>
+                        </h:selectManyCheckbox>
+
+                    </div>
+                </div>
+                <h:panelGroup id="cobranca">
+                    <div class="row">
+                        <div class="input-field col s3">
+                            <h:selectOneMenu id="estadoCob" value="#{contribuinteBean.imovelCobranca.bairrologradouro.cidade.estado}" converter="entityConverter">
+                                <f:selectItem itemLabel="Selecione o estado" />
+                                <f:selectItems value="#{utilBean.buscarIssqnEstado()}" var="est" itemValue="#{est}" itemLabel="#{est.nome}"/>
+                                <p:ajax listener="#{contribuinteBean.changeEstado()}" global="false"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel for="estadoCob" value="Estado"/>
+                        </div>
+                        <div class="input-field col s4">
+                            <h:outputLabel for="cidadeCob" value="Cidade" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.imovelCobranca.bairrologradouro.cidade}" 
+                                            id="cidadeCob"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3" 
+                                            maxResults="10"     
+                                            converter="entityConverter"
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarIssqnCidade}" 
+                                            var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                                <p:ajax event="itemSelect" listener="#{contribuinteBean.changeCidade()}" global="false"/>
+                            </p:autoComplete>
+                        </div>
+                        <div class="input-field col s5">
+                            <h:outputLabel for="bairroCob" value="Bairro" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.imovelCobranca.bairrologradouro.bairro}" 
+                                            id="bairroCob"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3"
+                                            maxResults="10"    
+                                            converter="entityConverter"
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarIssqnBairro}" 
+                                            var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                            </p:autoComplete>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s5">
+                            <h:outputLabel for="logradouroCob" value="Logradouro" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.imovelCobranca.bairrologradouro.logradouro}" 
+                                            id="logradouroCob"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3"
+                                            maxResults="10"    
+                                            converter="entityConverter"
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarIssqnLogradouro}" 
+                                            var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}" >
+                            </p:autoComplete>
+                        </div>
+                        <div class="input-field col s1">
+                            <h:outputLabel for="numeroCob" value="Número" />
+                            <h:inputText id="numeroCob"  value="#{contribuinteBean.imovelCobranca.nrImovel}" />
+                        </div>    
+                        <div class="input-field col s4">
+                            <h:outputLabel for="complementoCob" value="Complemento" />
+                            <h:inputText id="complementoCob"  value="#{contribuinteBean.imovelCobranca.complemento}" />
+                        </div>  
+                        <div class="input-field col s2">
+                            <h:outputLabel for="cepCob" value="Cep" />
+                            <p:inputMask id="cepCob"  mask="99999-999" value="#{contribuinteBean.imovelCobranca.cep}" />
+                        </div>   
+                    </div>
+                </h:panelGroup>
+                <div class="row">
+                    <div class="col s12">
+                        <br/>
+                        <h:outputLabel style="font-size: 20px" value="Sócio(s)"/>
+                    </div>
+                </div>
+                <!--<p:separator/>-->
+                <h:panelGroup id="pnlSocio">
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <h:outputLabel for="socioFisica" value="CPF/CNPJ *" class="active" rendered="#{contribuinteBean.tipoSocio eq 0}"/>
+                            <p:inputMask id="socioFisica" mask="999.999.999-99" value="#{contribuinteBean.socio.pessoa.cpfCnpj}" 
+                                         rendered="#{contribuinteBean.tipoSocio eq 0}" >
+                                <p:ajax update="pnlSocio" event="blur" oncomplete="updateFields()"
+                                        listener="#{contribuinteBean.validaCpfCnpjSocio}"/>
+                            </p:inputMask>    
+                            <h:outputLabel for="socioJuridica" value="CPF/CNPJ *" class="active" rendered="#{contribuinteBean.tipoSocio eq 1}"/>
+                            <p:inputMask id="socioJuridica" mask="99.999.999/9999-99" value="#{contribuinteBean.socio.pessoa.cpfCnpj}" 
+                                         rendered="#{contribuinteBean.tipoSocio eq 1}" >
+                                <p:ajax update="pnlSocio" event="blur" oncomplete="updateFields()"
+                                        listener="#{contribuinteBean.validaCpfCnpjSocio}" />
+                            </p:inputMask>
+
+                            <h:outputLabel for="cpfSocio" value="CPF/CNPJ" class="active" rendered="#{contribuinteBean.tipoSocio eq null}"/>
+                            <h:inputText  id="cpfSocio"  value="#{contribuinteBean.socio.pessoa.cpfCnpj}" rendered="#{contribuinteBean.tipoSocio eq null}" >
+                                <p:ajax update="pnlSocio" event="blur" oncomplete="updateFields()"
+                                        listener="#{contribuinteBean.validaCpfCnpjSocio}"/>
+                            </h:inputText> 
+                        </div>
+                        <div class="input-field col s8">
+                            <h:outputLabel for="socioNome" id="socioNomeLabel"  value="Nome" class="active"/>
+                            <h:inputText id="socioNome" value="#{contribuinteBean.socio.pessoa.nome}" 
+                                         style="text-transform:uppercase"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s3">
+                            <div class="switch">
+                                <label>
+                                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.socio.isResponsavel}" />
+                                    <span class="lever"></span>                                                    
+                                    <span style="font-size: 14px; color: #000;"> Responsável</span>
+                                </label>                        
+                            </div>
+                        </div>
+                        <div class="input-field col s3">
+                            <h:outputLabel for="rgSocio" value="RG" class="active"/>
+                            <h:inputText id="rgSocio" value="#{contribuinteBean.socio.pessoa.rg}" >
+                            </h:inputText>
+                        </div>
+                        <div class="input-field col s6">
+                            <h:outputLabel for="emailSocio" value="Email" class="active"/>
+                            <h:inputText   id="emailSocio"  value="#{contribuinteBean.socio.pessoa.email}" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4">
+                            <h:outputLabel for="cidadeSocio" value="Cidade" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.socio.pessoa.cidade}" 
+                                            id="cidadeSocio"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3"
+                                            maxResults="10"    
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarCidadeSocio}" 
+                                            var="obj" itemLabel="#{obj}" itemValue="#{obj}">
+                            </p:autoComplete>
+                        </div>
+                        <div class="input-field col s3">
+                            <h:outputLabel for="bairroSocio" value="Bairro" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.socio.pessoa.bairro}" 
+                                            id="bairroSocio"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3"
+                                            maxResults="10"     
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarBairroSocio}" 
+                                            var="obj" itemLabel="#{obj}" itemValue="#{obj}">
+                            </p:autoComplete>
+                        </div>
+                        <div class="input-field col s5">
+                            <h:outputLabel for="logradouroSocio" value="Logradouro" class="active"/>
+                            <p:autoComplete value="#{contribuinteBean.socio.pessoa.logradouro}" 
+                                            id="logradouroSocio"
+                                            style="font-weight: bold;width: 100%;"
+                                            styleClass="ui-autocomplete-edit"
+                                            minQueryLength="3"
+                                            maxResults="10"    
+                                            forceSelection="true"
+                                            completeMethod="#{utilBean.buscarLogradouroSocio}" 
+                                            var="obj" itemLabel="#{obj}" itemValue="#{obj}">
+                            </p:autoComplete>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <h:outputLabel for="numeroSocio" value="Número" class="active"/>
+                            <h:inputText id="numeroSocio"  value="#{contribuinteBean.socio.pessoa.numero}" />
+                        </div>    
+                        <div class="input-field col s4">
+                            <h:outputLabel for="complementoSocio" value="Complemento" class="active"/>
+                            <h:inputText id="complementoSocio" value="#{contribuinteBean.socio.pessoa.complemento}"  />
+                        </div>
+                        <div class="input-field col s3">
+                            <h:outputLabel for="telefoneSocio" value="Telefone 1" class="active"/>
+                            <h:inputText id="telefoneSocio" value="#{contribuinteBean.socio.pessoa.telefone}"  />
+                        </div>
+                        <div class="input-field col s3">
+                            <h:outputLabel for="celularSocio" value="Telefone 2" class="active"/>
+                            <h:inputText id="celularSocio" value="#{contribuinteBean.socio.pessoa.celular}"  />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-floating light-blue white-text left" title="Salvar Sócio" 
+                                       actionListener="#{contribuinteBean.adicionarSocio()}">
+                            <i class="mdi-content-save"></i>
+                            <p:ajax process="pnlSocio" update="tableSocios pnlSocio" />
+                        </h:commandLink>
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-floating light-green white-text left" title="Limpar Campos Sócio" actionListener="#{contribuinteBean.limparSocio()}">
+                            <i class="mdi-navigation-close"></i>
+                            <p:ajax process="pnlSocio" update="pnlSocio tableSocios" />
+                        </h:commandLink>
+                    </div>
+                </h:panelGroup>
+                <div class="row">
+                    <div class="col s12">
+                        <p:dataTable id="tableSocios" var="soc" value="#{contribuinteBean.listSocios}" styleClass="bordered"
+                                     style="overflow: hidden !important; cursor: pointer;"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.listSocios.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!"  rowIndexVar="indexSocio">
+
+
+                            <p:column sortBy="#{soc.id}" headerText="Nº" width="5%">
+                                <h:outputText value="#{soc.id}" />
+                            </p:column>
+                            <p:column headerText="Responsável" width="8%">
+                                <div class="switch">
+                                    <label>
+                                        <h:selectBooleanCheckbox value="#{soc.isResponsavel}" disabled="true"/>
+                                        <span class="lever"></span>                                                    
+                                    </label>                        
+                                </div>
+                            </p:column>
+                            <p:column sortBy="#{soc.pessoa.nome}" headerText="Nome" width="15%">
+                                <h:outputText value="#{soc.pessoa.nome}" />
+                            </p:column>
+                            <p:column sortBy="#{soc.pessoa.cpfCnpj}" headerText="CPF/CNPJ" width="10%">
+                                <h:outputText value="#{soc.pessoa.cpfCnpj}" />
+                            </p:column>
+                            <p:column sortBy="#{soc.pessoa.rg}" headerText="Celular" width="10%">
+                                <h:outputText value="#{soc.pessoa.celular}" />
+                            </p:column>
+                            <p:column sortBy="#{soc.pessoa.email}" headerText="Email" width="15%">
+                                <h:outputText value="#{soc.pessoa.email}" />
+                            </p:column>
+                            <p:column width="6%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnVisualizarDados" class="btn-flat blue darken-1 mdi-action-search white-text" 
+                                               actionListener="#{contribuinteBean.setSocio(soc)}" title="Visualizar Dados">
+                                    <p:ajax update="pnlSocio" />
+                                </h:commandLink>
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-flat red darken-1 white-text" 
+                                               onclick="confirmaExclusaoSocio(#{indexSocio});
+                                                       return false" title="Remover Sócio">
+                                    <i class="mdi-action-delete"></i>
+                                </h:commandLink>
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluirSocio" actionListener="#{contribuinteBean.removerSocio(soc)}" style="display: none;">
+                                    <p:ajax update="tableSocios " />
+                                </h:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+            <div id="dadosCNAE" class="col s12">
+
+                <div class="controls">
+                    <h4>Atividade</h4>
+                    <div class="controls">
+                        <p:autoComplete placeholder="Digite o nome ou código da atividade e tecle enter para adicionar" id="listaAtividade" value="#{contribuinteBean.selectedAtividade}"
+                                        maxlength="50" minQueryLength="3" maxResults="15"
+                                        var="b" forceSelection="true"
+                                        style="width: 100% !important"
+                                        styleClass="ui-autocomplete"
+                                        itemValue="#{b}" itemLabel="#{b.nome}"
+                                        completeMethod="#{contribuinteBean.doFiltroAtividade}" converter="entityConverter">
+                            <p:ajax event="itemSelect" listener="#{contribuinteBean.doAdicionaAtividade}" update="tableCnae, @this" global="false"/>
+                        </p:autoComplete>
+                    </div>
+                </div>
+                <p:dataTable id="tableCnae" var="cnae" value="#{contribuinteBean.cnaes}" styleClass="bordered"
+                             style="overflow: hidden !important; cursor: pointer;"
+                             rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.cnaes.size()}"
+                             paginator="true" paginatorPosition="bottom" 
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!" rowIndexVar="indexAtividade">
+                    <p:column sortBy="#{cnae.cnae.codigoCnae}" headerText="Código" width="15%">
+                        <h:outputText value="#{cnae.cnae.codigoCnae}" />
+                    </p:column>
+                    <p:column sortBy="#{cnae.cnae.nome}" headerText="Atividade" width="55%">
+                        <h:outputText value="#{cnae.cnae.nome}" />
+                    </p:column>
+                    <p:column headerText="Atv. Primária" sortBy="#{cnae.atividadePrimaria}" width="10%">
+                        <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{cnae.atividadePrimaria}" id="atividadePrimaria" >
+                            <p:ajax event="change" update="tableCnae" listener="#{contribuinteBean.cnaePrimaria(cnae)}" process="@this" />
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel for="atividadePrimaria" value="" />
+                    </p:column>
+                    <p:column headerText="Atv. Secundária" sortBy="#{cnae.atividadeSecundaria}" width="12%">
+                        <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{cnae.atividadeSecundaria}" id="atividadeSecundaria">
+                            <p:ajax event="change" update="tableCnae" listener="#{contribuinteBean.cnaeSecundaria(cnae)}" process="@this" />
+                        </h:selectBooleanCheckbox> 
+                        <h:outputLabel for="atividadeSecundaria" value="" />
+                    </p:column>
+                    <p:column width="10%">
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-flat red darken-1 white-text right" 
+                                       onclick="confirmaExclusaoAtividade(#{indexAtividade});
+                                               return false">
+                            <i class="mdi-action-delete"></i>
+                        </h:commandLink>
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluirAtividade" style="display: none;">
+                            <p:ajax update="tableCnae" listener="#{contribuinteBean.removerAtividade(cnae)}" global="false"/>
+                        </h:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </div>
+            <div id="dadosTaxas" class="col s12">
+                <div class="row">
+                    <div class="col s12">
+                        <p:dataTable id="tableTaxas" var="tax" value="#{contribuinteBean.taxas}" styleClass="bordered" 
+                                     style="overflow: hidden !important; cursor: pointer;" sortBy="#{tax.id}"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.taxas.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                            <p:column sortBy="#{tax.nome}" headerText="Taxa" width="45%">
+                                <h:outputText value="#{tax.nome}" />
+                            </p:column>
+                            <p:column sortBy="#{tax.contribuinteTaxa.vlTaxa}" headerText="Valor" width="10%" >
+                                <h:inputText id="valorTaxa" value="#{tax.contribuinteTaxa.vlTaxa}" rendered="#{tax.taxaFixa eq false}">
+                                    <f:convertNumber minIntegerDigits="0"  />
+                                </h:inputText>
+                                <h:outputText value="#{configuracaoBean.selectedRegistro.expediente}" rendered="#{tax.taxaFixa eq true and tax.nome.contains('EXPEDIENTE') eq true}"/>
+                            </p:column>
+                            <p:column sortBy="#{tax.tpValor}" headerText="Tipo" width="15%">
+                                <h:outputText id="tpTaxa" value="#{tax.tpValor}" />
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+            <div id="dadosComplementares" class="col s12">
+                <div class="row">
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.simplesNacional}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Simples Nacional</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtSimples" value="Data Simples Nacional"/>
+                        <h:inputText id="dtSimples" value="#{contribuinteBean.selectedRegistro.dtSimples}">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="obsSimples" value="Observação Simples Nacional"/>
+                        <h:inputText id="obsSimples" value="#{contribuinteBean.selectedRegistro.obsSimples}"  />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="inscEst" value="Inscrição Estadual / Regional"/>
+                        <h:inputText id="inscEst" value="#{contribuinteBean.selectedRegistro.pessoa.inscEstadual}" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="inscMunicipal" value="Inscrição Municipal"/>
+                        <h:inputText id="inscMunicipal" value="#{contribuinteBean.selectedRegistro.pessoa.inscMunicipal}" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtAbertura" value="Data Abertura *"/>
+                        <h:inputText id="dtAbertura" value="#{contribuinteBean.selectedRegistro.dtAbertura}" required="true" requiredMessage="Informar Data Abertura" >
+                            <p:ajax process="@this" global="false"/>
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtInicio" value="Data Inscrição"/>
+                        <h:inputText id="dtInicio" value="#{contribuinteBean.selectedRegistro.dtInicio}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtReabertura" value="Data Reabertura"/>
+                        <h:inputText id="dtReabertura" value="#{contribuinteBean.selectedRegistro.dtReabertura}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s9">
+                        <h:outputLabel for="observacao" value="Observação"/>
+                        <h:inputText id="observacao" value="#{contribuinteBean.selectedRegistro.observacao}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">                        
+                        <h:outputLabel value="Escritório" class="active"/>
+                        <p:autoComplete value="#{contribuinteBean.selectedRegistro.escritorio}" 
+                                        id="escritorio"
+                                        style="width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        converter="entityConverter"
+                                        minQueryLength="3"
+                                        maxResults="10"     
+                                        completeMethod="#{utilBean.buscarEscritorio}" 
+                                        var="obj" itemLabel="#{obj.nomeFantasia}" itemValue="#{obj}">
+                        </p:autoComplete>
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="processo" value="Nº Processo"/>
+                        <h:inputText id="processo" value="#{contribuinteBean.selectedRegistro.processoN}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <h:outputLabel for="nConselho" value="Nº Conselho"/>
+                        <h:inputText id="nConselho" value="#{contribuinteBean.selectedRegistro.numeroRegistroConselho}" />
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="cadastro" value="Cadastro"/>
+                        <h:inputText id="cadastro" value="#{contribuinteBean.selectedRegistro.cadastro}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <h:outputLabel value="Conselho" class="active"/>
+                        <p:autoComplete value="#{contribuinteBean.selectedRegistro.conselho}" 
+                                        id="conselho"
+                                        style="width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        converter="entityConverter"
+                                        minQueryLength="3"
+                                        maxResults="10"     
+                                        completeMethod="#{utilBean.buscarConselho}" 
+                                        var="obj" itemLabel="#{obj.descricao}" itemValue="#{obj}">
+                        </p:autoComplete>  
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="nFuncionarios" value="Nº Funcionários"/>
+                        <h:inputText id="nFuncionarios" value="#{contribuinteBean.selectedRegistro.numeroFuncionarios}" />
+                    </div>
+                </div> 
+                <div class="row">
+                    <h:panelGroup id="panelLicenca">
+                        <div class="input-field col s3">
+                            <h:outputLabel for="alvara1" value="Licença Nº" rendered="#{contribuinteBean.retornaTipoPessoa() eq 0}"/>
+                            <h:inputText id="alvara1" readonly="true" value="#{contribuinteBean.selectedRegistro.numAlvara}"  rendered="#{contribuinteBean.retornaTipoPessoa() eq 0}"/>
+                            <h:outputLabel for="alvara2" value="Licença Nº" rendered="#{contribuinteBean.retornaTipoPessoa() eq 1}"/>
+                            <h:inputText id="alvara2" value="#{contribuinteBean.selectedRegistro.numAlvara}"   rendered="#{contribuinteBean.retornaTipoPessoa() eq 1}"/>
+                        </div>
+                    </h:panelGroup>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtAlvara" value="Data Emissão Licença"/>
+                        <h:inputText id="dtAlvara" value="#{contribuinteBean.selectedRegistro.dtAlvara}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.alvaraProvisorio}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Provisório(60 dias)</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtValidadeAlvara" value="Data Validade Licença"/>
+                        <h:inputText id="dtValidadeAlvara" value="#{contribuinteBean.selectedRegistro.dtValidadeAlvara}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="capSocial" value="Capital Social"/>
+                        <h:inputText id="capSocial" value="#{contribuinteBean.selectedRegistro.capitalSocial}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtTransferencia" value="Data Transferência"/>
+                        <h:inputText id="dtTransferencia" value="#{contribuinteBean.selectedRegistro.dtTransferencia}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="inscAnterior" value="Inscrição Anterior"/>
+                        <h:inputText id="inscAnterior" value="#{contribuinteBean.selectedRegistro.inscricaoAnterior}"  />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="numeroJunta" value="NIRE"/>
+                        <h:inputText id="numeroJunta" value="#{contribuinteBean.selectedRegistro.nrJuntaComercial}"  />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="fatEstimado" value="Faturamento Estimado"/>
+                        <h:inputText id="fatEstimado" value="#{contribuinteBean.selectedRegistro.faturamentoEstimado}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s4">
+                        <h:outputLabel for="tipoPredio" value="Tipo de Estabelecimento"/>
+                        <h:inputText id="tipoPredio" value="#{contribuinteBean.selectedRegistro.tipoPredio}"  />
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="nVeiculos" value="Nº de Veículos"/>
+                        <h:inputText id="nVeiculos" value="#{contribuinteBean.selectedRegistro.nrVeiculos}"  />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="ctrAnterior" value="Ctr Anterior"/>
+                        <h:inputText id="ctrAnterior" value="#{contribuinteBean.selectedRegistro.contrAnterior}"  />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtJunta" value="Dt Junta Comercial"/>
+                        <h:inputText id="dtJunta" value="#{contribuinteBean.selectedRegistro.dtJuntaComercial}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">                    
+                    <div class="input-field col s3">
+                        <h:outputLabel for="areaTerreno" value="Área Terreno"/>
+                        <h:inputText id="areaTerreno" value="#{contribuinteBean.selectedRegistro.areaTerreno}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="areaConstruida" value="Área Construída"/>
+                        <h:inputText id="areaConstruida" value="#{contribuinteBean.selectedRegistro.areaConstruida}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="areaImovel" value="Área Imóvel"/>
+                        <h:inputText id="areaImovel" value="#{contribuinteBean.selectedRegistro.areaImovel}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="areaEstabelecimento" value="Área Estabelecimento"/>
+                        <h:inputText id="areaEstabelecimento" value="#{contribuinteBean.selectedRegistro.areaEstabelecimento}" >
+                            <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                </div>
+            </div>
+            <div id="dadosAdicionais" class="col s12">
+                <div class="row" style="margin-bottom: 35px;">
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.inativo}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Inativo</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.encerrado}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Encerrado</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.bloqueado}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Bloqueado</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.isento}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Isento</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.mei}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">MEI</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s2">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.eventualidade}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Eventual</span>
+                            </label>                        
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtInativo" value="Data Inativo"/>
+                        <h:inputText id="dtInativo" value="#{contribuinteBean.selectedRegistro.dtInatividade}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtEncerrado" value="Data Encerrado"/>
+                        <h:inputText id="dtEncerrado" value="#{contribuinteBean.selectedRegistro.dtEncerramento}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtBloqueado" value="Data Bloqueio"/>
+                        <h:inputText id="dtBloqueado" value="#{contribuinteBean.selectedRegistro.dtBloqueado}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtIsento" value="Data Isento"/>
+                        <h:inputText id="dtIsento" value="#{contribuinteBean.selectedRegistro.dtIsento}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtMei" value="Data MEI"/>
+                        <h:inputText id="dtMei" value="#{contribuinteBean.selectedRegistro.dtMei}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <p:separator/>
+                <div class="row">
+                    <div class="input-field col s2">
+                        <h:outputLabel for="suspensaoDe" value="Suspensão de "/>
+                        <h:inputText id="suspensaoDe" value="#{contribuinteBean.selectedRegistro.dtSuspensaoInicio}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="suspensaoAte" value="Até"/>
+                        <h:inputText id="suspensaoAte" value="#{contribuinteBean.selectedRegistro.dtSuspensaoFim}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.passivelVigilancia}"/>
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Passível de Vigilância</span>
+                            </label>                        
+                        </div>
+                    </div>
+                </div>
+                <p:separator/>
+                <div class="row" style="margin-bottom: 35px;">
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.horarioEspecial}"/>
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Horário Especial</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.autoLancado}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Auto Lançado</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.pendenteFiscalizacao}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Pendente Fiscalização</span>
+                            </label>                        
+                        </div>
+                    </div>
+                    <div class="input-field col s3">
+                        <div class="switch">
+                            <label>
+                                <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.pendenteDocumentacao}" />
+                                <span class="lever"></span>                                                    
+                                <span style="font-size: 14px; color: #000;">Pendente Documentação</span>
+                            </label>                        
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="horaEspecial" value="Horário"/>
+                        <p:inputMask id="horaEspecial" mask="99:99" value="#{contribuinteBean.selectedRegistro.horaEspecial}" style="text-align: center;">
+                        </p:inputMask>
+                    </div>
+                </div>
+            </div>
+            <div id="tabnotificacao" class="col s12">
+                <div class="row">
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtNotificacao" value="Data Notificação"/>
+                        <h:inputText id="dtNotificacao" value="#{contribuinteBean.notificacaoInEdit.dtPrazo}" >
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s10">
+                        <h:outputLabel for="notificacao" value="Notificação"/>
+                        <h:inputText id="notificacao" value="#{contribuinteBean.notificacaoInEdit.notificacao}"  >
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel for="obsNotficacao" value="Observação"/>
+                        <h:inputTextarea id="obsNotficacao" class="materialize-textarea" value="#{contribuinteBean.notificacaoInEdit.observacao}" >
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputTextarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-floating light-blue white-text left" title="Adicionar Notificação" actionListener="#{contribuinteBean.adicionarNotificacao()}">
+                        <i class="mdi-content-save"></i>
+                        <p:ajax update="notificacao dtNotificacao notificacao obsNotficacao tableNotificacao" />
+                    </h:commandLink>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <p:dataTable id="tableNotificacao" var="n" value="#{contribuinteBean.listNotificacao}" styleClass="bordered"
+                                     style="overflow: hidden !important; cursor: pointer;"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.listNotificacao.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!"  rowIndexVar="indexNotificacao">
+                            <p:column sortBy="#{n.id}" headerText="Nº" width="70">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.editarNotificacao(n)}">
+                                    <h:outputText value="#{n.id}" />
+                                    <p:ajax update="notificacao dtNotificacao notificacao obsNotficacao" />
+                                </h:commandLink>
+                            </p:column>
+                            <p:column sortBy="#{n.notificacao}" headerText="Notificação" width="10%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.editarNotificacao(n)}">
+                                    <h:outputText value="#{n.notificacao}" />
+                                    <p:ajax update="notificacao dtNotificacao notificacao obsNotficacao" />
+                                </h:commandLink>
+                            </p:column>
+                            <p:column sortBy="#{n.dtPrazo}" headerText="Data Notificação" width="10%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.editarNotificacao(n)}">
+                                    <h:outputText value="#{n.dtPrazo}" >
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                    </h:outputText>
+                                    <p:ajax update="notificacao dtNotificacao notificacao obsNotficacao" />
+                                </h:commandLink>
+                            </p:column>
+                            <p:column sortBy="#{n.observacao}" headerText="Observação" width="40%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.editarNotificacao(n)}">
+                                    <h:outputText value="#{n.observacao}" />
+                                    <p:ajax update="notificacao dtNotificacao notificacao obsNotficacao" />
+                                </h:commandLink>
+                            </p:column>
+                            <p:column width="5%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-flat red darken-1 white-text right" 
+                                               onclick="confirmaExclusaoItem2(#{indexNotificacao});
+                                                       return false">
+                                    <i class="mdi-action-delete"></i>
+                                </h:commandLink>
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluirItemNot" actionListener="#{contribuinteBean.removerNotificacao(n)}" style="display: none;">
+                                    <p:ajax update="tableNotificacao" />
+                                </h:commandLink>
+                                <h:outputLabel value="Imprimir Histórico" />
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+            <div id="historico" class="col s12">
+                <div class="row">
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dataHistorico" value="Data Histórico"/>
+                        <h:inputText id="dataHistorico" value="#{contribuinteBean.dataHistorico}" >
+                            <!--<f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />-->
+                            <p:ajax process="@this" global="false" event="blur"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="assunto" value="Assunto"/>
+                        <h:inputText id="assunto" value="#{contribuinteBean.assuntoHistorico}"  >
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dataProcesso" value="Data Processo"/>
+                        <h:inputText id="dataProcesso" value="#{contribuinteBean.dataProcesso}" >
+                            <!--<f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />-->
+                            <p:ajax process="@this" global="false" event="blur"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="processoHist" value="Processo"/>
+                        <h:inputText id="processoHist" value="#{contribuinteBean.processo}"  >
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel for="obs" value="Observação"/>
+                        <h:inputTextarea id="obs" class="materialize-textarea" value="#{contribuinteBean.observacaoHistorico}" >
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputTextarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-floating light-blue white-text left" title="Adicionar Histórico" actionListener="#{contribuinteBean.adicionarHistorico()}">
+                        <i class="mdi-content-save"></i>
+                        <p:ajax update="assunto dataHistorico obs tableItens processoHist dataProcesso" oncomplete="updateFields()"/>
+                    </h:commandLink>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <p:dataTable id="tableItens" var="item" value="#{contribuinteBean.listHistoricos}" styleClass="bordered"
+                                     style="overflow: hidden !important; cursor: pointer;" rowKey="#{item.id}"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.listHistoricos.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!" rowIndexVar="indexHistorico">
+                            <p:column sortBy="#{item.id}" headerText="Nº" width="5%">
+                                <h:outputText value="#{item.id}" />
+                            </p:column>
+                            <p:column sortBy="#{item.processo}" headerText="Processo" width="15%">
+                                <h:outputText value="#{item.processo}" />
+                            </p:column>
+                            <p:column sortBy="#{item.historicoAssunto}" headerText="Assunto" width="20%">
+                                <h:outputText value="#{item.historicoAssunto}" />
+                            </p:column>
+                            <p:column sortBy="#{item.historicoData}" headerText="Data Histórico" width="10%">
+                                <h:outputText value="#{item.historicoData}" >
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column sortBy="#{item.historicoObs}" headerText="Observação" width="40%">
+                                <h:outputText value="#{item.historicoObs}" />
+                            </p:column>
+                            <p:column width="10%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-flat grey darken-1 white-text right" id="btnAlterarHistorico">
+                                    <i class="mdi-editor-border-color"></i>
+                                    <p:ajax update="dataHistorico dataProcesso processoHist assunto obs tableItens" listener="#{contribuinteBean.selecionarHistorico(item)}" global="false" oncomplete="updateFields()"/>
+                                </h:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div id="imprimeHistorico" class="col s12">
+                        <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.imprimirHistorico()}" title="Imprimir" target="_blank"
+                                       class="btn-floating btn-flat waves-effect waves-light blue">
+                            <i class="mdi mdi-action-print"></i>
+                        </h:commandLink>
+                        &nbsp;
+                        <h:outputLabel value="Imprimir Processos" />
+                    </div>
+                </div>
+            </div>
+            <div id="tabanexo" >
+                <div class="row">
+                    <div class="row">
+                        <div class="col s12">
+                            <p:dataTable id="table9" value="#{contribuinteBean.listAnexos}" var="rowA" 
+                                         emptyMessage="Nenhum arquivo anexado para este contribuinte!" rowIndexVar="index">
+                                <p:column width="50%" headerText="Arquivo" sortBy="#{rowA.nome}">
+                                    <h:outputText value="#{rowA.nomeRealArquivo}" />
+                                </p:column>
+                                <p:column width="50%" headerText="Data" sortBy="#{rowA.dataCadastro}">
+                                    <h:outputText value="#{rowA.dataCadastro}">
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column width="50%" headerText="" >  
+                                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btn-download" class="btn blue btn-primary btn-sm" actionListener="#{contribuinteBean.downloadAnexo(rowA)}" 
+                                                   style="margin-left: 10px; color: #fff;">
+                                        <i class="mdi-content-save"></i> 
+                                    </h:commandLink>
+                                    <h:commandLink disabled="#{globalBean.somenteConsulta}" class="btn-flat red darken-1 white-text" 
+                                                   onclick="confirmaExclusaoAnexo(#{index});
+                                                           return false" title="Remover Anexo">
+                                        <i class="mdi-action-delete"></i>
+                                        <p:ajax update="@this"></p:ajax>
+                                    </h:commandLink>
+                                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluirAnexo" actionListener="#{contribuinteBean.removerAnexo(rowA)}" style="display: none;">
+                                        <p:ajax update="table9 " />
+                                    </h:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <p:fileUpload fileUploadListener="#{contribuinteBean.handleFileUpload}" mode="advanced" 
+                                  label="Incluir Arquivo" invalidSizeMessage="Arquivo maior que 5mb não é permitido!"
+                                  auto="true" sizeLimit="5000000" update="table9"/>
+                </div>    
+            </div>
+            <div id="tabextras" >
+                <h:panelGroup id="tbextra" >
+                    <br/>
+                    <div class="row">
+                        <div class="input-field col s3">
+                            <div class="switch">
+                                <label>
+                                    <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{contribuinteBean.selectedRegistro.eventual}" id="chkEventual">
+                                        <p:ajax event="change" update="tbeventual" listener="#{contribuinteBean.changeEventual()}" global="false" oncomplete="updateFields()"/>
+                                    </h:selectBooleanCheckbox>
+                                    <span class="lever"></span>                                                    
+                                    <span style="font-size: 14px; color: #000;">Cálculo Eventual</span>
+                                </label>                        
+                            </div>
+                        </div>
+                        <div class="input-field col s2">
+                            <h:outputLabel for="dtEventual" value="Data Eventual"/>
+                            <h:inputText id="dtEventual" value="#{contribuinteBean.selectedRegistro.dtEventual}" >
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </div>
+                        <div class="input-field col s2">
+                            <h:outputLabel for="vlBilheteria" value="Vl. Bilheteria (3% UFM)"/>
+                            <h:inputText id="vlBilheteria" value="#{contribuinteBean.selectedRegistro.vlBilheteria}" >
+                                <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                            </h:inputText>
+                        </div>
+                    </div>
+                    <br/>
+                    <h:panelGroup id="tbeventual" >
+                        <div class="row">
+                            <div class="input-field col s2">
+                                <h:selectOneMenu id="tpCobranca" value="#{contribuinteBean.tipoCobranca}" disabled="true">
+                                    <f:selectItem itemValue="#{1}" itemLabel="TCF" />
+                                    <f:selectItem itemValue="#{3}" itemLabel="EVENTUAL" />
+                                    <p:ajax update="tbeventual" global="false" oncomplete="updateFields()"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel for="tpCobranca" value="Tipo Cobrança"/>
+                            </div>
+                            <h:panelGroup id="motivoCancelamento" rendered="#{contribuinteBean.existeCalculo() eq true and contribuinteBean.selectedRegistro.eventual == false}">
+                                <div class="input-field col s4">
+                                    <h:selectOneMenu id="motivo" value="#{contribuinteBean.motivo}" converter="entityConverter" >
+                                        <f:selectItem itemLabel="Selecione o motivo" noSelectionOption="true"/>
+                                        <f:selectItems value="#{cancelamentoBean.buscaMotivoCancelamento()}" var="mot" itemValue="#{mot}" itemLabel="#{mot.descricao}"/>
+                                        <p:ajax update="@this" event="change" process="@this" global="false"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel for="motivo" value="Motivo do cancelamento"/>
+                                </div>
+                            </h:panelGroup>
+                            <div class="col s3" style="margin-top: 1rem">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" title="Calcular" 
+                                               actionListener="#{contribuinteBean.validaNovoCalculo()}"
+                                               class="btn-floating btn-flat waves-effect waves-light blue">
+                                    <p:ajax process="@form" global="true" update="tbeventual tableParcelas tableTaxasItem tableCancelamento" oncomplete="updateFields()"/>
+                                    <i class="mdi-content-send"></i>
+                                </h:commandLink>
+                                &nbsp;
+                                <h:outputLabel value="Efetuar Cálculo"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <br/>
+                    <div class="row">
+                        <div class="col s12">
+                            <ul class="tabs z-depth-0" style="width: 100%;">
+                                <li class="tab col s12 m4"><a class="active" href="#abaParcelas">Parcelas</a></li>
+                                <li class="tab col s12 m4"><a id="abaTaxasTab" href="#abaTaxas">Taxas</a></li>
+                                <li class="tab col s12 m4"><a href="#abaCancelamentos">Parcelas Canceladas</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="abaParcelas">
+                            <p:dataTable id="tableParcelas" var="itemP" value="#{contribuinteBean.lstParcela}" styleClass="bordered"
+                                         rows="30" rowsPerPageTemplate="20,50,100,#{contribuinteBean.lstParcela.size()}"
+                                         paginator="true" paginatorPosition="bottom" selectionMode="single" selection="#{contribuinteBean.selectedParcelaDTO}"
+                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!" rowIndexVar="indexEventual" rowKey="#{itemP.nossoNumero}">
+                                <p:ajax event="rowSelect" listener="#{contribuinteBean.onParcelaSelected}" oncomplete="$('#abaTaxasTab').click()" update="tableTaxasItem"/>
+                                <!--<p:ajax event="rowSelect" listener="# {contribuinteBean.onParcelaSelected}" oncomplete="$('#abaTaxasTab').click()" update="tableTaxasItem"/>-->
+                                <p:column sortBy="#{itemP.formaPagto}" headerText="Forma Pagto" width="30%">
+                                    <h:outputText value="#{itemP.formaPagto}" />
+                                </p:column>
+                                <p:column sortBy="#{itemP.parc}" headerText="Parc" width="5%">
+                                    <h:outputText value="#{itemP.parc}" />
+                                </p:column>
+                                <p:column sortBy="#{itemP.valor}" headerText="Valor" width="10%">
+                                    <h:outputText value="#{itemP.valor}" >
+                                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{itemP.dtVenc}" headerText="Dt. Venc" width="15%">
+                                    <h:outputText value="#{itemP.dtVenc}" >
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{itemP.dtPagto}" headerText="Dt. Pagto" width="15%">
+                                    <h:outputText value="#{itemP.dtPagto}" >
+                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{itemP.vlPago}" headerText="Vl. Pago" width="15%">
+                                    <h:outputText value="#{itemP.vlPago}" >
+                                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{itemP.banco}" headerText="Banco" width="20%">
+                                    <h:outputText value="#{itemP.banco}" />
+                                </p:column>
+                                <p:column sortBy="#{itemP.nossoNumero}" headerText="Nosso Número" width="20%">
+                                    <h:outputText value="#{itemP.nossoNumero}" />
+                                </p:column>
+                                <p:column sortBy="#{itemP.vlTotal}" headerText="Vl. Total" width="15%">
+                                    <h:outputText value="#{itemP.vlTotal}" >
+                                        <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column width="7%">
+                                    <h:commandLink disabled="#{globalBean.somenteConsulta}" title="Cancelar Parcela" 
+                                                   actionListener="#{contribuinteBean.cancelaParcelaSelecionada(itemP)}"
+                                                   class="btn-floating btn-flat waves-effect waves-light red">
+                                        <p:ajax global="true" update="tbeventual tableParcelas tableTaxasItem tableCancelamento" oncomplete="updateFields()"/>
+                                        <i class="mdi-content-block"></i>
+                                    </h:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                    <div id="abaTaxas">
+                        <p:dataTable id="tableTaxasItem" var="itemT" value="#{contribuinteBean.listTaxa}" styleClass="bordered"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.listTaxa.size()}"
+                                     paginator="true" paginatorPosition="bottom" 
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                            <p:column sortBy="#{itemT[0]}" headerText="Taxas" width="400">
+                                <h:outputText value="#{itemT[0]}" />
+                            </p:column>
+                            <p:column sortBy="#{itemT[1]}" headerText="Valor" width="100">
+                                <h:outputText value="#{itemT[1]}" >
+                                    <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <div id="abaCancelamentos">
+                        <p:dataTable id="tableCancelamento" var="itemC" value="#{contribuinteBean.lstCancelamento}" styleClass="bordered"
+                                     rows="20" rowsPerPageTemplate="20,50,100,#{contribuinteBean.lstCancelamento.size()}"
+                                     paginator="true" paginatorPosition="bottom" rowIndexVar="indexCanc" rowKey="#{itemC.nossoNumero}"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                            <!--<p:ajax event="rowSelect" listener="#{contribuinteBean.onParcelaSelected}" oncomplete="$('#abaTaxasTab').click()" update="tableTaxasItem"/>-->
+                            <p:column sortBy="#{itemC.formaPagto}" headerText="Forma Pagto" width="30%">
+                                <h:outputText value="#{itemC.formaPagto}" />
+                            </p:column>
+                            <p:column sortBy="#{itemC.parc}" headerText="Parc" width="5%">
+                                <h:outputText value="#{itemC.parc}" />
+                            </p:column>
+                            <p:column sortBy="#{itemC.nossoNumero}" headerText="Nosso Número" width="20%">
+                                <h:outputText value="#{itemC.nossoNumero}" />
+                            </p:column>
+                            <p:column sortBy="#{itemC.valor}" headerText="Valor" width="10%">
+                                <h:outputText value="#{itemC.valor}" >
+                                    <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column sortBy="#{itemC.dtCancelamento}" headerText="Dt. Cancelamento" width="15%">
+                                <h:outputText value="#{itemC.dtCancelamento}" >
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column sortBy="#{itemC.descricaoParc}" headerText="Descrição Parc" width="15%">
+                                <h:outputText value="#{itemC.descricaoParc}" />
+                            </p:column>
+                            <p:column sortBy="#{itemC.detalheCancelamento}" headerText="Detalhe Cancelamento" width="20%">
+                                <h:outputText value="#{itemC.detalheCancelamento}" />
+                            </p:column>
+                            <p:column width="7%">
+                                <h:commandLink disabled="#{globalBean.somenteConsulta}" title="Estornar Parcela" 
+                                               actionListener="#{contribuinteBean.estornaParcelaSelecionada(itemC)}"
+                                               class="btn-floating btn-flat waves-effect waves-light blue">
+                                    <p:ajax global="true" update="tbeventual tableParcelas tableTaxasItem tableCancelamento" oncomplete="updateFields()"/>
+                                    <i class="mdi-content-content-copy"></i>
+                                </h:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="input-field col s2">
+                            <h:outputLabel for="parcela_incial" value="Parcela Inicial" class="active"/>
+                            <h:inputText id="parcela_incial" value="#{contribuinteBean.parcelaInicial}">
+                            </h:inputText>
+                        </div>
+                        <div class="input-field col s2">
+                            <h:outputLabel for="parcela_final" value="Parcela Final" class="active"/>
+                            <h:inputText id="parcela_final" value="#{contribuinteBean.parcelaFinal}">
+                            </h:inputText>
+                        </div>
+                        <div class="input-field col s2">
+                            <h:selectOneMenu id="tipoCobrancaBoleto" value="#{contribuinteBean.tipoCobrancaBoleto}" >
+                                <f:selectItem itemValue="#{1}" itemLabel="TCF" />
+                                <f:selectItem itemValue="#{3}" itemLabel="EVENTUAL" />
+                            </h:selectOneMenu>
+                            <h:outputLabel for="tipoCobrancaBoleto" value="Tipo Vencimento"/>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s2">
+                                <h:outputLabel for="dtVencimento" value="Vencimento"/>
+                                <h:inputText id="dtVencimento" value="#{contribuinteBean.dtVencimento}">
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:inputText>
+                            </div>
+                        </div>
+                        <div class="col s2" style="margin-top: 1rem">
+                            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.imprimirBoleto()}" title="Imprimir Boleto" target="_blank" 
+                                           class="btn-floating btn-flat waves-effect waves-light blue ">
+                                <i class="mdi mdi-action-print"></i>
+                            </h:commandLink>
+                            &nbsp;
+                            <h:outputLabel value="Imprimir Boleto" />
+                        </div>
+                        <div class="col s2" style="margin-top: 1rem">
+                            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.imprimirFebraban()}" title="Imprimir Febraban" target="_blank" 
+                                           class="btn-floating btn-flat waves-effect waves-light blue ">
+                                <i class="mdi mdi-action-print"></i>
+                            </h:commandLink>
+                            &nbsp;
+                            <h:outputLabel value="Imprimir Febraban"/>
+                        </div>
+                        <div class="col s2" style="margin-top: 1rem">
+                            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{contribuinteBean.imprimirFichaCadastral()}" title="Imprimir Ficha Cadastral" target="_blank"
+                                           class="btn-floating btn-flat waves-effect waves-light blue" >
+                                <i class="mdi mdi-action-print"></i>
+                            </h:commandLink>
+                            &nbsp;
+                            <h:outputLabel value="Ficha Cadastral"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
+            <div id="tabAlvaras">
+                <br/>
+                <div class="row">
+
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Alvará e Lic. de Func.</legend>  
+                            <h:outputLabel for="numAlvaraFunc" value="Nº Licença:" />
+                            <h:inputText id="numAlvaraFunc" value="#{contribuinteBean.selectedRegistro.numAlvaraFunc}" />
+
+                            <h:outputLabel value="Data:" for="numAlvaraFunc"/>
+                            <h:inputText id="dtAlvaraFunc" value="#{contribuinteBean.selectedRegistro.dtAlvaraFunc}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Alvará Horario Especial</legend>  
+
+                            <h:outputLabel for="numAlvaraEspecial" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraEspecial" value="#{contribuinteBean.selectedRegistro.numAlvaraEspecial}" />
+
+                            <h:outputLabel value="Data:" for="dtAlvaraEspecial"/>
+                            <h:inputText id="dtAlvaraEspecial" value="#{contribuinteBean.selectedRegistro.dtAlvaraEspecial}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Alvará Bombeiro</legend>  
+                            <br/>
+                            <h:outputLabel for="numAlvaraBombeiro" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraBombeiro" value="#{contribuinteBean.selectedRegistro.numAlvaraBombeiro}" />
+
+                            <h:outputLabel value="Data:" for="dtAlvaraBombeiro"/>
+                            <h:inputText id="dtAlvaraBombeiro" value="#{contribuinteBean.selectedRegistro.dtAlvaraBombeiro}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Alvará Vigilancia Sanitaria</legend>  
+
+                            <h:outputLabel for="numAlvaraSanitaria" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraSanitaria" value="#{contribuinteBean.selectedRegistro.numAlvaraSanitaria}" />
+
+                            <h:outputLabel value="Data:" for="dtAlvaraSanitaria"/>
+                            <h:inputText id="dtAlvaraSanitaria" value="#{contribuinteBean.selectedRegistro.dtAlvaraSanitaria}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Alvará Ambiental</legend>  
+                            <br/>
+                            <h:outputLabel for="numAlvaraAmbiental" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraAmbiental" value="#{contribuinteBean.selectedRegistro.numAlvaraAmbiental}" />
+
+                            <h:outputLabel value="Data:" for="dtAlvaraAmbiental"/>
+                            <h:inputText id="dtAlvaraAmbiental" value="#{contribuinteBean.selectedRegistro.dtAlvaraAmbiental}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">ANP</legend>  
+
+                            <h:outputLabel for="numAlvaraAnp" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraAnp" value="#{contribuinteBean.selectedRegistro.numAlvaraAnp}" />
+
+                            <h:outputLabel value="Data Validade:" for="dtAlvaraAnp"/>
+                            <h:inputText id="dtAlvaraAnp" value="#{contribuinteBean.selectedRegistro.dtAlvaraAnp}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Cetesp</legend>  
+
+                            <h:outputLabel for="numAlvaraCetesb" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraCetesb" value="#{contribuinteBean.selectedRegistro.numAlvaraCetesb}" />
+
+                            <h:outputLabel value="Data Validade:" for="dtAlvaraCetesb"/>
+                            <h:inputText id="dtAlvaraCetesb" value="#{contribuinteBean.selectedRegistro.dtAlvaraCetesb}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Uso do Solo</legend>  
+
+                            <h:outputLabel for="numAlvaraSolo" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraSolo" value="#{contribuinteBean.selectedRegistro.numAlvaraSolo}" />
+
+                            <h:outputLabel value="Data Validade:" for="dtAlvaraSolo"/>
+                            <h:inputText id="dtAlvaraSolo" value="#{contribuinteBean.selectedRegistro.dtAlvaraSolo}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">0utros</legend>  
+
+                            <h:outputLabel for="numAlvaraOutros" value="Nº Licença::" />
+                            <h:inputText id="numAlvaraOutros" value="#{contribuinteBean.selectedRegistro.numAlvaraOutros}" />
+
+                            <h:outputLabel value="Data Validade:" for="dtAlvaraOutros"/>
+                            <h:inputText id="dtAlvaraOutros" value="#{contribuinteBean.selectedRegistro.dtAlvaraOutros}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo"/>
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                    <div class="col s2">
+                        <fieldset>
+                            <legend style="font-weight: bold;">Inf.Alvará</legend>  
+
+                            <h:outputLabel value="Data Cassação:" for="dtAlvaraVencimento"/>
+                            <h:inputText id="dtAlvaraVencimento" value="#{contribuinteBean.selectedRegistro.dtAlvaraVencimento}" style="text-align: center;">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </fieldset>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel for="observacaoAlvara" value="Observação Alvará"/>
+                        <h:inputTextarea id="observacaoAlvara" class="materialize-textarea" value="#{alvaraBean.contribuinte.obsAlvara}"  />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 row">
+                        <br/>
+                        <br/>
+                        <h:outputLabel style="font-size: 25px" value="Relatorio Alvará"/>
+                        <div class="col s2 right">
+                            <h:commandLink actionListener="#{alvaraBean.imprimir()}" title="Imprimir" target="_blank"
+                                           class="btn-floating btn-large waves-effect waves-light blue right-align">
+                                <i class="mdi mdi-action-print"></i>
+                            </h:commandLink>
+                            &nbsp;
+                            <h:outputLabel value="Imprimir Alvará" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m3">
+                        <h:outputLabel for="dataAberturaAlvara" value="Data de Abertura"/>
+                        <h:inputText id="dataAberturaAlvara" value="#{alvaraBean.dataAbertura}">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s12 m2">
+                        <h:outputLabel for="inscricaoIniAlvara" value="Entre a inscrição"/>
+                        <h:inputText id="inscricaoIniAlvara" value="#{alvaraBean.inscricaoIni}" />
+                    </div>
+                    <div class="input-field col s12 m2">
+                        <h:outputLabel for="inscricaoFimAlvara" value="e"/>
+                        <h:inputText id="inscricaoFimAlvara" value="#{alvaraBean.inscricaoFim}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m5">
+                        <h:selectOneMenu id="tpAlvara" value="#{alvaraBean.tipoAlvara}" >
+                            <f:selectItem itemLabel="Selecione a licença"/>
+                            <f:selectItems value="#{alvaraBean.tipoLicenca}" var="tipo" itemValue="#{tipo.descricao}" itemLabel="#{tipo.descricao}"/>
+                            <p:ajax event="change" update="tipoProtocoloAlvara" oncomplete="updateFields();"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tipoProtocoloAlvara" value="Tipo de Licença"/>
+                    </div>
+                    <h:panelGroup id="tipoProtocoloAlvara">
+                        <div class="input-field col s12 m4">
+                            <h:outputLabel for="tipoProtocoloAlvara" value="Nº Protocolo" id="protocoloLabel"/>
+                            <h:inputText id="n_protocoloAlvara" value="#{alvaraBean.n_protocolo}" rendered="#{alvaraBean.tipoAlvara == null}"/>
+                            <h:inputText id="n_protocoloAutonomoAlvara" value="#{alvaraBean.contribuinte.protocoloAutonomo}" rendered="#{alvaraBean.tipoAlvara.equalsIgnoreCase('Licenciamento para Autônomo')}"/>
+                            <h:inputText id="n_protocoloAutonomoDomicilioAlvara" value="#{alvaraBean.contribuinte.protocoloAutonomoDomicilioFiscal}" rendered="#{alvaraBean.tipoAlvara.equalsIgnoreCase('Licenciamento para Autônomo Domicílio Fiscal')}"/>
+                            <h:inputText id="n_protocoloDiversoesAlvara" value="#{alvaraBean.contribuinte.protocoloDiversoes}" rendered="#{alvaraBean.tipoAlvara.equalsIgnoreCase('Licenciamento para Diversões Públicas')}"/>
+                            <h:inputText id="n_protocoloFuncionamentoAlvara" value="#{alvaraBean.contribuinte.protocoloFuncionamento}" rendered="#{alvaraBean.tipoAlvara.equalsIgnoreCase('Licenciamento de Funcionamento - MEI')}"/>
+                            <h:inputText id="n_protocoloProvisorioAlvara" value="#{alvaraBean.contribuinte.protocoloProvisorio}" rendered="#{alvaraBean.tipoAlvara.equalsIgnoreCase('Licenciamento Provisório')}"/>
+                        </div>
+                        <div class="input-field col s12 m3">
+                            <h:outputLabel for="validadeAlvara" value="Validade"/>
+                            <h:inputText id="validadeAlvara" value="#{alvaraBean.contribuinte.dtValidadeAlvara}">
+                                <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                            </h:inputText>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('#protocoloLabel').addClass('active');
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#validadeAlvara').mask('99/99/9999');
+                $('#fone').mask('(99)99999-9999');
+                $('#dtSimples').mask('99/99/9999');
+                $('#dtReabertura').mask('99/99/9999');
+                $('#dtAbertura').mask('99/99/9999');
+                $('#dtInicio').mask('99/99/9999');
+                $('#dtAlvara').mask('99/99/9999');
+                $('#dtValidadeAlvara').mask('99/99/9999');
+                $('#dtTransferencia').mask('99/99/9999');
+                $('#dtJunta').mask('99/99/9999');
+                $('#dtInativo').mask('99/99/9999');
+                $('#dtEncerrado').mask('99/99/9999');
+                $('#dtBloqueado').mask('99/99/9999');
+                $('#dtIsento').mask('99/99/9999');
+                $('#dtMei').mask('99/99/9999');
+                $('#suspensaoDe').mask('99/99/9999');
+                $('#suspensaoAte').mask('99/99/9999');
+                $('#dataHistorico').mask('99/99/9999');
+                $('#dataProcesso').mask('99/99/9999');
+                $('#dtInicio1').mask('99/99/9999');
+                $('#dtEventual').mask('99/99/9999');
+                $('#dtVencimento').mask('99/99/9999');
+                $('#dtTermino').mask('99/99/9999');
+                $('#dtNotificacao').mask('99/99/9999');
+                $('#dtInicioUnCalculo').mask('99/99/9999');
+                $('#dtTerminoUnCalculo').mask('99/99/9999');
+                $('#dtAlvaraFunc').mask('99/99/9999');
+                $('#dtAlvaraEspecial').mask('99/99/9999');
+                $('#dtAlvaraBombeiro').mask('99/99/9999');
+                $('#dtAlvaraSanitaria').mask('99/99/9999');
+                $('#dtAlvaraAmbiental').mask('99/99/9999');
+                $('#dtAlvaraAnp').mask('99/99/9999');
+                $('#dtAlvaraCetesb').mask('99/99/9999');
+                $('#dtAlvaraSolo').mask('99/99/9999');
+                $('#dtAlvaraOutros').mask('99/99/9999');
+                $('#dtAlvaraVencimento').mask('99/99/9999');
+                //                $('#telRes').mask('(99)9999-9999');
+                //                $('#celPes').mask('(99)99999-9999');
+                //                $('#telefoneSocio').mask('(99)9999-9999');
+                //                $('#celularSocio').mask('(99)9999-9999');
+                $('#socioNomeLabel').addClass('active');
+                $('#lblContribuinteAlterado').addClass('active');
+                $('#senha').attr('type', 'password');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoItem(linha) {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluirItem").css('display', 'none');
+                                document.getElementById('tableItens:' + linha + ':btnExcluirItem').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoItem1(linha1) {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluirItem1").css('display', 'none');
+                                document.getElementById('tableItens1:' + linha1 + ':btnExcluirItem1').click();
+                            }
+                        });
+            }
+            function confirmaExclusaoItem2(linha) {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluirItemNot").css('display', 'none');
+                                document.getElementById('tableNotificacao:' + linha + ':btnExcluirItemNot').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoEventual(linha) {
+                swal({
+                    title: "Confirma o cancelamento do eventual?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#confirmaExclusaoEventual").css('display', 'none');
+                                document.getElementById('tableParcelas:' + linha + ':confirmaExclusaoEventual').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoSocio(linha) {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluirSocio").css('display', 'none');
+                                document.getElementById('tableSocios:' + linha + ':btnExcluirSocio').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoUnidadeCalculo(linha) {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                document.getElementById('tableItensUnCalc:' + linha + ':btnExcluirItemUnCalc').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoAtividade(linha) {
+                swal({
+                    title: "Confirma a exclusão da atividade?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                document.getElementById('tableCnae:' + linha + ':btnExcluirAtividade').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoAnexo(linha) {
+                swal({
+                    title: "Confirma a exclusão do anexo?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                document.getElementById('table9:' + linha + ':btnExcluirAnexo').click();
+                            }
+                        });
+            }
+
+            function efetuarNovoCalculo(data) {
+
+                if (data > 0) {
+                    swal({
+                        title: "Deseja efetuar um novo cálculo?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Confirmar",
+                        cancelButtonText: "Cancelar",
+                        closeOnConfirm: true,
+                        closeOnCancel: true},
+                            function (isConfirm) {
+                                if (isConfirm) {
+                                    rc();
+                                }
+                            });
+                } else {
+                    rc();
+                }
+            }
+
+            function fecharModalPessoa() {
+                $('#modalCadastrarPessoa').closeModal();
+                updateFields();
+            }
+            function abrirModalPessoa() {
+                $('#modalCadastrarPessoa').openModal({
+                    dismissible: true, // Modal can be dismissed by clicking outside of the modal
+                    opacity: .0, // Opacity of modal background
+                    in_duration: 300, // Transition in duration
+                    out_duration: 200, // Transition out duration
+                    ready: function () {
+                    }, // Callback for Modal open
+                    complete: function () {
+                    } // Callback for Modal close
+                });
+            }
+
+            //evitar duplo clicks
+            function selectedContribuinte(){
+                $('#table a').css('pointer-events', 'none');
+            }
+            
+            
+            
+            window.addEventListener('keydown', function (e) {
+                var code = e.which || e.keyCode;
+                if (code == 116)
+                    document.getElementById('cancelar').click();
+                else
+                    return true;
+
+            });
+
+            var link = window.location.pathname;
+            history.pushState(null, null, link);
+            window.addEventListener('popstate', function (event) {
+                history.pushState(null, null, link);
+                swal({title: 'Atenção!', text: 'Para navegar no sistema utilize os botões do Issqn', type: 'info'});
+            });
+
+        </script>
+    </ui:define>
+</ui:composition>
+

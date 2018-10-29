@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Taxas" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{taxaBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o id ou nome da taxa" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{taxaBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{taxaBean.selectedRegistro eq null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" rendered="#{globalBean.somenteConsulta eq false}" actionListener="#{taxaBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{taxaBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{taxaBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light light-blue">
+                <i class="mdi-navigation-check"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{taxaBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{taxaBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{taxaBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="row" value="#{taxaBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{taxaBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{row.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{row.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{row.nome}" headerText="Nome" width="25%">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{row.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{row.banco}" headerText="Banco" width="25%">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{taxaBean.mostrarTipo(row.banco.nome)}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{row.tpValor}" headerText="Tipo Valor" width="15%">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{taxaBean.mostrarTipo(row.tpValor)}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{row.tipo}" headerText="Tipo" width="15%">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{taxaBean.mostrarTipo(row.tipo)}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{row.isTaxa}" headerText="Tipo Taxa" width="20%">
+                            <h:commandLink actionListener="#{taxaBean.alterar(row)}">
+                                <h:outputText value="#{taxaBean.mostrarTipoIssqn(row.isTaxa)}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{taxaBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <h:outputLabel for="nome" value="Descrição"/>
+                    <h:inputText id="nome" value="#{taxaBean.selectedRegistro.nome}" style="font-weight: bold;" />        
+                </div>
+                <div class="input-field col s12 m6">
+                    <h:selectOneMenu id="banco" value="#{taxaBean.selectedRegistro.banco}"  converter="entityConverter">
+                        <f:selectItem itemValue="#{null}" itemLabel="Selecione o Banco"/>
+                        <f:selectItems value="#{taxaBean.listBanco}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel for="banco" value="Banco"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m1">
+                    <h:selectOneMenu id="tipo_valor" value="#{taxaBean.selectedRegistro.tpValor}">
+                            <f:selectItem itemValue="UFM" itemLabel="UFM" />
+                            <f:selectItem itemValue="RS" itemLabel="RS" />
+                            <f:selectItem itemValue="UFESP" itemLabel="UFESP" />
+                            <p:ajax event="blur" update="@this" process="@this" global="false"/>
+                        </h:selectOneMenu>
+                    <h:outputLabel for="tipo_valor" value="Tipo Valor"/>
+                </div>
+                <br/>
+                 <div class="switch">
+                        <label>
+                            <h:selectBooleanCheckbox disabled="#{globalBean.somenteConsulta}" value="#{taxaBean.selectedRegistro.taxaFixa}" />
+                            <span class="lever"></span>                                                    
+                            <span style="font-size: 14px; color: #000;"> Taxa com Valor Fixo</span>
+                        </label>                        
+                    </div>
+            </div>
+            <div class="row">
+                <br/>
+                <br/>
+                <div class="col s12 m3">
+                    <h:selectOneRadio disabled="#{globalBean.somenteConsulta}" layout="lineDirection" value="#{taxaBean.selectedRegistro.tipo}">
+                        <f:selectItem itemValue="0" itemLabel="Anual" />
+                        <f:selectItem itemValue="1" itemLabel="Uma vez" />
+                    </h:selectOneRadio>
+                </div>
+                <div class="col s12 m4 offset-m3">
+                    <h:selectOneRadio disabled="#{globalBean.somenteConsulta}" class="with-gap" layout="lineDirection" value="#{taxaBean.selectedRegistro.isTaxa}">
+                        <f:selectItem itemValue="0" itemLabel="ISSQN" />
+                        <f:selectItem itemValue="1" itemLabel="Demais Taxas" />
+                    </h:selectOneRadio>
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#item_valor_lbl').mask('#,##9.99######');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+
+            function confirmaExclusaoItem() {
+                swal({
+                    title: "Confirma a exclusão do item?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluirItem").css('display', 'none');
+                                document.getElementById('btnExcluirItem').click();
+                            }
+                        });
+            }
+        </script>
+        <style>
+            .col1{width: 50px}
+            .col2{width: 70%}
+            .col3{width: 100px}
+            .col4{width: 50px}
+            .col5{width: 95px}
+        </style>
+    </ui:define>
+</ui:composition>
+

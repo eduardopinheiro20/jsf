@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:growl showDetail="false" life="9000" sticky="true" autoUpdate="true" /> 
+    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>  
+
+    <p:dialog widgetVar="statusDialog" width="33%" style="overflow: hidden" position="right top"
+              draggable="false" closable="false" resizable="false" modal="false" showHeader="false">  
+        <div class="col s12">
+            <h:outputLabel value="Buscando informações, por favor aguarde..." />
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+    </p:dialog> 
+
+    <p:ajaxExceptionHandler type="javax.faces.application.ViewExpiredException"
+                            update="exceptionDialog"
+                            onexception="PF('exceptionDialog').show();" />
+    <p:dialog  id="exceptionDialog" 
+               header="Página Expirada!" 
+               widgetVar="exceptionDialog"
+               modal="true"
+               >
+
+        <div style="text-align: center;">
+            <p style="color: red">Página Expirada!</p>
+            <br/>
+            <p:button onclick="document.location.href = 'document.location.href;'"
+                      value="Atualizar Pagina!"/>
+
+        </div>
+    </p:dialog> 
+
+    <div id="modalTrocarMes" class="modal" style="width: 450px">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <h:outputLabel value="Selecione o Ano:"/>
+                    <h:selectOneMenu value="#{globalBean.exercicio}" styleClass="input-field" converter="entityConverter">
+                        <f:selectItems value="#{exercicioBean.todosExercicios}" var="obj" itemValue="#{obj}" itemLabel="#{obj.ano}"/>
+                        <p:ajax event="change" process="@this" update="@this" />
+                    </h:selectOneMenu>    
+                </div>
+                <div class="col s12">
+                    <h:outputLabel value="Selecione o mês:"/>
+                    <h:selectOneMenu value="#{globalBean.mesReferencia}" styleClass="input-field" style="font-weight: bold; color: #0044cc">
+                        <f:selectItem itemValue="1" itemLabel="JANEIRO" />
+                        <f:selectItem itemValue="2" itemLabel="FEVEREIRO" />
+                        <f:selectItem itemValue="3" itemLabel="MARÇO" />
+                        <f:selectItem itemValue="4" itemLabel="ABRIL" />
+                        <f:selectItem itemValue="5" itemLabel="MAIO" />
+                        <f:selectItem itemValue="6" itemLabel="JUNHO" />
+                        <f:selectItem itemValue="7" itemLabel="JULHO" />
+                        <f:selectItem itemValue="8" itemLabel="AGOSTO" />
+                        <f:selectItem itemValue="9" itemLabel="SETEMBRO" />
+                        <f:selectItem itemValue="10" itemLabel="OUTUBRO" />
+                        <f:selectItem itemValue="11" itemLabel="NOVEMBRO" />
+                        <f:selectItem itemValue="12" itemLabel="DEZEMBRO" />
+                        <p:ajax event="change" process="@this" update="@this" />
+                    </h:selectOneMenu>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="waves-effect waves-green btn-flat grey lighten-4 modal-action modal-close">
+                <i class="mdi mdi-navigation-close"></i> Fechar
+            </a>
+            <h:commandLink action="#{logonBean.doTrocarReferencia()}" styleClass="waves-effect waves-green  btn-flat green white-text"> 
+                <i class="mdi mdi-navigation-check"></i> Alterar mês
+            </h:commandLink>
+        </div>
+    </div>
+
+</ui:composition>

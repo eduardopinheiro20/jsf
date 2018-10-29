@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Escritório" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{escritorioBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o escritório" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{escritorioBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{escritorioBean.selectedRegistro eq null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" rendered="#{globalBean.somenteConsulta eq false}" actionListener="#{escritorioBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{escritorioBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{escritorioBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{escritorioBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{escritorioBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{escritorioBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{escritorioBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{escritorioBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{escritorioBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nomeFantasia}" headerText="Nome Fantasia" width="35%">
+                            <h:commandLink actionListener="#{escritorioBean.alterar(item)}">
+                                <h:outputText value="#{item.nomeFantasia}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.razaoSocial}" headerText="Razão Social" width="35%">
+                            <h:commandLink actionListener="#{escritorioBean.alterar(item)}">
+                                <h:outputText value="#{item.razaoSocial}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{escritorioBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="nome" value="Nome *"/>
+                    <h:inputText id="nome" value="#{escritorioBean.selectedRegistro.nomeFantasia}" style="font-weight: bold;" />
+                    <h:message for="nome" style="color: red;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="razaoSocial" value="Razão Social"/>
+                    <h:inputText id="razaoSocial" value="#{escritorioBean.selectedRegistro.razaoSocial}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s5">
+                    <h:outputLabel for="responsavel" value="Responsável *"/>
+                    <h:inputText id="responsavel" value="#{escritorioBean.selectedRegistro.responsavel}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s5">
+                    <h:outputLabel for="orgaoClasse" value="Orgão de Classe"/>
+                    <h:inputText id="orgaoClasse" value="#{escritorioBean.selectedRegistro.orgaoClasse}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s2">
+                    <h:outputLabel for="numeroClasse" value="Nº da Classe"/>
+                    <h:inputText id="numeroClasse" value="#{escritorioBean.selectedRegistro.numeroClasse}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3">
+                    <h:outputLabel for="telefone" value="Telefone"/>
+                    <h:inputText id="telefone" value="#{escritorioBean.selectedRegistro.telefone}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="fax" value="Fax"/>
+                    <h:inputText id="fax" value="#{escritorioBean.selectedRegistro.fax}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s6">
+                    <h:outputLabel for="email" value="Email"/>
+                    <h:inputText id="email" value="#{escritorioBean.selectedRegistro.email}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3">
+                    <h:outputLabel for="cpf" value="CPF"/>
+                    <h:inputText id="cpf" value="#{escritorioBean.selectedRegistro.cpf}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="cnpj" value="CNPJ"/>
+                    <h:inputText id="cnpj" value="#{escritorioBean.selectedRegistro.cnpj}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel value="Cidade" class="active"/>
+                    <p:autoComplete value="#{escritorioBean.selectedRegistro.cidade}" 
+                                    id="cidade"
+                                    style="width: 100%;"
+                                    styleClass="ui-autocomplete-edit"
+                                    converter="entityConverter"
+                                    minQueryLength="3"
+                                    maxResults="10"     
+                                    completeMethod="#{utilBean.buscarCidade}" 
+                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}">
+                        <p:ajax event="blur" listener="#{escritorioBean.atualizaCidade}" 
+                                update="bairro logradouro"
+                                global="false"/>
+                    </p:autoComplete>
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel value="Bairro" class="active"/>
+                    <p:autoComplete value="#{escritorioBean.selectedRegistro.bairro}" 
+                                    id="bairro"
+                                    style="width: 100%;"
+                                    styleClass="ui-autocomplete-edit"
+                                    converter="entityConverter"
+                                    minQueryLength="3"
+                                    maxResults="10" 
+                                    completeMethod="#{utilBean.buscarBairro}" 
+                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}">
+                        <f:attribute name="cidade" value="#{escritorioBean.idCidade}" />
+                    </p:autoComplete>
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel value="Logradouro" class="active"/>
+                    <p:autoComplete value="#{escritorioBean.selectedRegistro.logradouro}" 
+                                    id="logradouro"
+                                    style="width: 100%;"
+                                    styleClass="ui-autocomplete-edit"
+                                    converter="entityConverter"
+                                    minQueryLength="3"
+                                    maxResults="10" 
+                                    completeMethod="#{utilBean.buscarLogradouro}" 
+                                    var="obj" itemLabel="#{obj.nome}" itemValue="#{obj}">
+                        <f:attribute name="cidade" value="#{escritorioBean.idCidade}" />
+                    </p:autoComplete>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3">
+                    <h:outputLabel for="numero" value="Número"/>
+                    <h:inputText id="numero" value="#{escritorioBean.selectedRegistro.numero}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="cep" value="CEP"/>
+                    <h:inputText id="cep" value="#{escritorioBean.selectedRegistro.cep}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s6">
+                    <h:outputLabel for="complemento" value="Complemento"/>
+                    <h:inputText id="complemento" value="#{escritorioBean.selectedRegistro.complemento}" style="font-weight: bold;" />
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#telefone').mask('(99)99999999');
+                $('#fax').mask('(99)99999999');
+                $('#cpf').mask('999.999.999-99');
+                $('#cnpj').mask('99.999.999/9999-99');
+                $('#cep').mask('99999-999');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $("#btnExcluir").css('display', 'none');
+                        document.getElementById('btnExcluir').click();
+                    }
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

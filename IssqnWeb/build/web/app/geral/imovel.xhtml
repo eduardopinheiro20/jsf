@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Imóvel" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>
+        <h:inputText id="txtFiltro" value="#{imovelBean.textoFiltro}" styleClass="header-search-input z-depth-2"
+                     pt:placeholder="Informe o imóvel" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{imovelBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{imovelBean.selectedRegistro eq null}">
+            <h:commandLink rendered="#{globalBean.somenteConsulta eq false}" disabled="#{globalBean.somenteConsulta}" actionListener="#{imovelBean.adicionar()}" title="Incluir"
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{imovelBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{imovelBean.salvar()}" title="Salvar"
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{imovelBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{imovelBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{imovelBean.selectedRegistro eq null}">
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{imovelBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{imovelBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{imovelBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.bairrologradouro.logradouro.nome}" headerText="Logradouro" width="30%">
+                            <h:commandLink actionListener="#{imovelBean.alterar(item)}">
+                                <h:outputText value="#{item.bairrologradouro.logradouro.nome}">
+                                    <f:convertNumber pattern="#,##0.00" minFractionDigits="2"/>
+                                </h:outputText>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nrImovel}" headerText="Número" width="50">
+                            <h:commandLink actionListener="#{imovelBean.alterar(item)}">
+                                <h:outputText value="#{item.nrImovel}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.bairrologradouro.bairro.nome}" headerText="Bairro" width="30%">
+                            <h:commandLink actionListener="#{imovelBean.alterar(item)}">
+                                <h:outputText value="#{item.bairrologradouro.bairro.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.cep}" headerText="CEP" width="90">
+                            <h:commandLink actionListener="#{imovelBean.alterar(item)}">
+                                <h:outputText value="#{item.cep}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{imovelBean.selectedRegistro ne null}">
+            <h:panelGroup id="pnlEndereco">
+                <div class="row">
+                    <div class="input-field col s12 m2">
+                        <h:selectOneMenu id="uf" value="#{imovelBean.selectedEstado}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                            <f:selectItems value="#{imovelBean.listEstado}" var="v_uf" itemValue="#{v_uf}" itemLabel="#{v_uf.uf}"/>
+                            <p:ajax update="pnlEndereco" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="uf" value="UF"/>
+                    </div>
+                    <div class="input-field col s12 m5">
+                        <h:selectOneMenu id="cidade" value="#{imovelBean.selectedCidade}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cidade"/>
+                            <f:selectItems value="#{imovelBean.listCidade}" var="v_cidade" itemValue="#{v_cidade}" itemLabel="#{v_cidade.nome}"/>
+                            <p:ajax update="pnlEndereco" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="cidade" value="Cidade"/>
+                    </div>
+                    <div class="input-field col s12 m5">
+                        <h:selectOneMenu id="bairro" value="#{imovelBean.selectedBairro}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Bairro"/>
+                            <f:selectItems value="#{imovelBean.listBairro}" var="v_bairro" itemValue="#{v_bairro}" itemLabel="#{v_bairro.nome}"/>
+                            <p:ajax update="pnlEndereco" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="bairro" value="Bairro"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <h:selectOneMenu id="logradouro" value="#{imovelBean.selectedRegistro.bairrologradouro}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Logradouro"/>
+                            <f:selectItems value="#{imovelBean.listBairroLogradouro}" var="v_bairlogr" itemValue="#{v_bairlogr}" itemLabel="#{v_bairlogr.logradouro.nome}" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="logradouro" value="Logradouro"/>
+                    </div>
+                    <div class="input-field col s12 m1">
+                        <h:outputLabel for="nrImovel" value="Nº"/>
+                        <h:inputText id="nrImovel" value="#{imovelBean.selectedRegistro.nrImovel}" />
+                    </div>
+                    <div class="input-field col s12 m2">
+                        <h:outputLabel for="cep" value="CEP"/>
+                        <h:inputText id="cep" value="#{imovelBean.selectedRegistro.cep}" />
+                    </div>
+                    <div class="input-field col s12 m3">
+                        <h:outputLabel for="complemento" value="Complemento"/>
+                        <h:inputText id="complemento" value="#{imovelBean.selectedRegistro.complemento}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="pontoReferencia" value="Ponto Referência"/>
+                    <h:inputText id="pontoReferencia" value="#{imovelBean.selectedRegistro.pontoReferencia}" />
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $("#cep").mask("99.999-999");
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $("#btnExcluir").css('display', 'none');
+                        document.getElementById('btnExcluir').click();
+                    }
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

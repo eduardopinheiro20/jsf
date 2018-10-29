@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:param name="pagina_atual" value="Cadastros" />
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:taxa" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-image-tune"></i> 
+                        <span>Taxas</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:motivo-cancelamento" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-content-block"></i>
+                        <span>Motivo Cancelamento</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:categoria" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-content-content-copy"></i>
+                        <span>Categoria</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:banco" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-editor-attach-money"></i>
+                        <span>Bancos</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:contribuinte" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-perm-contact-cal"></i>
+                        <span>Contribuinte</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:historico-registro" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-notification-event-note"></i>
+                        <span>Alterações de Registro</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:codigo-fiscal" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi-content-content-paste"></i>
+                        <span>Códigos Fiscais</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:atividade" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-turned-in-not"></i>
+                        <span>Atividade</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:escritorio" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-wallet-travel"></i>
+                        <span>Escritório</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:conselho-regional" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-account-balance"></i>
+                        <span>Conselhos Regionais</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:ramo-atuacao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-file-folder-open"></i>
+                        <span>Ramos de Atuação</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:questao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-content-content-paste"></i>
+                        <span>Questões Contribuinte</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:orgao-fiscalizacao" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-wallet-travel"></i>
+                        <span>Orgão de Fiscalização</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:zona-municipio" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-track-changes"></i>
+                        <span>Zona do Município</span>
+                    </h:link>
+                </div>
+            </div>
+            <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:cadastro-requisitos" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-av-my-library-books"></i>
+                        <span>Requisitos</span>
+                    </h:link>
+                </div>
+            </div>
+             <div class="col s12 l3">
+                <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                    <h:link outcome="pretty:cadastro-segmentos" class="waves-effect waves-cyan cor-eddy-text">
+                        <i class="mdi mdi-action-list"></i>
+                        <span>Segmentos</span>
+                    </h:link>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col l12">
+                <ul class="collapsible" data-collapsible="accordion">
+                    <li>
+                        <div class="collapsible-header cor-eddy-text">
+                            <i class="mdi mdi-navigation-apps"></i> Cadastros Globais
+                        </div>
+                        <div class="collapsible-body cor-eddy">
+                            <div class="row margin">
+                                <div class="col s12 l3">
+                                    <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                                        <h:link outcome="pretty:imovel" class="waves-effect waves-cyan cor-eddy-text">
+                                            <i class="mdi-action-home"></i>
+                                            <span>Imóveis</span>
+                                        </h:link>
+                                    </div>
+                                </div>
+                                <div class="col s12 l3">
+                                    <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                                        <h:link outcome="pretty:pessoa" class="waves-effect waves-cyan cor-eddy-text">
+                                            <i class="mdi mdi-image-timer-auto"></i>
+                                            <span>Pessoas</span>
+                                        </h:link>
+                                    </div>
+                                </div>
+                                <div class="col s12 l3">
+                                    <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                                        <h:link outcome="pretty:profissao" class="waves-effect waves-cyan cor-eddy-text">
+                                            <i class="mdi mdi-action-book"></i>
+                                            <span>Profissões</span>
+                                        </h:link>
+                                    </div>
+                                </div>
+                                <div class="col s12 l3">
+                                    <div class="card-panel cadastro grey lighten-4 z-depth-1">
+                                        <h:link outcome="pretty:religiao" class="waves-effect waves-cyan cor-eddy-text">
+                                            <i class="mdi mdi-social-location-city"></i>
+                                            <span>Religiões</span>
+                                        </h:link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra"></ui:define>
+</ui:composition>

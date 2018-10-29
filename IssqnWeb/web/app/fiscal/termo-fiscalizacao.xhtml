@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Termo de Fiscalização" />
+    <ui:param name="pagina_acima" value="Fiscal" />
+    <ui:param name="pretty_pagina" value="fiscal" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{termoFiscalizacaoBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o nome, CPF/CNPJ ou inscrição do contribuinte" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{termoFiscalizacaoBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{termoFiscalizacaoBean.selectedRegistro eq null}">
+            <h:commandLink rendered="#{globalBean.somenteConsulta eq false}" disabled="#{globalBean.somenteConsulta}" actionListener="#{termoFiscalizacaoBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{termoFiscalizacaoBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{termoFiscalizacaoBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{termoFiscalizacaoBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink target="_blank" actionListener="#{termoFiscalizacaoBean.imprimir()}" title="Imprimir" class="btn-floating green"
+                                   rendered="#{termoFiscalizacaoBean.selectedRegistro.id ne null}">
+                        <i class="mdi mdi-action-print"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red"
+                                   rendered="#{termoFiscalizacaoBean.selectedRegistro.id ne null}">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{termoFiscalizacaoBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{termoFiscalizacaoBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{termoFiscalizacaoBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{termoFiscalizacaoBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="Cod." width="70">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.iss.inscricao}" headerText="Inscrição" width="70">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.iss.inscricao}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.data}" headerText="Data" width="60">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.data}" >
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:outputText>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.estabelecimento}" headerText="Contribuinte" width="40%">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.estabelecimento}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.numAlvara}" headerText="Nº Alvará" width="100">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.numAlvara}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.cnpjCpf}" headerText="CNPJ" width="60">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.cnpjCpf}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.proprietarioCpf}" headerText="CPF" width="60">
+                            <h:commandLink actionListener="#{termoFiscalizacaoBean.alterar(item)}">
+                                <h:outputText value="#{item.proprietarioCpf}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{termoFiscalizacaoBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                    <h:inputText id="inscricao" value="#{termoFiscalizacaoBean.inscricao}">
+                        <p:ajax update="form1" event="blur" process="@this" listener="#{termoFiscalizacaoBean.buscaPorInscricao()}" oncomplete="updateFields();" />
+                    </h:inputText>
+                </div>
+                <div class="input-field col s12 m7">
+                    <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                    <p:autoComplete value="#{termoFiscalizacaoBean.selectedRegistro.iss}" 
+                                    id="contribuinte"
+                                    style="width: 100%;"
+                                    styleClass="ui-autocomplete-edit"
+                                    converter="entityConverter"
+                                    minQueryLength="3"
+                                    maxResults="10"     
+                                    completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                    var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                        <p:ajax event="itemSelect" listener="#{termoFiscalizacaoBean.selecionarIssqn()}" update="form1" oncomplete="updateFields();"/>
+                    </p:autoComplete>
+                </div>
+                <div class="input-field col s12 m3">
+                    <h:outputLabel for="cnpjCpf" value="CNPJ/CPF"/>
+                    <h:inputText id="cnpjCpf" value="#{termoFiscalizacaoBean.selectedRegistro.cnpjCpf}"/>
+                </div>
+            </div>
+            <h:panelGroup id="pnlEndereco">
+                <div class="row">
+                    <div class="input-field col s12 m2">
+                        <h:selectOneMenu id="uf" value="#{termoFiscalizacaoBean.selectedEstado}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="-"/>
+                            <f:selectItems value="#{termoFiscalizacaoBean.listEstado}" var="v_uf" itemValue="#{v_uf}" itemLabel="#{v_uf.uf}"/>
+                            <p:ajax update="pnlEndereco" oncomplete="updateFields();" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="uf" value="UF"/>
+                    </div>
+                    <div class="input-field col s12 m5">
+                        <h:selectOneMenu id="cidade" value="#{termoFiscalizacaoBean.selectedCidade}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cidade"/>
+                            <f:selectItems value="#{termoFiscalizacaoBean.listCidade}" var="v_cidade" itemValue="#{v_cidade}" itemLabel="#{v_cidade.nome}"/>
+                            <p:ajax update="pnlEndereco" oncomplete="updateFields();" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="cidade" value="Cidade"/>
+                    </div>
+                    <div class="input-field col s12 m5">
+                        <h:selectOneMenu id="bairro" value="#{termoFiscalizacaoBean.selectedBairro}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Bairro"/>
+                            <f:selectItems value="#{termoFiscalizacaoBean.listBairro}" var="v_bairro" itemValue="#{v_bairro}" itemLabel="#{v_bairro.nome}"/>
+                            <p:ajax update="pnlEndereco" oncomplete="updateFields();" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="bairro" value="Bairro"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <h:selectOneMenu id="logradouro" value="#{termoFiscalizacaoBean.selectedRegistro.bairrologradouro}"  converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Logradouro"/>
+                            <f:selectItems value="#{termoFiscalizacaoBean.listBairroLogradouro}" var="v_bairlogr" itemValue="#{v_bairlogr}" itemLabel="#{v_bairlogr.logradouro.nome}" />
+                        </h:selectOneMenu>
+                        <h:outputLabel for="logradouro" value="Logradouro"/>
+                    </div>
+                    <div class="input-field col s12 m2">
+                        <h:outputLabel for="nrImovel" value="Nº"/>
+                        <h:inputText id="nrImovel" value="#{termoFiscalizacaoBean.selectedRegistro.nrImovel}" />
+                    </div>
+                    <div class="input-field col s12 m4">
+                        <h:outputLabel for="complemento" value="Complemento"/>
+                        <h:inputText id="complemento" value="#{termoFiscalizacaoBean.selectedRegistro.complemento}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            <div class="row">
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="numAlvara" value="Nº Alvará"/>
+                    <h:inputText id="numAlvara" value="#{termoFiscalizacaoBean.selectedRegistro.numAlvara}" />
+                </div>
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="estabelecimento" value="Estabelecimento"/>
+                    <h:inputText id="estabelecimento" value="#{termoFiscalizacaoBean.selectedRegistro.estabelecimento}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="data" value="Data"/>
+                    <p:inputMask mask="99/99/9999" id="data" value="#{termoFiscalizacaoBean.selectedRegistro.data}" >
+                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="proprietario" value="Proprietário"/>
+                    <h:inputText id="proprietario" value="#{termoFiscalizacaoBean.selectedRegistro.proprietario}" />
+                </div>
+                <div class="input-field col s12 m4">
+                    <h:outputLabel for="proprietarioCpf" value="CPF"/>
+                    <h:inputText id="proprietarioCpf" value="#{termoFiscalizacaoBean.selectedRegistro.proprietarioCpf}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="proprietarioProfissao" value="Profissão Prop."/>
+                    <h:inputText id="proprietarioProfissao" value="#{termoFiscalizacaoBean.selectedRegistro.proprietarioProfissao}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="fone" value="Fone"/>
+                    <h:inputText id="fone" value="#{termoFiscalizacaoBean.selectedRegistro.fone}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="atividade" value="Atividade"/>
+                    <h:inputText id="atividade" value="#{termoFiscalizacaoBean.selectedRegistro.atividade}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="nomeEscritorio" value="Escritório Resp."/>
+                    <h:inputText id="nomeEscritorio" value="#{termoFiscalizacaoBean.selectedRegistro.nomeEscritorio}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="foneEscritorio" value="Fone"/>
+                    <h:inputText id="foneEscritorio" value="#{termoFiscalizacaoBean.selectedRegistro.foneEscritorio}" />
+                </div>
+                <div class="input-field col s12 m2">
+                    <h:outputLabel for="fiscal" value="Fiscal"/>
+                    <h:inputText id="fiscal" value="#{termoFiscalizacaoBean.selectedRegistro.fiscal}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="apuracao" value="Apuração"/>
+                    <h:inputTextarea id="apuracao" class="materialize-textarea" value="#{termoFiscalizacaoBean.selectedRegistro.apuracao}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="observacao" value="Observaçao"/>
+                    <h:inputTextarea id="observacao" class="materialize-textarea" value="#{termoFiscalizacaoBean.selectedRegistro.observacao}" style="font-weight: bold;" />
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#telefone').mask('(99)99999999');
+                $('#fax').mask('(99)99999999');
+                $('#cpf').mask('999.999.999-99');
+                $('#cnpj').mask('99.999.999/9999-99');
+                $('#cep').mask('99999-999');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $("#btnExcluir").css('display', 'none');
+                        document.getElementById('btnExcluir').click();
+                    }
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

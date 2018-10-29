@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ * Sistema Eddydata de Administração Pública
+ * Copyright (C) 2016, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Rodrigo Teixeira
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ph="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <title>Planejamento - Eddydata</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <h:outputStylesheet name="style.min.css" library="css"/>
+        <h:outputStylesheet name="centralizar.css" library="css"/>
+    </h:head>
+    <h:body class="light-blue darken-2">
+
+
+        <div id="login-page" class="row" style="width: 520px;">
+            <div class="col s12 z-depth-4 card-panel">
+                <h:form class="login-form" prependId="false">
+                    <div class="row">
+                        <div class="input-field col s12 center">
+                            <h:graphicImage name="logo-cor.png" library="img" alt="" />
+                            <p style="line-height: 2px" class="center login-form-text">EDDYDATA</p>
+                            <h4 class="center login-form-text" style="color: #b6b6b6; font-weight: 100;">Recuperar Senha</h4>
+                            <br/>
+                        </div>
+                    </div>                    
+                    <div class="row margin">
+                        <div class="input-field col s12">
+                            <i class="mdi mdi-email prefix" style="color: #0277bd"></i>
+                            <h:inputText id="email" value="#{usuarioBean.emailRecuperacao}" ph:placeholder="Informe seu endereço de email"
+                                         required="true" requiredMessage="Informe o e-mail"/>
+                            <h:outputLabel for="email" class="active">E-mail</h:outputLabel>
+                             <h:message for="email" style="color: red;" />
+                        </div>
+                    </div>
+                    <div class="row" align="right">
+                        <div class="input-field col s12">
+                            <h:commandLink action="pretty:login" class="btn-flat waves-effect waves-red" immediate="true">Cancelar</h:commandLink>&nbsp;
+                            <h:commandLink action="#{usuarioBean.recuperarSenha()}" class="btn waves-effect waves-light light-blue darken-2">Enviar</h:commandLink>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                </h:form>
+            </div>
+
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                Materialize.updateTextFields();
+            });
+        </script>
+    </h:body>
+</html>
+
+

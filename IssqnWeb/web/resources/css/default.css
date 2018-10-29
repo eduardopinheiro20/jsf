@@ -1,0 +1,212 @@
+.container{
+    width: 95%;
+    float: left
+}
+
+.msg-erro {
+    padding: 0;
+    margin: 0;
+    color: red;
+    font-size: 11px
+}
+
+.imgtexto{
+    float: left;
+    border: transparent thin solid;
+    padding-top: 10px;
+    margin: 0px 10px 10px 0
+}
+
+nav{
+    background: #2E548A
+}
+
+.dropdown-content li>a, .dropdown-content li>span{
+    color: #2E548A
+}
+
+.card-panel.cadastro{
+    padding: 15px 20px
+}
+
+.card-panel.cadastro i {
+    font-size: 1.5em;
+    float: left
+}
+
+.card-panel.cadastro span {
+    font-size: 1em;
+    float: left;
+    margin-left: 10px;
+    margin-top: 0.5em
+}
+
+.cor-eddy{
+    background: #2E548A !important
+}
+
+.cor-eddy-text{
+    color: #2E548A !important
+}
+
+header .brand-logo{
+    padding: 5px 25px
+}
+
+h4{
+    font-size: 1.4rem;
+    line-height: 100%;
+    margin: 1.14rem 0 0.912rem 0
+}
+
+.dropdown-content li>a>i{
+    float: left;
+    margin-right: 10px
+}
+
+.dropdown-content li>a>span{
+    font-size: 14px;
+    margin-top: 4px;
+    float: left
+}
+
+nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i{
+    height: 50px;
+    line-height: 50px;
+}
+
+.navbar-fixed{
+    height: 50px
+}
+
+ul.side-nav.leftside-navigation{
+    top: 58px
+}
+
+header .brand-logo img{
+    width: 130px;
+    height: 40px
+}
+
+.mes-referencia{
+    padding-left: 18px
+}
+
+.mes-referencia i{
+    margin-right: 1rem;
+    width: 2rem;
+    font-size: 1.5em;
+    float: left
+}
+
+.mes-referencia span{
+    font-size: 14px
+}
+
+.header-search-wrapper{
+    margin: 0 0 0 240px
+}
+
+.header-search-wrapper i{
+    top: 2px;
+    left: 15px
+}
+
+h4.titulo-form{
+    margin: 0
+}
+
+[type="checkbox"]:checked+label:before{
+    border-right: 2px solid #2E548A;
+    border-bottom: 2px solid #2E548A
+}
+
+input.header-search-input{
+    padding: 5px 8px 5px 50px
+}
+
+.cadastro a{
+    width: 100%
+}
+
+input[type=text]:focus:not([readonly]),input[type=password]:focus:not([readonly]),input[type=email]:focus:not([readonly]),input[type=url]:focus:not([readonly]),input[type=time]:focus:not([readonly]),input[type=date]:focus:not([readonly]),input[type=datetime-local]:focus:not([readonly]),input[type=tel]:focus:not([readonly]),input[type=number]:focus:not([readonly]),input[type=search]:focus:not([readonly]),textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #2196F3;
+    box-shadow: 0 1px 0 0 #2196F3
+}
+
+[type="radio"]:checked+label:after{
+    border: 2px solid #2196F3;
+    background-color: #2196F3;
+}
+
+.table-eddy td a, .table-eddy td span{
+    display: table-cell;
+    padding: 0 10px
+}
+
+.table-eddy td, .table-eddy th{
+    padding: 3px
+}
+
+.breadcrumbs{
+    margin: 0 0 10px 0
+}
+
+.tabs .tab a{
+    color: #2E548A
+}
+
+.tabs{
+    margin-bottom: 15px
+}
+
+.no-margin{
+    margin: 0
+}
+
+.no-padding{
+    padding: 0
+}
+
+.switch label input[type=checkbox]:checked+.lever{
+    background-color: #2E548A
+}
+
+.switch label input[type=checkbox]:checked+.lever:after{
+    background-color: #2196F3
+}
+
+[type="checkbox"]:checked+label:before{
+    border-right: 2px solid #2E548A;
+    border-bottom: 2px solid #2E548A
+}
+
+.progress{
+    background-color: rgba(46, 84, 138, 0.22)
+}
+.progress .indeterminate{
+    background-color: #2E548A
+}
+
+.modal-content .row {
+    margin-bottom: 0
+}
+
+td, th{
+    padding: 5px
+}
+
+table.striped>tbody>tr.ui-state-highlight:nth-child(odd) {
+    background: #2e548a
+}
+
+input[type=text]:disabled, input[type=text][readonly="readonly"], input[type=password]:disabled, input[type=password][readonly="readonly"], input[type=email]:disabled, input[type=email][readonly="readonly"], input[type=url]:disabled, input[type=url][readonly="readonly"], input[type=time]:disabled, input[type=time][readonly="readonly"], input[type=date]:disabled, input[type=date][readonly="readonly"], input[type=datetime-local]:disabled, input[type=datetime-local][readonly="readonly"], input[type=tel]:disabled, input[type=tel][readonly="readonly"], input[type=number]:disabled, input[type=number][readonly="readonly"], input[type=search]:disabled, input[type=search][readonly="readonly"], textarea.materialize-textarea:disabled, textarea.materialize-textarea[readonly="readonly"] {
+    opacity: 1;
+    color: inherit !important;
+}
+
+.desativar input {
+    pointer-events: none !important; 
+    opacity: 0.8 !important;
+}
+

@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Cancelar Cálculo" />
+    <ui:param name="pagina_acima" value="Movimentos" />
+    <ui:param name="pretty_pagina" value="movimentos" />
+    <ui:define name="botoes">
+        <h:panelGroup id="botao">
+            <h:commandLink actionListener="#{cancelamentoBean.cancelar}" title="Cancelar" 
+                           class="btn-floating btn-large waves-effect waves-light blue" >
+                <i class="mdi-content-send"></i>
+                <p:ajax />
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink title="Limpar" class="btn-floating light-green">
+                        <i class="mdi-navigation-close"></i>
+                        <p:ajax event="click" update="form1" listener="#{cancelamentoBean.limpar()}" oncomplete="updateFields();"/>
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+    <ui:define name="conteudo">
+        <h:panelGroup id="panelGeral">
+            <div class="row">
+                <div class="col s12 m6">
+                    <h:selectOneRadio class="with-gap" value="#{cancelamentoBean.opcaoCalculo}" layout="pageDirection">
+                        <f:selectItem itemValue="C" itemLabel="Cancelamento do cálculo por Contribuinte" />
+                        <f:selectItem itemValue="G" itemLabel="Cancelamento Geral" />
+                        <p:ajax update="panelGeral" oncomplete="updateFields();" global="false"/>
+                    </h:selectOneRadio>
+                </div>
+            </div>
+            <h:panelGroup id="infoGeral" rendered="#{cancelamentoBean.opcaoCalculo.equalsIgnoreCase('G')}">
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="tipoCobrancaGeral" value="#{cancelamentoBean.tipoCobrancaGeral}" >
+                            <f:selectItem itemValue="0" itemLabel="TODAS" />
+                            <f:selectItem itemValue="1" itemLabel="TCF" />
+                            <f:selectItem itemValue="3" itemLabel="EVENTUAL" />
+                            <p:ajax process="@this" event="change" global="false"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tipoCobrancaGeral" value="Tipo Cobrança"/>
+                    </div>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup id="infoContribuinte" rendered="#{cancelamentoBean.opcaoCalculo.equalsIgnoreCase('C')}">
+                <div class="row">
+                    <div class="input-field col s12 m4">
+                        <h:outputLabel for="inscricao" value="Inscrição" class="active" />
+                        <h:inputText id="inscricao" value="#{cancelamentoBean.inscricao}">
+                            <p:ajax update="nome @this processo tipoCobranca" event="blur" process="@this" listener="#{cancelamentoBean.buscaPorInscricao()}"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s12 m8">
+                        <h:outputLabel for="nome" value="Nome" class="active"/>
+                        <p:autoComplete value="#{cancelamentoBean.issqn}" 
+                                        id="nome"
+                                        style="width: 100%;"
+                                        styleClass="ui-autocomplete-edit"
+                                        converter="entityConverter"
+                                        minQueryLength="3"
+                                        maxResults="10"  
+                                        completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                        var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}" >
+                            <p:ajax update="inscricao, @this" event="itemSelect" oncomplete="updateFields()"/>
+                        </p:autoComplete>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="tipoCobranca" value="#{cancelamentoBean.tipoCobranca}" >
+                            <f:selectItem itemValue="0" itemLabel="TODAS" />
+                            <f:selectItem itemValue="1" itemLabel="TCF" />
+                            <f:selectItem itemValue="3" itemLabel="EVENTUAL" />
+                            <p:ajax process="@this" event="change" global="false"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tipoCobranca" value="Tipo Cobrança"/>
+                    </div>
+                    <div class="input-field col s6">
+                        <h:selectOneMenu id="motivo" value="#{cancelamentoBean.motivo}" converter="entityConverter">
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o motivo" />
+                            <f:selectItems value="#{cancelamentoBean.buscaMotivoCancelamento()}" var="mot" itemValue="#{mot}" itemLabel="#{mot.descricao}"/>
+                            <p:ajax process="@this" event="change" global="false"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="motivo" value="Motivo do cancelamento"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="processo" value="Nº Processo" class="active"/>
+                        <h:inputText id="processo" value="#{cancelamentoBean.processo}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

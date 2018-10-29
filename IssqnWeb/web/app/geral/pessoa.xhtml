@@ -1,0 +1,424 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Pessoa" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{pessoaBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o nome" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{pessoaBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{pessoaBean.selectedRegistro eq null}">
+            <h:commandLink rendered="#{globalBean.somenteConsulta eq false}" disabled="#{globalBean.somenteConsulta}" actionListener="#{pessoaBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{pessoaBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{pessoaBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{pessoaBean.cancelar()}" immediate="true">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{pessoaBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{pessoaBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{pessoaBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{pessoaBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{pessoaBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nome}" headerText="Nome" width="35%">
+                            <h:commandLink actionListener="#{pessoaBean.alterar(item)}">
+                                <h:outputText value="#{item.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{pessoaBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs tab-demo z-depth-0" style="width: 100%;">
+                        <li class="tab col s12 m6"><a class="active" href="#dadosGerais">Dados Gerais</a></li>
+                        <li class="tab col s12 m6"><a href="#dadosPessoais">Dados Pessoais</a></li>
+                        <li class="tab col s12 m6"><a href="#dadosOrganizacionais">Dados Organizacionais</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="dadosGerais" class="col s12">
+                <div class="row">
+                    <div class="input-field col s8">
+                        <h:outputLabel for="nome" value="Nome *"/>
+                        <h:inputText id="nome" value="#{pessoaBean.selectedRegistro.nome}" style="font-weight: bold;" />
+                        <h:message for="nome" style="color: red;" />
+                    </div>
+                    <div class="input-field col s4">
+                        <h:selectOneMenu id="tipoPessoa" value="#{pessoaBean.selectedRegistro.tpPessoa}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Tipo Pessoa"/>
+                            <f:selectItems value="#{pessoaBean.listarTipoPessoa()}" var="pes" itemValue="#{pes}" itemLabel="#{pes.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tipoPessoa" value="Tipo Pessoa"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="cpf" value="CPF/CNPJ"/>
+                        <h:inputText id="cpf" value="#{pessoaBean.selectedRegistro.cpfCnpj}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="cartaoCidadao" value="Cartão Cidadão"/>
+                        <h:inputText id="cartaoCidadao" value="#{pessoaBean.selectedRegistro.cartaoCidadao}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="telRes" value="Tel. Res"/>
+                        <h:inputText id="telRes" value="#{pessoaBean.selectedRegistro.telefone}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="celular" value="Celular"/>
+                        <h:inputText id="celular" value="#{pessoaBean.selectedRegistro.celular}" style="font-weight: bold;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="telCom" value="Tel. Com"/>
+                        <h:inputText id="telCom" value="#{pessoaBean.selectedRegistro.tel1}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="telRecados" value="Tel. Recados"/>
+                        <h:inputText id="telRecados" value="#{pessoaBean.selectedRegistro.tel2}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="nascimento" value="Nascimento"/>
+                        <h:inputText id="nascimento" value="#{pessoaBean.selectedRegistro.dataNascimento}" style="font-weight: bold;">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtCadastro" value="Dt. Cadastro"/>
+                        <h:inputText id="dtCadastro" value="#{pessoaBean.selectedRegistro.dtInscricao}" style="font-weight: bold;">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s8">
+                        <h:outputLabel for="email" value="Email"/>
+                        <h:inputText id="email" value="#{pessoaBean.selectedRegistro.email}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s4">
+                        <h:selectOneMenu id="situacao" value="#{pessoaBean.selectedRegistro.situacao}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Situação"/>
+                            <f:selectItems value="#{pessoaBean.listSituacao}" var="sit" itemValue="#{sit}" itemLabel="#{sit.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="situacao" value="Situação"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h4 class="center cor-eddy-text" style="margin: 0">Dados do Trabalhador</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s4">
+                        <h:selectOneMenu id="profissao" value="#{pessoaBean.selectedRegistro.profissao}" 
+                                         converter="entityConverter"
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Profissao"/>
+                            <f:selectItems value="#{pessoaBean.listProfissao}" var="pro" itemValue="#{pro}" itemLabel="#{pro.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="profissao" value="Profissao"/>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtAdmissao" value="Dt. Admissão"/>
+                        <h:inputText id="dtAdmissao" value="#{pessoaBean.selectedRegistro.dtAdmissao}" style="font-weight: bold;">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s4">
+                        <h:outputLabel for="cartProfissional" value="Cart. Profissional"/>
+                        <h:inputText id="cartProfissional" value="#{pessoaBean.selectedRegistro.cartProf}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="dtEmissaoCart" value="Dt. Emissão Carteira"/>
+                        <h:inputText id="dtEmissaoCart" value="#{pessoaBean.selectedRegistro.dtEmissaoCartProf}" style="font-weight: bold;">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s2">
+                        <h:outputLabel for="renda" value="Renda"/>
+                        <h:inputText id="renda" value="#{pessoaBean.selectedRegistro.renda}" style="font-weight: bold;" >
+                            <f:convertNumber pattern="#,##0.000" minFractionDigits="2"/>
+                            <p:ajax event="blur" update="@this" global="false"/>
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s2">
+                        <h:outputLabel for="pisPasep" value="PIS/PASEP"/>
+                        <h:inputText id="pisPasep" value="#{pessoaBean.selectedRegistro.pisPasep}" style="font-weight: bold;" />
+                    </div>
+                </div>
+            </div>
+            <div id="dadosPessoais" class="col s12">
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="rg" value="Nº. RG"/>
+                        <h:inputText id="rg" value="#{pessoaBean.selectedRegistro.rg}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="dtRg" value="Dt. RG"/>
+                        <h:inputText id="dtRg" value="#{pessoaBean.selectedRegistro.dtEmissaoRg}" style="font-weight: bold;">
+                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                        </h:inputText>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="orgaoExp" value="#{pessoaBean.selectedRegistro.orgaoExpRg}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Orgão Exp"/>
+                            <f:selectItems value="#{pessoaBean.listOrgaoExpedidor}" var="rgx" itemValue="#{rgx}" itemLabel="#{rgx.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="orgaoExp" value="Orgão Exp."/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="ufRg" value="#{pessoaBean.selectedRegistro.ufRg}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a UF"/>
+                            <f:selectItems value="#{pessoaBean.listUfRg}" var="ufr" itemValue="#{ufr}" itemLabel="#{ufr.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="ufRg" value="UF"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="escolaridade" value="#{pessoaBean.selectedRegistro.grauInstrucao}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Escolaridade"/>
+                            <f:selectItems value="#{pessoaBean.listGrauInstrucao}" var="esc" itemValue="#{esc}" itemLabel="#{esc.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="escolaridade" value="Escolaridade"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="religiao" value="#{pessoaBean.selectedRegistro.religiao}" 
+                                         converter="entityConverter"
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Religião"/>
+                            <f:selectItems value="#{pessoaBean.listReligiao}" var="rel" itemValue="#{rel}" itemLabel="#{rel.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="religiao" value="Religião"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="estadoCivil" value="#{pessoaBean.selectedRegistro.estCivil}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Estado Civil"/>
+                            <f:selectItems value="#{pessoaBean.listEstadoCivil}" var="est" itemValue="#{est}" itemLabel="#{est.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="estadoCivil" value="Est. Civil"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="cor" value="#{pessoaBean.selectedRegistro.cor}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cor"/>
+                            <f:selectItems value="#{pessoaBean.listCor}" var="obj" itemValue="#{obj}" itemLabel="#{obj.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="cor" value="Cor"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="sexo" value="#{pessoaBean.selectedRegistro.sexo}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Sexo"/>
+                            <f:selectItems value="#{pessoaBean.listSexo}" var="sex" itemValue="#{sex}" itemLabel="#{sex.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="sexo" value="Sexo"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:outputLabel for="reservista" value="Reservista"/>
+                        <h:inputText id="reservista" value="#{pessoaBean.selectedRegistro.certReservista}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="tpSanguineo" value="#{pessoaBean.selectedRegistro.tpSanguineo}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione o Tipo Sanguineo"/>
+                            <f:selectItems value="#{pessoaBean.listTipoSanguineo}" var="tps" itemValue="#{tps}" itemLabel="#{tps.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="tpSanguineo" value="Tp. Sanguineo"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="votaEm" value="#{pessoaBean.selectedRegistro.cidadeEleitor}" 
+                                         converter="entityConverter"
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cidade"/>
+                            <f:selectItems value="#{pessoaBean.listCidadeVotacao}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="votaEm" value="Vota em"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:outputLabel for="nacionalidade" value="Nacionalidade"/>
+                        <h:inputText id="nacionalidade" value="#{pessoaBean.selectedRegistro.nacionalidade}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="nasceuEm" value="#{pessoaBean.selectedRegistro.cidadeNascimento}" 
+                                         converter="entityConverter"
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cidade"/>
+                            <f:selectItems value="#{pessoaBean.listCidadeVotacao}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="nasceuEm" value="Nasceu em"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="migranteDe" value="#{pessoaBean.selectedRegistro.origemMigracao}" 
+                                         converter="entityConverter"
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Cidade"/>
+                            <f:selectItems value="#{pessoaBean.listCidadeMigracao}" var="obj" itemValue="#{obj}" itemLabel="#{obj.nome}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="migranteDe" value="Migrante de"/>
+                    </div>
+                </div>
+            </div>
+            <div id="dadosOrganizacionais" class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <h:outputLabel for="nomeFantasia" value="Nome Fantasia"/>
+                        <h:inputText id="nomeFantasia" value="#{pessoaBean.selectedRegistro.nomeFantasia}" style="font-weight: bold;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <h:outputLabel for="inscEstadual" value="Insc. Estadual"/>
+                        <h:inputText id="inscEstadual" value="#{pessoaBean.selectedRegistro.inscEstadual}" style="font-weight: bold;" />
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="inscMunicipal" value="Insc. Municipal"/>
+                        <h:inputText id="inscMunicipal" value="#{pessoaBean.selectedRegistro.inscMunicipal}" style="font-weight: bold;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="natureza" value="#{pessoaBean.selectedRegistro.natureza}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Natureza"/>
+                            <f:selectItems value="#{pessoaBean.listNatureza}" var="nat" itemValue="#{nat}" itemLabel="#{nat.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="natureza" value="Natureza"/>
+                    </div>
+                    <div class="input-field col s3">
+                        <h:selectOneMenu id="sociedade" value="#{pessoaBean.selectedRegistro.sociedade}" 
+                                         >
+                            <f:selectItem itemValue="#{null}" itemLabel="Selecione a Sociedade"/>
+                            <f:selectItems value="#{pessoaBean.listSociedade}" var="soc" itemValue="#{soc}" itemLabel="#{soc.descricao}"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel for="sociedade" value="Sociedade"/>
+                    </div>
+                    <div class="input-field col s6">
+                        <h:outputLabel for="website" value="Website"/>
+                        <h:inputText id="website" value="#{pessoaBean.selectedRegistro.url}" style="font-weight: bold;" />
+                    </div>
+                </div>
+            </div>
+
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#telRes').mask('(99)99999999');
+                $('#celular').mask('(99)999999999');
+                $('#telCom').mask('(99)99999999');
+                $('#telRecados').mask('(99)99999999');
+                $('#nascimento').mask('99/99/9999');
+                $('#dtCadastro').mask('99/99/9999');
+                $('#dtAdmissao').mask('99/99/9999');
+                $('#dtEmissaoCart').mask('99/99/9999');
+                $('#dtRg').mask('99/99/9999');
+                $('#cpf').focusout(function () {
+                    var cpf, element;
+                    element = $(this);
+                    element.unmask();
+                    cpf = element.val().replace(/\D/g, '');
+                    if (cpf.length > 11) {
+                        element.mask("99.999.999/9999-99");
+                    } else {
+                        element.mask("999.999.999-99?999");
+                    }
+                }).trigger('focusout');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                function (isConfirm) {
+                    if (isConfirm) {
+                        $("#btnExcluir").css('display', 'none');
+                        document.getElementById('btnExcluir').click();
+                    }
+                });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

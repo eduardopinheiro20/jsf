@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="menu-input">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{logradouroBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o código ou nome" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{logradouroBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+    <ui:define name="conteudo">
+        <div id="basic-form" class="section" style="width: 80%; padding-left: 10%;">
+            <div id="div-main" class="card-panel">                
+                <h:panelGroup id="frm0" rendered="#{logradouroBean.logradouro eq null}"> 
+                    <div class="row">
+                        <div class="col s9">
+                            <h:graphicImage name="logradouro-42.png" library="img/estoque" alt="logradouro" styleClass="imgtexto" />
+                            <h4 class="header">Logradouros</h4>
+                        </div>
+                        <div class="col s2" align="right">
+                            <h:commandLink actionListener="#{logradouroBean.adicionar()}" title="Incluir" style="font-size: 32px; color: #666">
+                                <i class="mdi mdi-content-add-circle"></i>
+                            </h:commandLink>
+                            <h:panelGroup id="pnlRemover">
+                                &nbsp;
+                                <h:commandLink onclick="confirmaExclusao()" title="Remover" rendered="#{logradouroBean.existeSelecionado}" style="font-size: 32px; color: #db4437">
+                                    <i class="mdi mdi-action-delete"></i>
+                                    <f:ajax event="click"/>
+                                </h:commandLink>
+                                <h:commandLink id="btnExcluir" actionListener="#{logradouroBean.remover()}" style="display: none;"/>
+                            </h:panelGroup>  
+                        </div>
+                        <div class="col s1" align="right">
+                            <h:commandLink action="pretty:painel-issqn" title="Voltar" style="font-size: 32px; color: #666">
+                                <i class="mdi mdi-close"></i>
+                            </h:commandLink>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <br/>
+                    <div class="row">
+                        <div class="col s12">
+                            <style type="text/css">
+                                .col1 { width: 5% }
+                                .col2 { width: 90% }
+                            </style>                            
+                            <h:dataTable id="table" var="item" value="#{logradouroBean.todosLogradouros}" styleClass="bordered"
+                                         style="overflow: hidden !important; cursor: pointer;" columnClasses="col1, col2">
+                                <h:column> 
+                                    <h:selectBooleanCheckbox id="chk1" value="#{item.selecionado}">
+                                        <p:ajax event="click" listener="#{logradouroBean.verificarSelecionado()}" process="@this" update="pnlRemover"/>
+                                    </h:selectBooleanCheckbox>
+                                    <h:outputLabel for="chk1" value="&nbsp;" style="padding: 0;"/>
+                                </h:column>
+                                <h:column>
+                                    <h:commandLink id="btn-alterar" style="width: 100%; display: block; color: #555" actionListener="#{logradouroBean.alterar(item)}">
+                                        <i class="mdi mdi-chevron-double-right" style="color: #ccc"/>&nbsp;<h:outputText value="#{item.id} - #{item.nome}" /><br/>
+                                        <h:outputText value="ATIVO" class="task-cat blue" rendered="#{item.ativo}" style="float: right"/>
+                                        <h:outputText value="INATIVO" class="task-cat red" rendered="#{!item.ativo}" style="float: right"/>
+                                    </h:commandLink>
+                                </h:column>
+                            </h:dataTable>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <div aria-label="Page navigation">
+                                <ul class="pagination" style="padding-left: 15px;">
+                                    <li>
+                                        <h:commandLink action="#{logradouroBean.pageFirst}"
+                                                       disabled="#{logradouroBean.firstRow == 0}">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </h:commandLink>
+                                    </li>
+                                    <ui:repeat value="#{logradouroBean.pages}" var="page">
+                                        <li>
+                                            <h:commandLink value="#{page}" actionListener="#{logradouroBean.page}"/>
+                                        </li>
+                                    </ui:repeat>
+                                    <li>
+                                        <h:commandLink action="#{logradouroBean.pageLast}"
+                                                       disabled="#{logradouroBean.firstRow + logradouroBean.rowsPerPage &gt;= logradouroBean.totalRows}">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </h:commandLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup id="frm1" rendered="#{logradouroBean.logradouro ne null}">                
+                    <div class="row">
+                        <div class="col s9">
+                            <h:graphicImage name="logradouro-42.png" library="img/estoque" alt="logradouro" styleClass="imgtexto" />
+                            <h4 class="header">Logradouros</h4>
+                        </div>
+                        <div class="col s1" align="right">
+                            <h:commandLink actionListener="#{logradouroBean.adicionar()}" title="Incluir" style="font-size: 32px; color: #666">
+                                <i class="mdi mdi-content-add-circle"></i>
+                            </h:commandLink>
+                        </div>
+                        <div class="col s1" align="right">
+                            <h:commandLink actionListener="#{logradouroBean.salvar()}" title="Salvar" style="font-size: 32px; color: #666">
+                                <i class="mdi mdi-content-save"></i>
+                            </h:commandLink>
+                        </div>
+                        <div class="col s1" align="right">
+                            <h:commandLink actionListener="#{logradouroBean.cancelar()}" title="Voltar" immediate="true" style="font-size: 32px; color: #666">
+                                <i class="mdi mdi-close"></i>
+                            </h:commandLink>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <br/>
+
+                    <p:focus for="nome" />
+                                   
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <h:outputLabel for="nome" value="Nome do logradouro *"/>
+                            <h:inputText id="nome" value="#{logradouroBean.logradouro.nome}" style="font-weight: bold;" />
+                            <h:message for="nome" style="color: red;" />
+                        </div>
+                    </div>                    
+
+                    <div class="row">
+                        <div class="col s12">
+                            <br/>
+                            <br/>
+                            <h:commandLink class="btn  waves-effect waves-light blue darken-1" actionListener="#{logradouroBean.salvar()}">
+                                <i class="mdi mdi-content-save"></i>
+                                Salvar &amp; Incluir
+                            </h:commandLink>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <div class="fixed-action-btn" style="bottom: 45px; right: 3%;">
+                    <h:commandLink action="#{logradouroBean.adicionar()}"                                                    
+                                   class="btn-floating btn-large waves-effect waves-light red">
+                        <i class="large mdi mdi-plus"></i>
+                    </h:commandLink>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').closeFAB();
+                $('select').material_select();
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

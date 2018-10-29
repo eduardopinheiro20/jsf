@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--
+ * Sistema Eddydata de Administração Pública
+ * Copyright (C) 2016, Eddydata ltda.
+ * Diretors Reservados.
+ * @author Rodrigo Teixeira
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ph="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="msapplication-tap-highlight" content="no"/>
+        <title><h:outputText value="Eddydata - ISSQN"/></title>
+
+        <h:outputStylesheet name="materialize.min.css" library="css"/>
+        <h:outputStylesheet name="jquery.growl.css" library="css"/>
+        <h:outputStylesheet name="sweet-alert.css" library="css"/>
+        <h:outputStylesheet name="style.min.css" library="css"/>
+        <h:outputStylesheet name="prime.css" library="css"/>
+        <h:outputStylesheet name="default.css" library="css"/>
+
+        <h:outputScript name="jquery.growl.js" library="js" />
+        <h:outputScript name="perfect-scrollbar.min.js" library="js" />
+        <h:outputScript name="materialize.min.js" library="js" />
+        <h:outputScript name="plugins.min.js" library="js" />
+        <h:outputScript name="sweet-alert.min.js" library="js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/favicon.ico"/>
+    </h:head>
+    <h:body class="light-blue darken-2">
+        <style type="text/css">
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+                transition: background-color 5000s ease-in-out 0s;
+            }
+        </style>
+
+        <h:form id="form1" prependId="false" ph:autocomplete="off">
+            <p:growl showDetail="false" life="9000" sticky="true" autoUpdate="true" /> 
+            <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()"/>  
+
+            <p:dialog widgetVar="statusDialog" width="33%" style="overflow: hidden" position="right top"
+                      draggable="false" closable="false" resizable="false" modal="false" showHeader="false">  
+                <div class="col s12">
+                    <h:outputLabel value="Buscando informações, por favor aguarde..." />
+                    <div class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+                </div>
+            </p:dialog>
+
+            <div id="content">
+                <div id="div-main" class="card-panel">
+                    <div class="row">
+                        <div class="col s12">
+                            <h:link outcome="pretty:login" class="left btn-flat waves-effect waves-light grey white-text">
+                                <i class="mdi mdi-content-reply"></i>
+                                Voltar
+                            </h:link>
+                        </div>
+                    </div>
+                    <div class="divider" ></div>
+
+                    <h:panelGroup rendered="#{consultarProtocolosBean.solicitacao eq null}"> 
+                        <div class="row">
+                            <div class="col s12">
+                                <p:dataTable id="table" var="item" value="#{consultarProtocolosBean.listaSolicitacao}" styleClass="bordered"
+                                             style="overflow: hidden !important; cursor: pointer;"
+                                             rows="20" rowsPerPageTemplate="20,50,100,#{consultarProtocolosBean.listaSolicitacao.size()}"
+                                             paginator="true" paginatorPosition="bottom" 
+                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                             tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column sortBy="#{item.numeroProtocolo}" headerText="Protocolo" width="50">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.alterar(item)}">
+                                            <h:outputText value="#{item.numeroProtocolo}" />
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column sortBy="#{item.empresa.nomeEmpresa}" headerText="Empresa" width="30%">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.alterar(item)}">
+                                            <h:outputText value="#{item.empresa.nomeEmpresa}" />
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column sortBy="#{item.empresa.cpnj}" headerText="CNPJ" width="70">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.alterar(item)}">
+                                            <h:outputText value="#{item.empresa.cpnj}" />
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column sortBy="#{item.statusSolicitacao.status}" headerText="Status" width="50">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.alterar(item)}">
+                                            <h:outputText value="#{item.statusSolicitacao.status}" />
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column sortBy="#{item.pendenteViabilidade}" headerText="Pendente" width="40">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.alterar(item)}">
+                                            <h:outputText value="#{item.pendenteViabilidade ? 'Sim' : 'Não'}" />
+                                        </h:commandLink>
+                                    </p:column>
+                                    <p:column width="50">
+                                        <h:commandLink actionListener="#{consultarProtocolosBean.abrirRegistro(item)}" 
+                                                       rendered="#{item.statusSolicitacao.status eq 'Concluída' and !item.pendenteViabilidade}"
+                                                       class="waves-effect waves-light blue-text">
+                                            <f:setPropertyActionListener target="#{issqnBean.solicitacao}" value="#{item}" />
+                                            <i class="mdi mdi-action-done"></i>
+                                            <span>Alterar</span>
+                                        </h:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{consultarProtocolosBean.solicitacao ne null}">
+                        <div class="row">
+                            <div class="input-field col s8">
+                                <h:outputLabel for="nome" value="Nome"/>
+                                <h:inputText id="nome" value="#{consultarProtocolosBean.solicitacao.empresa.nomeEmpresa}" style="font-weight: bold;" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="cnpj" value="CNPJ"/>
+                                <p:inputMask id="cnpj" mask="99.999.999/9999-99" value="#{consultarProtocolosBean.solicitacao.empresa.cpnj}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="email" value="E-mail"/>
+                                <h:inputText id="email" value="#{consultarProtocolosBean.solicitacao.empresa.email}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="telefone1" value="Telefone 1"/>
+                                <h:inputText id="telefone1" value="(#{consultarProtocolosBean.solicitacao.empresa.DDD1}) #{consultarProtocolosBean.solicitacao.empresa.telefone1}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="telefone2" value="Telefone 2"/>
+                                <h:inputText id="telefone2" value="(#{consultarProtocolosBean.solicitacao.empresa.DDD2}) #{consultarProtocolosBean.solicitacao.empresa.telefone2}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="CEP" value="CEP"/>
+                                <p:inputMask id="CEP" mask="99999-999" value="#{consultarProtocolosBean.solicitacao.empresa.cep}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s8">
+                                <h:outputLabel for="logradouro" value="Logradouro"/>
+                                <h:inputText id="logradouro" value="#{consultarProtocolosBean.solicitacao.empresa.tipoLogradouro.nomeLogradouro} #{consultarProtocolosBean.solicitacao.empresa.logradouro}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="numero" value="Número"/>
+                                <h:inputText id="numero" value="#{consultarProtocolosBean.solicitacao.empresa.numero}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="complemento" value="Complemento"/>
+                                <h:inputText id="complemento" value="#{consultarProtocolosBean.solicitacao.empresa.complemento}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="bairro" value="Bairro"/>
+                                <h:inputText id="bairro" value="#{consultarProtocolosBean.solicitacao.empresa.bairro}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="cidade" value="Cidade"/>
+                                <h:inputText id="cidade" value="#{consultarProtocolosBean.solicitacao.empresa.municipio.nome} - #{consultarProtocolosBean.solicitacao.empresa.municipio.estado.sigla}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="referencia" value="Referência"/>
+                                <h:inputText id="referencia" value="#{consultarProtocolosBean.solicitacao.empresa.referencia}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="setor" value="Setor/Quadra/Lote"/>
+                                <h:inputText id="setor" value="#{consultarProtocolosBean.solicitacao.empresa.setorQuadraLote}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="cpfResponsavel" value="Cpf Responsável"/>
+                                <h:inputText id="cpfResponsavel" value="#{consultarProtocolosBean.solicitacao.empresa.cpfResponsavel}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="nire" value="NIRE"/>
+                                <h:inputText id="nire" value="#{consultarProtocolosBean.solicitacao.empresa.nire}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="natureza" value="Natureza Jurídica"/>
+                                <h:inputText id="natureza" value="#{consultarProtocolosBean.solicitacao.empresa.naturezaJuridica.nomeNaturezaJuridica}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="porte" value="Porte"/>
+                                <h:inputText id="porte" value="#{consultarProtocolosBean.solicitacao.empresa.porte.descricaoPorte}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <h:outputLabel for="areaImovel" value="Área do Imóvel"/>
+                                <h:inputText id="areaImovel" value="#{consultarProtocolosBean.solicitacao.empresa.areaImovel}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="areaEstabelecimento" value="Área do Estabelecimento"/>
+                                <h:inputText id="areaEstabelecimento" value="#{consultarProtocolosBean.solicitacao.empresa.areaEstabelecimento}" />
+                            </div>
+                            <div class="input-field col s4">
+                                <h:outputLabel for="inclusao" value="Data Inclusão"/>
+                                <h:inputText id="inclusao" value="#{utilBean.convertXmlGregorianCalendarToDate(consultarProtocolosBean.solicitacao.empresa.horaInclusao)}" >
+                                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm:ss" locale="pt" timeZone="America/Sao_Paulo" />
+                                </h:inputText>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4 no-margin no-padding">
+                                <h:selectBooleanCheckbox value="#{consultarProtocolosBean.solicitacao.empresa.mei}" id="mei" />
+                                <h:outputLabel for="mei" value="MEI" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col s12 m12">
+                                <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                                    <li>
+                                        <div class="collapsible-header">Solicitação</div>
+                                        <div class="collapsible-body">
+                                            <div class="input-field col s4">
+                                                <h:outputLabel for="protocolo" value="Protocolo"/>
+                                                <h:inputText id="protocolo" value="#{consultarProtocolosBean.solicitacao.numeroProtocolo}" />
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <h:outputLabel for="status" value="Status"/>
+                                                <h:inputText id="status" value="#{consultarProtocolosBean.solicitacao.statusSolicitacao.status}" />
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <h:outputLabel for="pendente" value="Pendente"/>
+                                                <h:inputText id="pendente" value="#{consultarProtocolosBean.solicitacao.pendenteViabilidade ? 'Sim' : 'Não'}" />
+                                            </div>
+                                            <div class="input-field col 12">
+                                                <p:dataTable id="tableLicencas" var="lic" value="#{consultarProtocolosBean.solicitacao.licencas.licenca}" styleClass="bordered"
+                                                             style="overflow: hidden !important; cursor: pointer;"
+                                                             rows="20" rowsPerPageTemplate="20,50,100,#{consultarProtocolosBean.solicitacao.licencas.licenca.size()}"
+                                                             paginator="true" paginatorPosition="bottom" 
+                                                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                             tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                                    <p:column sortBy="#{lic.protocolo}" headerText="Protocolo" width="70">
+                                                        <h:outputText value="#{lic.protocolo}" />
+                                                    </p:column>
+                                                    <p:column sortBy="#{lic.numero}" headerText="Número" width="10%">
+                                                        <h:outputText value="#{lic.numero}" />
+                                                    </p:column>
+                                                    <p:column sortBy="#{lic.orientacao}" headerText="Orientação" width="10%">
+                                                        <h:outputText value="#{lic.orientacao}" />
+                                                    </p:column>
+                                                    <p:column headerText="Validade" width="10%">
+                                                        <h:outputText value="#{utilBean.convertXmlGregorianCalendarToDate(lic.dataValidade.value)}" >
+                                                            <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm:ss" locale="pt" timeZone="America/Sao_Paulo" />
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column sortBy="#{lic.situacaoLicenca.descricao}" headerText="Situação" width="10%">
+                                                        <h:outputText value="#{lic.situacaoLicenca.descricao}" />
+                                                    </p:column>
+                                                    <p:column sortBy="#{lic.viabilidade}" headerText="Viabilidade" width="10%">
+                                                        <h:outputText value="#{lic.viabilidade ? 'Sim' : 'Não'}" />
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header ">Sócios</div>
+                                        <div class="collapsible-body">
+                                            <p:dataTable id="tableSocios" var="soc" value="#{consultarProtocolosBean.solicitacao.empresa.socios.responsavelEmpresa}" styleClass="bordered"
+                                                         style="overflow: hidden !important; cursor: pointer;"
+                                                         rows="20" rowsPerPageTemplate="20,50,100,#{consultarProtocolosBean.solicitacao.empresa.socios.responsavelEmpresa.size()}"
+                                                         paginator="true" paginatorPosition="bottom" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                         tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column sortBy="#{soc.nomeResponsavel}" headerText="Nome" width="70%">
+                                                    <h:outputText value="#{soc.nomeResponsavel}" />
+                                                </p:column>
+                                                <p:column sortBy="#{soc.CPFResponsavel}" headerText="CPF" width="15%">
+                                                    <h:outputText value="#{soc.CPFResponsavel}" />
+                                                </p:column>
+                                                <p:column sortBy="#{utilBean.convertXmlGregorianCalendarToDate(soc.inclusao)}" headerText="Inclusão" width="15%">
+                                                    <h:outputText value="#{utilBean.convertXmlGregorianCalendarToDate(soc.inclusao)}" >
+                                                        <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy HH:mm:ss" locale="pt" timeZone="America/Sao_Paulo" />
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header ">Atividades</div>
+                                        <div class="collapsible-body">
+                                            <p:dataTable id="tableAtividades" var="atv" value="#{consultarProtocolosBean.solicitacao.empresa.atividadesAuxiliares.atividadeAuxiliar}" styleClass="bordered"
+                                                         style="overflow: hidden !important; cursor: pointer;"
+                                                         rows="20" rowsPerPageTemplate="20,50,100,#{consultarProtocolosBean.solicitacao.empresa.atividadesAuxiliares.atividadeAuxiliar.size()}"
+                                                         paginator="true" paginatorPosition="bottom" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                         tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column sortBy="#{atv.nome}" headerText="Nome" width="30%">
+                                                    <h:outputText value="#{atv.nome}" />
+                                                </p:column>
+                                                <p:column sortBy="#{atv.descricao}" headerText="Descrição" width="50%">
+                                                    <h:outputText value="#{atv.descricao}" />
+                                                </p:column>
+                                                <p:column sortBy="#{atv.tipo}" headerText="Tipo" width="20%">
+                                                    <h:outputText value="#{atv.tipo}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="collapsible-header ">Atividades CNAE</div>
+                                        <div class="collapsible-body">
+                                            <p:dataTable id="tableCnae" var="cnae" value="#{consultarProtocolosBean.solicitacao.empresa.atividadesCNAE.atividadeCNAE}" styleClass="bordered"
+                                                         style="overflow: hidden !important; cursor: pointer;"
+                                                         rows="20" rowsPerPageTemplate="20,50,100,#{consultarProtocolosBean.solicitacao.empresa.atividadesCNAE.atividadeCNAE.size()}"
+                                                         paginator="true" paginatorPosition="bottom" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                         tableStyleClass="table-eddy responsive-table striped" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column sortBy="#{cnae.descricao}" headerText="Descrição" width="70%">
+                                                    <h:outputText value="#{cnae.descricao}" />
+                                                </p:column>
+                                                <p:column sortBy="#{cnae.tipo}" headerText="Tipo" width="15%">
+                                                    <h:outputText value="#{cnae.tipo}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </h:form>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+            }
+        </script>
+    </h:body>
+</html>
+

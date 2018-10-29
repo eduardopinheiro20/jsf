@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Banco" />
+    <ui:param name="pagina_acima" value="Cadastros" />
+    <ui:param name="pretty_pagina" value="cadastro" />
+
+    <ui:define name="filtro">
+        <i class="mdi mdi-action-search"></i>     
+        <h:inputText id="txtFiltro" value="#{bancoBean.textoFiltro}" styleClass="header-search-input z-depth-2" 
+                     pt:placeholder="Informe o banco" style="padding-left: 50px;"
+                     onkeypress="if (event.keyCode === 13) {
+                                 document.getElementById('btnFiltro').click();
+                                 return false;
+                             }"/>
+        <h:commandLink id="btnFiltro" actionListener="#{bancoBean.filtrar()}" value="FILTRO" style="display: none;" ></h:commandLink>
+    </ui:define>
+
+    <ui:define name="botoes">
+        <h:panelGroup rendered="#{bancoBean.selectedRegistro eq null}">
+            <h:commandLink rendered="#{globalBean.somenteConsulta eq false}" disabled="#{globalBean.somenteConsulta}" actionListener="#{bancoBean.adicionar()}" title="Incluir" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi mdi-content-add"></i>
+            </h:commandLink>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{bancoBean.selectedRegistro ne null}">
+            <h:commandLink disabled="#{globalBean.somenteConsulta}" actionListener="#{bancoBean.salvar()}" title="Salvar" 
+                           class="btn-floating btn-large waves-effect waves-light blue">
+                <i class="mdi-content-save"></i>
+            </h:commandLink>
+            <ul>
+                <li>
+                    <h:commandLink class="btn-floating grey" actionListener="#{bancoBean.cancelar()}">
+                        <i class="mdi-navigation-close"></i>
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" onclick="confirmaExclusao()" title="Remover" class="btn-floating red">
+                        <i class="mdi mdi-action-delete"></i>
+                        <f:ajax event="click"/>
+                    </h:commandLink>
+                    <h:commandLink disabled="#{globalBean.somenteConsulta}" id="btnExcluir" actionListener="#{bancoBean.remover()}" style="display: none;"/>
+                </li>
+            </ul>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <h:panelGroup rendered="#{bancoBean.selectedRegistro eq null}"> 
+            <div class="row">
+                <div class="col s12">
+                    <p:dataTable id="table" var="item" value="#{bancoBean.listRegistro}" styleClass="bordered"
+                                 style="overflow: hidden !important; cursor: pointer;"
+                                 rows="20" rowsPerPageTemplate="20,50,100,#{bancoBean.listRegistro.size()}"
+                                 paginator="true" paginatorPosition="bottom" 
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 tableStyleClass="striped" emptyMessage="Nenhum registro encontrado!">
+                        <p:column sortBy="#{item.id}" headerText="ID" width="70">
+                            <h:commandLink actionListener="#{bancoBean.alterar(item)}">
+                                <h:outputText value="#{item.id}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.nome}" headerText="Nome" width="35%">
+                            <h:commandLink actionListener="#{bancoBean.alterar(item)}">
+                                <h:outputText value="#{item.nome}" />
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.numero}" headerText="Número" width="15%">
+                            <h:commandLink actionListener="#{codigoFiscalBean.alterar(item)}">
+                                <h:commandLink actionListener="#{bancoBean.alterar(item)}">
+                                    <h:outputText value="#{item.numero}" />
+                                </h:commandLink>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column sortBy="#{item.agencia}" headerText="Agência" width="50%">
+                            <h:commandLink actionListener="#{bancoBean.alterar(item)}">
+                                <h:outputText value="#{item.agencia}" />
+                            </h:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </h:panelGroup>
+        <h:panelGroup class="#{globalBean.somenteConsulta eq true ? 'desativar' : ''}" rendered="#{bancoBean.selectedRegistro ne null}">
+            <div class="row">
+                <div class="input-field col s12">
+                    <h4 class="center cor-eddy-text" style="margin: 0">Dados do Banco</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="categoria" value="Nome *"/>
+                    <h:inputText id="categoria" value="#{bancoBean.selectedRegistro.nome}" style="font-weight: bold;" />
+                    <h:message for="categoria" style="color: red;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="numero" value="Número *"/>
+                    <h:inputText id="numero" value="#{bancoBean.selectedRegistro.numero}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="agencia" value="Agência *"/>
+                    <h:inputText id="agencia" value="#{bancoBean.selectedRegistro.agencia}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="dvAgencia" value="Dv. Agência *"/>
+                    <h:inputText id="dvAgencia" value="#{bancoBean.selectedRegistro.dvAgencia}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s9">
+                    <h:outputLabel for="conta" value="Conta"/>
+                    <h:inputText id="conta" value="#{bancoBean.selectedRegistro.conta}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="dvConta" value="Dv. Conta"/>
+                    <h:inputText id="dvConta" value="#{bancoBean.selectedRegistro.dvConta}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="gerente" value="Gerente"/>
+                    <h:inputText id="gerente" value="#{bancoBean.selectedRegistro.gerente}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s3">
+                    <h:outputLabel for="telefone" value="Telefone"/>
+                    <h:inputText id="telefone" value="#{bancoBean.selectedRegistro.telefone}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="fax" value="Fax"/>
+                    <h:inputText id="fax" value="#{bancoBean.selectedRegistro.fax}" style="font-weight: bold;" />
+                </div>
+                <div class="input-field col s3">
+                    <h:outputLabel for="contaOrcam" value="Conta Orçamentária"/>
+                    <h:inputText id="contaOrcam" value="#{bancoBean.selectedRegistro.contaOrcamentaria}" style="font-weight: bold;" />
+                </div>
+                <div class="col s12 m3">
+                    <h:selectOneRadio disabled="#{globalBean.somenteConsulta}" layout="lineDirection" value="#{bancoBean.selectedRegistro.cnab}">
+                        <h:outputLabel for="Cnab" value="Cnab"/>
+                        <f:selectItem itemValue="0" itemLabel="240" />
+                        <f:selectItem itemValue="1" itemLabel="400" />
+                    </h:selectOneRadio>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h4 class="center cor-eddy-text" style="margin: 0">Dados do Boleto</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <h:outputLabel for="localPagamento" value="Local de Pagamento"/>
+                    <h:inputText id="localPagamento" value="#{bancoBean.selectedRegistro.boletoLocalPagto1}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s4">
+                    <h:outputLabel for="carteira" value="Carteira *"/>
+                    <h:inputText id="carteira" value="#{bancoBean.selectedRegistro.boletoCarteira}" style="font-weight: bold;" maxlength="5"/>
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="especieDocumento" value="Espécie Documento"/>
+                    <h:inputText id="especieDocumento" value="#{bancoBean.selectedRegistro.boletoEspecieDocumento}" style="font-weight: bold;" maxlength="5"/>
+                </div>
+                <div class="input-field col s4">
+                    <h:outputLabel for="convenio" value="Nº Convênio *"/>
+                    <h:inputText id="convenio" value="#{bancoBean.selectedRegistro.numeroConvenio}" style="font-weight: bold;" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s8">
+                    <h:outputLabel for="corpoBoleto" value="Instruções/Corpo do Boleto"/>
+                    <h:inputTextarea id="corpoBoleto" class="materialize-textarea" value="#{bancoBean.selectedRegistro.corpoBoleto}" style="font-weight: bold;" />
+                </div>
+            </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#telefone').mask('(99)99999999');
+                $('#fax').mask('(99)99999999');
+            }
+
+            function confirmaExclusao() {
+                swal({
+                    title: "Confirma a exclusão ?", text: "A exclusão só será possível se este registro não foi movimentado.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Confirmar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: true,
+                    closeOnCancel: true},
+                        function (isConfirm) {
+                            if (isConfirm) {
+                                $("#btnExcluir").css('display', 'none');
+                                document.getElementById('btnExcluir').click();
+                            }
+                        });
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+

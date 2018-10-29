@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition template="../../WEB-INF/modelo-app.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pagina_atual" value="Relatório de Conferência de Parcelas" />
+    <ui:param name="pagina_acima" value="Relatórios" />
+    <ui:param name="pretty_pagina" value="relatorio" />
+
+    <ui:define name="botoes">
+        <h:commandLink actionListener="#{relatorioConferenciaParcelas.imprimir()}" title="Imprimir" target="_blank"
+                       class="btn-floating btn-large waves-effect waves-light blue">
+            <i class="mdi mdi-action-print"></i>
+        </h:commandLink>
+        <ul>
+            <li>
+                <h:commandLink title="Limpar" class="btn-floating light-green">
+                    <i class="mdi-navigation-close"></i>
+                    <p:ajax event="click" update="form1" listener="#{relatorioConferenciaParcelas.limpar()}" oncomplete="updateFields();"/>
+                </h:commandLink>
+            </li>
+        </ul>
+    </ui:define>
+
+    <ui:define name="conteudo">
+        <div class="row">
+            <h:outputLabel for="order" value="Opções de Impressão" class="active"/>
+            <h:selectOneRadio id="order" value="#{relatorioConferenciaParcelas.order}" layout="pageDirection" styleClass="myradio" >
+                <f:selectItem itemValue="I"  itemLabel="Inscrição"/>
+                <f:selectItem itemValue="C" itemLabel="Contribuinte"/>
+                <f:selectItem itemValue="E" itemLabel="Endereço Imóvel"/>
+                <f:selectItem itemValue="A" itemLabel="Atividade"/>
+            </h:selectOneRadio>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="input-field col s12 m2">
+                <h:outputLabel for="inscricao" value="Inscrição" class="active"/>
+                <h:inputText id="inscricao" value="#{relatorioConferenciaParcelas.inscricao}">
+                    <p:ajax update="form1" event="blur" process="@this" listener="#{relatorioConferenciaParcelas.buscaPorInscricao()}" oncomplete="updateFields();" global="false"/>
+                </h:inputText>
+            </div>
+            <div class="input-field col s12 m7">
+                <h:outputLabel for="contribuinte" value="Nome" class="active"/>
+                <p:autoComplete value="#{relatorioConferenciaParcelas.contribuinte}" 
+                                id="contribuinte"
+                                style="width: 100%;"
+                                styleClass="ui-autocomplete-edit"
+                                converter="entityConverter"
+                                minQueryLength="3"
+                                maxResults="10"     
+                                completeMethod="#{utilBean.buscarIssqnNomePessoa}" 
+                                var="obj" itemLabel="#{obj.pessoa.nome}" itemValue="#{obj}">
+                    <p:ajax event="itemSelect" listener="#{relatorioConferenciaParcelas.selecionarIssqn()}" update="form1" oncomplete="updateFields();"/>
+                </p:autoComplete>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s3">
+                <h:outputLabel for="dataAbertura" value="Data Máxima de Abertura" class="active"/>
+                <h:inputText id="dataAbertura" value="#{relatorioConferenciaParcelas.dataMax}">
+                    <f:convertDateTime type="date" dateStyle="short" pattern="dd/MM/yyyy" locale="pt" timeZone="America/Sao_Paulo" />
+                </h:inputText>
+            </div>
+            <div class="input-field col s3">
+                <h:selectOneMenu id="tpCobranca" value="#{relatorioConferenciaParcelas.tipoCobranca}">
+                    <f:selectItem itemValue="#{0}" itemLabel="TODAS" />
+                    <f:selectItem itemValue="#{1}" itemLabel="TCF" />
+                    <f:selectItem itemValue="#{3}" itemLabel="EVENTUAL" />
+                    <p:ajax process="@this" global="false" oncomplete="updateFields()"/>
+                </h:selectOneMenu>
+                <h:outputLabel for="tpCobranca" value="Tipo Cobrança"/>
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <h:outputLabel for="tipo" value="Tipo Relatório" class="active"/>
+            <h:selectOneRadio id="tipo" value="#{relatorioConferenciaParcelas.tipoRelatorio}" layout="pageDirection" styleClass="myradio" >
+                <f:selectItem itemValue="S"  itemLabel="Simples"/>
+                <f:selectItem itemValue="D" itemLabel="Detalhado"/>
+                <f:selectItem itemValue="C" itemLabel="Cancelamento"/>
+            </h:selectOneRadio>
+        </div>
+    </ui:define>
+    <ui:define name="conteudo_extra">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                updateFields();
+            });
+
+            function updateFields() {
+                Materialize.updateTextFields();
+                $('.fixed-action-btn').openFAB();
+                $('select').material_select();
+                $('#dataAbertura').mask('99/99/9999');
+            }
+        </script>
+    </ui:define>
+</ui:composition>
+
